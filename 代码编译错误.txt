@@ -1,0 +1,178 @@
+FQBN: esp8266:esp8266:nodemcuv2
+Using board 'nodemcuv2' from platform in folder: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2
+Using core 'esp8266' from platform in folder: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2
+
+"C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\python3\\3.7.2-post1/python3" -I "C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2/tools/mkbuildoptglobals.py" "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Arduino IDE\\resources\\app\\lib\\backend\\resources" 10607 "C:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1" "C:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt" "F:\\Github\\SmartOvenController/SmartOvenController.ino.globals.h" "C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2\\cores\\esp8266/CommonHFile.h"
+default_encoding:       cp936
+Assume aggressive 'core.a' caching enabled.
+Note: optional global include file 'F:\Github\SmartOvenController\SmartOvenController.ino.globals.h' does not exist.
+  Read more at https://arduino-esp8266.readthedocs.io/en/latest/faq/a06-global-build-options.html
+Detecting libraries used...
+C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++ -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 @C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/lwip2/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include -IC:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core -c @C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/warnings/none-cppflags -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -w -x c++ -E -CC -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 -DARDUINO_BOARD="ESP8266_NODEMCU_ESP12E" -DARDUINO_BOARD_ID="nodemcuv2" -DLED_BUILTIN=2 -DFLASHMODE_DIO -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266 -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\nodemcu C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1\sketch\SmartOvenController.ino.cpp -o nul
+Alternatives for ESP8266WiFi.h: [ESP8266WiFi@1.0]
+ResolveLibrary(ESP8266WiFi.h)
+  -> candidates: [ESP8266WiFi@1.0]
+C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++ -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 @C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/lwip2/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include -IC:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core -c @C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/warnings/none-cppflags -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -w -x c++ -E -CC -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 -DARDUINO_BOARD="ESP8266_NODEMCU_ESP12E" -DARDUINO_BOARD_ID="nodemcuv2" -DLED_BUILTIN=2 -DFLASHMODE_DIO -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266 -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\nodemcu -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1\sketch\SmartOvenController.ino.cpp -o nul
+Alternatives for ESP8266WebServer.h: [ESP8266WebServer@1.0]
+ResolveLibrary(ESP8266WebServer.h)
+  -> candidates: [ESP8266WebServer@1.0]
+C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++ -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 @C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/lwip2/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include -IC:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core -c @C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/warnings/none-cppflags -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -w -x c++ -E -CC -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 -DARDUINO_BOARD="ESP8266_NODEMCU_ESP12E" -DARDUINO_BOARD_ID="nodemcuv2" -DLED_BUILTIN=2 -DFLASHMODE_DIO -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266 -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\nodemcu -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1\sketch\SmartOvenController.ino.cpp -o nul
+Alternatives for SPI.h: [SPI@1.0]
+ResolveLibrary(SPI.h)
+  -> candidates: [SPI@1.0]
+C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++ -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 @C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/lwip2/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include -IC:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core -c @C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/warnings/none-cppflags -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -w -x c++ -E -CC -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 -DARDUINO_BOARD="ESP8266_NODEMCU_ESP12E" -DARDUINO_BOARD_ID="nodemcuv2" -DLED_BUILTIN=2 -DFLASHMODE_DIO -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266 -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\nodemcu -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\SPI C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1\sketch\SmartOvenController.ino.cpp -o nul
+Alternatives for MAX6675.h: [MAX6675@0.3.3]
+ResolveLibrary(MAX6675.h)
+  -> candidates: [MAX6675@0.3.3]
+C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++ -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 @C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/lwip2/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include -IC:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core -c @C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/warnings/none-cppflags -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -w -x c++ -E -CC -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 -DARDUINO_BOARD="ESP8266_NODEMCU_ESP12E" -DARDUINO_BOARD_ID="nodemcuv2" -DLED_BUILTIN=2 -DFLASHMODE_DIO -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266 -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\nodemcu -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\SPI -If:\Github\libraries\MAX6675 C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1\sketch\SmartOvenController.ino.cpp -o nul
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\BearSSLHelpers.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\CertStoreBearSSL.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFi.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiAP.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiGeneric.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiGratuitous.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiMulti.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiSTA-WPS.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiSTA.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\ESP8266WiFiScan.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\WiFiClient.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\WiFiClientSecureBearSSL.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\WiFiServer.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\WiFiServerSecureBearSSL.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\WiFiUdp.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src\enable_wifi_at_boot_time.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src\detail\mimetable.cpp
+Using cached library dependencies for file: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\SPI\SPI.cpp
+Using cached library dependencies for file: f:\Github\libraries\MAX6675\MAX6675.cpp
+Generating function prototypes...
+C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++ -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 @C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/lwip2/include -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include -IC:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1/core -c @C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2/tools/warnings/none-cppflags -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -w -x c++ -E -CC -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 -DARDUINO_BOARD="ESP8266_NODEMCU_ESP12E" -DARDUINO_BOARD_ID="nodemcuv2" -DLED_BUILTIN=2 -DFLASHMODE_DIO -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266 -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\nodemcu -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src -IC:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\SPI -If:\Github\libraries\MAX6675 C:\Users\Administrator\AppData\Local\arduino\sketches\2D0CC722A0ADA2EA2E3ADE45A14949B1\sketch\SmartOvenController.ino.cpp -o C:\Users\Administrator\AppData\Local\Temp\1948485591\sketch_merged.cpp
+C:\Users\Administrator\AppData\Local\Arduino15\packages\builtin\tools\ctags\5.8-arduino11/ctags -u --language-force=c++ -f - --c++-kinds=svpf --fields=KSTtzns --line-directives C:\Users\Administrator\AppData\Local\Temp\1948485591\sketch_merged.cpp
+
+Compiling sketch...
+"C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\python3\\3.7.2-post1/python3" -I "C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2/tools/signing.py" --mode header --publickey "F:\\Github\\SmartOvenController/public.key" --out "C:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/Updater_Signing.h"
+"C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\xtensa-lx106-elf-gcc\\3.1.0-gcc10.3-e5f9fec/bin/xtensa-lx106-elf-g++" -D__ets__ -DICACHE_FLASH -U__STRICT_ANSI__ -D_GNU_SOURCE -DESP8266 "@C:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1/core/build.opt" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2/tools/sdk/include" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2/tools/sdk/lwip2/include" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2/tools/sdk/libc/xtensa-lx106-elf/include" "-IC:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1/core" -c "@C:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2/tools/warnings/none-cppflags" -Os -g -free -fipa-pta -Werror=return-type -mlongcalls -mtext-section-literals -fno-rtti -falign-functions=4 -std=gnu++17 -MMD -ffunction-sections -fdata-sections -fno-exceptions -DMMU_IRAM_SIZE=0x8000 -DMMU_ICACHE_SIZE=0x8000 -DNONOSDK22x_190703=1 -DF_CPU=80000000L -DLWIP_OPEN_SRC -DTCP_MSS=536 -DLWIP_FEATURES=1 -DLWIP_IPV6=0 -DARDUINO=10607 -DARDUINO_ESP8266_NODEMCU_ESP12E -DARDUINO_ARCH_ESP8266 "-DARDUINO_BOARD=\"ESP8266_NODEMCU_ESP12E\"" "-DARDUINO_BOARD_ID=\"nodemcuv2\"" -DLED_BUILTIN=2 -DFLASHMODE_DIO "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2\\cores\\esp8266" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2\\variants\\nodemcu" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2\\libraries\\ESP8266WiFi\\src" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2\\libraries\\ESP8266WebServer\\src" "-IC:\\Users\\Administrator\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\3.1.2\\libraries\\SPI" "-If:\\Github\\libraries\\MAX6675" "C:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1\\sketch\\SmartOvenController.ino.cpp" -o "C:\\Users\\Administrator\\AppData\\Local\\arduino\\sketches\\2D0CC722A0ADA2EA2E3ADE45A14949B1\\sketch\\SmartOvenController.ino.cpp.o"
+F:\Github\SmartOvenController\SmartOvenController.ino: In function 'void setup()':
+F:\Github\SmartOvenController\SmartOvenController.ino:535:5: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  535 |             Serial.println("1. WiFi名称和密码是否正确");
+      |     ^       ~~
+      |     ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:536:5: error: 'beep' was not declared in this scope
+  536 |             Serial.println("2. 路由器是否正常工作");
+      |     ^   
+F:\Github\SmartOvenController\SmartOvenController.ino:562:9: error: 'updateLed' was not declared in this scope
+  562 |     server.on("/startTimer", HTTP_GET, handleStartTimer);
+      |         ^~~~~~~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:585:36: error: 'handleStatus' was not declared in this scope
+  585 |         Serial.println(WiFi.localIP());
+      |                                    ^~~~        
+F:\Github\SmartOvenController\SmartOvenController.ino:586:37: error: 'handleSetTemp' was not declared in this scope
+  586 | 
+      |                                     ^            
+F:\Github\SmartOvenController\SmartOvenController.ino:587:36: error: 'handleSetPID' was not declared in this scope
+  587 |         // WiFi连接成功，LED慢闪
+      |                              ^~~        
+F:\Github\SmartOvenController\SmartOvenController.ino:588:39: error: 'handleTogglePID' was not declared in this scope
+  588 |         setLedMode(LED_SLOW);
+      |                                       ^              
+F:\Github\SmartOvenController\SmartOvenController.ino:589:38: error: 'handleResetPID' was not declared in this scope
+  589 |     } else {
+      |                                      ^             
+F:\Github\SmartOvenController\SmartOvenController.ino:590:35: error: 'handleStart' was not declared in this scope
+  590 |         Serial.println("WiFi连接失败，设备将在离线模式下运行");
+      |                                 ^~~~~~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:591:34: error: 'handleStop' was not declared in this scope
+  591 |         Serial.println("温度控制功能仍然可用");
+      |                               ^~~~~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:594:38: error: 'handleSetTimer' was not declared in this scope
+  594 |         setLedMode(LED_VERY_FAST);
+      |                                      ^             
+F:\Github\SmartOvenController\SmartOvenController.ino:595:40: error: 'handleStartTimer' was not declared in this scope; did you mean 'windowStartTime'?
+  595 |     }
+      |                                        ^               
+      |                                        windowStartTime
+F:\Github\SmartOvenController\SmartOvenController.ino:596:39: error: 'handleStopTimer' was not declared in this scope
+  596 | 
+      |                                       ^              
+F:\Github\SmartOvenController\SmartOvenController.ino:599:40: error: 'handleSetProfile' was not declared in this scope
+  599 |         beep(200);
+      |                                        ^               
+F:\Github\SmartOvenController\SmartOvenController.ino:600:42: error: 'handleStartProfile' was not declared in this scope
+  600 |         delay(100);
+      |                                          ^                 
+F:\Github\SmartOvenController\SmartOvenController.ino:601:41: error: 'handleStopProfile' was not declared in this scope
+  601 |         beep(200);
+      |                                         ^                
+F:\Github\SmartOvenController\SmartOvenController.ino:604:42: error: 'handleDownloadData' was not declared in this scope
+  604 |         beep(500);
+      |                                          ^                 
+F:\Github\SmartOvenController\SmartOvenController.ino:605:39: error: 'handleClearData' was not declared in this scope
+  605 |         delay(300);
+      |                                       ^              
+F:\Github\SmartOvenController\SmartOvenController.ino:608:37: error: 'handleMonitor' was not declared in this scope
+  608 | 
+      |                                     ^            
+F:\Github\SmartOvenController\SmartOvenController.ino:609:40: error: 'handleSystemInfo' was not declared in this scope
+  609 |     Serial.println("系统初始化完成!");
+      |                                  ^~~~~          
+F:\Github\SmartOvenController\SmartOvenController.ino: In function 'void loop()':
+F:\Github\SmartOvenController\SmartOvenController.ino:719:5: error: 'updateLed' was not declared in this scope
+  719 |           tempPredictionHistory[i-1] = tempPredictionHistory[i];
+      |     ^     ~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:732:13: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  732 |           currentWindowTime = 0;
+      |             ^~~~~~~~~~
+      |             ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:733:13: error: 'beep' was not declared in this scope
+  733 |         }
+      |             ^   
+F:\Github\SmartOvenController\SmartOvenController.ino:759:9: error: 'computeOptimizedPID' was not declared in this scope
+  759 |             // 自动安全关闭：温度超过350°C时强制关闭加热
+      |         ^   ~~~~~~~~~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:787:17: error: 'beep' was not declared in this scope
+  787 |     }
+      |                 ^   
+F:\Github\SmartOvenController\SmartOvenController.ino:797:17: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  797 |             Serial.println("定时加热结束");
+      |                 ^~~~~~~~~~
+      |                 ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:809:13: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  809 |                 if (currentProfileStep < 3) {
+      |             ^   ~~~~~~
+      |             ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:814:13: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  814 |                     Serial.print(targetTemp);
+      |             ^       ~~
+      |             ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:816:13: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  816 |                     beep(150);
+      |             ^       ~~
+      |             ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:818:13: error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?
+  818 |                     // 温度曲线结束
+      |             ^       ~~
+      |             ledMode
+F:\Github\SmartOvenController\SmartOvenController.ino:831:13: error: 'beep' was not declared in this scope
+  831 |   if (tempPredictionIndex < 3) return currentTemp; // 数据不足时返回当前温度
+      |             ^~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:849:21: error: 'beep' was not declared in this scope
+  849 |   float predictedTemp = predictTemperature();
+      |                     ^~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:856:21: error: 'beep' was not declared in this scope
+  856 |     adaptiveKi = Ki * 0.5;
+      |                     ^~~~
+F:\Github\SmartOvenController\SmartOvenController.ino:863:28: error: a function-definition is not allowed here before '{' token
+  863 |   } else {
+      |                            ^
+F:\Github\SmartOvenController\SmartOvenController.ino:878:26: error: a function-definition is not allowed here before '{' token
+  878 | void computeOptimizedPID() {
+      |                          ^
+F:\Github\SmartOvenController\SmartOvenController.ino:911:28: error: a function-definition is not allowed here before '{' token
+  911 |         Serial.print(currentTemp);
+      |                            ^
+Using library ESP8266WiFi at version 1.0 in folder: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi 
+Using library ESP8266WebServer at version 1.0 in folder: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer 
+Using library SPI at version 1.0 in folder: C:\Users\Administrator\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\SPI 
+Using library MAX6675 at version 0.3.3 in folder: F:\Github\libraries\MAX6675 
+exit status 1
+
+Compilation error: 'setLedMode' was not declared in this scope; did you mean 'ledMode'?

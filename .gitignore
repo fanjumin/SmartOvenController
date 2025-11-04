@@ -1,0 +1,62 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Python virtual environment
+.venv/
+
+# Build outputs
+build/
+*.bin
+*.elf
+*.hex
+
+# IDE
+.vscode/
+.idea/
+.codebuddy/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# PlatformIO specific
+.fuses
+.eeprom
+
+# Compiled files
+*.o
+*.a
+*.so
+*.dylib
+
+# Backup files
+*.bak
+*.backup
+
+# Gradle (for Android app)
+.gradle/
+build/
+
+# Large files that shouldn't be in repo
+gradle-*.zip
+
+# Serial port files
+COM*
+
+# Test directories
+Baudrate_Test/
+ESP8266_Test/
+MAX6675_Diagnostic/
+MAX6675_Test/
+SPI_SimpleTest/
+Serial_Test/
+Test_Files/
