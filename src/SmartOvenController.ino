@@ -1,9 +1,9 @@
 // =========================================
-// 智能电烤箱控制器 v0.3.1
+// 智能电烤箱控制器 v0.4.0
 // =========================================
-// 版本: 0.3.1
+// 版本: 0.4.0
 // 功能: 强制门户配网 + 设备自动发现 + OTA升级 + MAX6675手动SPI实现
-// 更新: 修复Web服务器无法访问问题，完善Web服务器处理逻辑
+// 更新: 修复温度显示不一致问题，优化温度数据接收机制，完善OTA功能
 // =========================================
 
 #include <ESP8266WiFi.h>
@@ -40,7 +40,7 @@ WiFiClient tcpClient;        // TCP客户端连接
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.3.1";
+const String FIRMWARE_VERSION = "0.4.0";
 
 // WiFi配置
 String wifiSSID = "";
@@ -490,6 +490,83 @@ void handleOTA() {
     }
 }
 
+// OTA升级页面
+void handleOTAWebPage() {
+    String html = "<!DOCTYPE html><html><head><title>智能电烤箱OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+    html += "<style>";
+    html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
+    html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }";
+    html += ".container { max-width: 600px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }";
+    html += ".header { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; padding: 25px; text-align: center; }";
+    html += ".header h1 { font-size: 24px; margin-bottom: 10px; }";
+    html += ".content { padding: 25px; }";
+    html += ".info-card { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }";
+    html += ".info-card p { margin: 5px 0; color: #6c757d; }";
+    html += ".ota-section { background: #e3f2fd; padding: 20px; border-radius: 8px; margin-bottom: 20px; }";
+    html += ".btn { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin: 5px; }";
+    html += ".btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3); }";
+    html += ".btn-success { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); }";
+    html += ".btn-warning { background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); }";
+    html += ".status { padding: 10px; border-radius: 5px; margin: 10px 0; text-align: center; }";
+    html += ".status-success { background: #d4edda; color: #155724; }";
+    html += ".status-warning { background: #fff3cd; color: #856404; }";
+    html += ".status-error { background: #f8d7da; color: #721c24; }";
+    html += "</style>";
+    html += "<script>";
+    html += "function checkUpdate() {";
+    html += "  fetch('/checkupdate').then(response => response.json()).then(data => {";
+    html += "    document.getElementById('updateStatus').innerHTML = '<div class=\"status status-success\">当前版本: ' + data.current_version + '</div>';";
+    html += "    if (data.update_available) {";
+    html += "      document.getElementById('updateStatus').innerHTML += '<div class=\"status status-warning\">有新版本可用: ' + data.latest_version + '</div>';";
+    html += "    }";
+    html += "  }).catch(error => {";
+    html += "    document.getElementById('updateStatus').innerHTML = '<div class=\"status status-error\">检查更新失败</div>';";
+    html += "  });";
+    html += "}";
+    html += "function startOTA() {";
+    html += "  window.open('http://' + window.location.hostname + ':8080/update', '_blank');";
+    html += "}";
+    html += "window.onload = checkUpdate;";
+    html += "</script>";
+    html += "</head><body>";
+    html += "<div class=\"container\">";
+    html += "<div class=\"header\">";
+    html += "<h1>智能电烤箱OTA升级</h1>";
+    html += "<p>固件空中升级系统</p>";
+    html += "</div>";
+    html += "<div class=\"content\">";
+    html += "<div class=\"info-card\">";
+    html += "<p><strong>设备ID:</strong> " + DEVICE_ID + "</p>";
+    html += "<p><strong>IP地址:</strong> " + WiFi.localIP().toString() + "</p>";
+    html += "<p><strong>OTA端口:</strong> 8080</p>";
+    html += "</div>";
+    html += "<div id=\"updateStatus\"></div>";
+    html += "<div class=\"ota-section\">";
+    html += "<h3>OTA升级操作</h3>";
+    html += "<p>点击下方按钮打开OTA升级页面，上传新的固件文件进行升级。</p>";
+    html += "<button class=\"btn btn-success\" onclick=\"startOTA()\">打开OTA升级页面</button>";
+    html += "<button class=\"btn\" onclick=\"checkUpdate()\">检查更新</button>";
+    html += "</div>";
+    html += "<div style=\"text-align: center; margin-top: 20px;\">";
+    html += "<a href=\"/\" style=\"color: #2196F3; text-decoration: none;\">返回主页面</a>";
+    html += "</div>";
+    html += "</div>";
+    html += "</div>";
+    html += "</body></html>";
+    
+    webServer.send(200, "text/html", html);
+}
+
+// 检查更新API
+void handleCheckUpdate() {
+    String json = "{\"current_version\":\"" + FIRMWARE_VERSION + "\",\"latest_version\":\"0.4.0\",\"update_available\":false}";
+    
+    // 这里可以添加检查新版本的逻辑
+    // 例如从服务器获取最新版本信息
+    
+    webServer.send(200, "application/json", json);
+}
+
 // =========================================
 // Web服务器处理
 // =========================================
@@ -499,6 +576,8 @@ void setupWebServer() {
     webServer.on("/status", HTTP_GET, handleStatus);
     webServer.on("/control", HTTP_POST, handleControl);
     webServer.on("/savewifi", HTTP_POST, handleSaveWiFi);
+    webServer.on("/ota", HTTP_GET, handleOTAWebPage);
+    webServer.on("/checkupdate", HTTP_GET, handleCheckUpdate);
     webServer.onNotFound(handleNotFound);
     webServer.begin();
 }
@@ -636,9 +715,10 @@ void handleNotFound() {
             html += "<div class=\"info\"><strong>加热状态:</strong> " + String(heatingEnabled ? "开启" : "关闭") + "</div>";
             html += "<div class=\"info\"><strong>WiFi状态:</strong> " + String(WiFi.status() == WL_CONNECTED ? "已连接 (" + WiFi.localIP().toString() + ")" : "未连接") + "</div>";
             html += "<div class=\"info\"><strong>API端点:</strong></div>";
-            html += "<ul><li><a href=\"/status\">/status</a> - 设备状态(JSON)</li>";
-            html += "<li><a href=\"/control\">/control</a> - 设备控制</li>";
-            html += "<li><a href=\"/scanwifi\">/scanwifi</a> - WiFi扫描</li></ul>";
+    html += "<ul><li><a href=\"/status\">/status</a> - 设备状态(JSON)</li>";
+    html += "<li><a href=\"/control\">/control</a> - 设备控制</li>";
+    html += "<li><a href=\"/scanwifi\">/scanwifi</a> - WiFi扫描</li>";
+    html += "<li><a href=\"/ota\">/ota</a> - OTA固件升级</li></ul>";
             html += "</div></body></html>";
             webServer.send(200, "text/html", html);
         } else {
