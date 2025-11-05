@@ -275,7 +275,7 @@
             <div class="control-group">
                 <label class="control-label">设备IP地址</label>
                 <input type="text" id="manualIpInput" class="temperature-input" 
-                       placeholder="例如: 192.168.1.100" value="192.168.4.1">
+                       placeholder="例如: 192.168.1.100" value="192.168.16.104">
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
                     如果自动扫描失败，请手动输入设备IP地址
                 </p>
@@ -362,6 +362,7 @@
             async detectDeviceIp() {
                 // 尝试常见的设备IP地址（优先AP模式地址）
                 const commonIps = [
+                    '192.168.16.104',   // 用户提供的设备IP（端口80）
                     '192.168.4.1',      // ESP8266 AP模式默认IP（端口80）
                     '192.168.1.1',
                     '192.168.1.100',
@@ -398,16 +399,33 @@
                     // 设备Web服务器运行在端口80，不需要指定端口
                     const ip = this.deviceIp;
                     
+                    // 添加详细的连接诊断
+                    console.log(`尝试连接设备: http://${ip}/status`);
+                    
                     const response = await fetch(`http://${ip}/status`, { 
                         method: 'GET',
                         timeout: 3000 
                     });
+                    
                     if (response.ok) {
                         this.showConnectionStatus('连接成功', true);
+                        console.log('设备Web服务器响应正常');
                         return true;
+                    } else {
+                        this.showError(`HTTP错误: ${response.status}`);
+                        return false;
                     }
                 } catch (error) {
-                    this.showError(`连接失败: ${error.message}`);
+                    console.error('连接失败详情:', error);
+                    
+                    // 提供更详细的错误信息
+                    if (error.name === 'TypeError') {
+                        this.showError('网络连接失败，请检查设备是否在线');
+                    } else if (error.name === 'AbortError') {
+                        this.showError('连接超时，设备Web服务器可能未启动');
+                    } else {
+                        this.showError(`连接失败: ${error.message}`);
+                    }
                 }
                 return false;
             }

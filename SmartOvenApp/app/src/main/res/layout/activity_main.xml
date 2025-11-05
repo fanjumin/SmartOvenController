@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_gradient"
     android:padding="16dp">
 
     <LinearLayout
@@ -9,15 +11,52 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- 标题 -->
-        <TextView
+        <!-- 现代化标题栏 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="智能烤箱控制器"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="20dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp"
+            android:paddingVertical="8dp">
+            
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="智能烤箱控制器"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryDark" />
+                    
+                <TextView
+                    android:id="@+id/deviceInfoText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="设备ID: --"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+                
+            <TextView
+                android:id="@+id/connectionStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="未连接"
+                android:textSize="12sp"
+                android:background="@drawable/status_indicator"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
 
         <!-- 设备发现区域 -->
         <LinearLayout
@@ -74,39 +113,261 @@
                 android:enabled="false" />
         </LinearLayout>
 
-        <!-- 状态显示区域 -->
+        <!-- 现代化温度显示区域 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <!-- 当前温度卡片 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/modern_card"
+                android:padding="20dp"
+                android:layout_marginEnd="8dp"
+                android:elevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌡️"
+                        android:textSize="16sp"
+                        android:layout_marginEnd="8dp" />
+                        
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="当前温度"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/currentTempText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="--°C"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:gravity="center"
+                    android:layout_marginBottom="4dp" />
+                    
+                <TextView
+                    android:id="@+id/tempStatusText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- 目标温度卡片 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/modern_card"
+                android:padding="20dp"
+                android:layout_marginStart="8dp"
+                android:elevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🎯"
+                        android:textSize="16sp"
+                        android:layout_marginEnd="8dp" />
+                        
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="目标温度"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/targetTempText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="--°C"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/accent"
+                    android:gravity="center" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 现代化状态信息卡片 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/rounded_corner"
-            android:padding="16dp"
-            android:layout_marginBottom="20dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="设备状态"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp" />
-
-            <TextView
-                android:id="@+id/statusDisplayTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="当前温度: --°C\n目标温度: --°C\n加热状态: --\n控制模式: --\n运行时间: --"
-                android:textSize="14sp"
-                android:background="@android:color/white"
-                android:padding="10dp"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="10dp" />
+            android:background="@drawable/modern_card"
+            android:padding="20dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📊"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp" />
+                    
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="设备状态"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryDark" />
+            </LinearLayout>
+
+            <!-- 状态信息网格 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔥"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp" />
+                        
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="加热状态"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:gravity="center" />
+                        
+                    <TextView
+                        android:id="@+id/heatingStatusText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚙️"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp" />
+                        
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="控制模式"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:gravity="center" />
+                        
+                    <TextView
+                        android:id="@+id/modeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/accent"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⏱️"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="4dp" />
+                        
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="运行时间"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:gravity="center" />
+                        
+                    <TextView
+                        android:id="@+id/uptimeText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:gravity="center" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 自动刷新控制 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
                 <Button
                     android:id="@+id/autoRefreshButton"
@@ -115,6 +376,7 @@
                     android:layout_weight="1"
                     android:text="开启自动刷新"
                     android:textSize="14sp"
+                    android:backgroundTint="@color/success"
                     android:layout_marginEnd="5dp" />
 
                 <Button
@@ -124,54 +386,75 @@
                     android:layout_weight="1"
                     android:text="停止自动刷新"
                     android:textSize="14sp"
+                    android:backgroundTint="@color/warning"
                     android:layout_marginStart="5dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 控制区域 -->
+        <!-- 现代化控制区域 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/rounded_corner"
-            android:padding="16dp"
-            android:layout_marginBottom="20dp">
+            android:background="@drawable/modern_card"
+            android:padding="20dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="4dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="烤箱控制"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp" />
-
-            <!-- 第一行按钮 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="10dp">
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎛️"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp" />
+                    
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="烤箱控制"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryDark" />
+            </LinearLayout>
+
+            <!-- 控制按钮网格 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
 
                 <Button
                     android:id="@+id/getStatusButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="获取状态"
+                    android:text="📊 获取状态"
                     android:textSize="14sp"
-                    android:layout_marginEnd="5dp" />
+                    android:backgroundTint="@color/primary"
+                    android:layout_marginEnd="6dp"
+                    android:paddingVertical="12dp" />
 
                 <Button
                     android:id="@+id/setTargetButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="设置温度"
+                    android:text="🎯 设置温度"
                     android:textSize="14sp"
-                    android:layout_marginStart="5dp" />
+                    android:backgroundTint="@color/accent"
+                    android:layout_marginStart="6dp"
+                    android:paddingVertical="12dp" />
             </LinearLayout>
 
-            <!-- 第二行按钮 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,48 +465,80 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="切换加热"
+                    android:text="🔥 切换加热"
                     android:textSize="14sp"
-                    android:layout_marginEnd="5dp" />
+                    android:backgroundTint="@color/warning"
+                    android:layout_marginEnd="6dp"
+                    android:paddingVertical="12dp" />
 
                 <Button
                     android:id="@+id/toggleModeButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="切换模式"
+                    android:text="⚙️ 切换模式"
                     android:textSize="14sp"
-                    android:layout_marginStart="5dp" />
+                    android:backgroundTint="@color/success"
+                    android:layout_marginStart="6dp"
+                    android:paddingVertical="12dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 通信日志区域 -->
+        <!-- 现代化通信日志区域 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/rounded_corner"
-            android:padding="16dp">
+            android:background="@drawable/modern_card"
+            android:padding="20dp"
+            android:elevation="4dp">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="通信日志"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="10dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+                
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📋"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp" />
+                    
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="通信日志"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryDark" />
+                    
+                <Button
+                    android:id="@+id/clearLogButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="清空"
+                    android:textSize="12sp"
+                    android:backgroundTint="@color/text_secondary"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/responseTextView"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@android:color/white"
-                android:text="通信日志将显示在这里...\n"
+                android:background="@drawable/log_background"
+                android:text="📱 智能烤箱控制器已启动\n等待设备连接...\n"
                 android:textSize="12sp"
-                android:padding="10dp"
+                android:padding="16dp"
                 android:scrollbars="vertical"
                 android:isScrollContainer="true"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/text_primary"
+                android:lineSpacingExtra="2dp" />
         </LinearLayout>
 
     </LinearLayout>

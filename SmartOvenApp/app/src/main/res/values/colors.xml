@@ -3,4 +3,20 @@
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#FF4081</color>
+    
+    <!-- 新增现代化颜色 -->
+    <color name="background_gradient">#F5F7FA</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="primary">#2196F3</color>
+    <color name="accent">#FF4081</color>
+    <color name="text_primary">#333333</color>
+    <color name="text_secondary">#666666</color>
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
+    <color name="error">#F44336</color>
+    <color name="status_connected">#4CAF50</color>
+    <color name="status_disconnected">#F44336</color>
+    <color name="status_scanning">#FF9800</color>
+    <color name="status_heating">#F44336</color>
+    <color name="status_stopped">#4CAF50</color>
 </resources>

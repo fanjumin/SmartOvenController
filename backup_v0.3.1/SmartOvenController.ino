@@ -33,8 +33,6 @@ WiFiUDP udp;
 DNSServer dnsServer;
 ESP8266WebServer otaServer(8080);
 ESP8266HTTPUpdateServer httpUpdater;
-WiFiServer tcpServer(8888);  // TCP服务器用于APP连接
-WiFiClient tcpClient;        // TCP客户端连接
 
 // 设备信息
 const String DEVICE_TYPE = "oven";
@@ -57,10 +55,6 @@ const String AP_PASSWORD = "12345678";
 float currentTemp = 0.0;
 float targetTemp = 180.0;
 bool heatingEnabled = false;
-bool ovenMode = true; // 烤箱模式：true=烤箱模式，false=烤面包机模式
-
-// 网络端口配置
-const int DEFAULT_PORT = 8888;
 
 // =========================================
 // MAX6675手动SPI通信函数
@@ -283,13 +277,10 @@ void startCaptivePortal() {
     setupWebServer();
     webServer.begin();
     
-    // 启动设备发现（强制门户模式下也需要支持设备发现）
-    udp.begin(8888);
-    
     isCaptivePortalMode = true;
     captivePortalStartTime = millis();
     
-    Serial.println("强制门户已启动，UDP监听端口8888已开启");
+    Serial.println("强制门户已启动");
 }
 
 void stopCaptivePortal() {
@@ -420,11 +411,6 @@ void handleDiscovery() {
             packetBuffer[len] = 0;
             String request = String(packetBuffer);
             
-            Serial.print("收到UDP数据包，大小: ");
-            Serial.print(packetSize);
-            Serial.print(" 字节，内容: ");
-            Serial.println(request);
-            
             if (request.startsWith("DISCOVER_SMARTOVEN")) {
                 Serial.println("收到设备发现请求");
                 sendDiscoveryResponse();
@@ -442,26 +428,21 @@ void handleDiscovery() {
 void sendDiscoveryResponse() {
     String response;
     
-    // 使用APP期望的格式：DEVICE_INFO:NAME:设备名称,MAC:MAC地址,PORT:端口号,...
-    response = "DEVICE_INFO:";
-    response += "NAME:" + DEVICE_NAME + ",";
-    response += "MAC:" + WiFi.macAddress() + ",";
-    response += "PORT:" + String(DEFAULT_PORT) + ",";
-    response += "TYPE:" + DEVICE_TYPE + ",";
-    response += "VERSION:" + FIRMWARE_VERSION + ",";
-    response += "TEMP:" + String(currentTemp) + ",";
-    response += "TARGET:" + String(targetTemp) + ",";
-    response += "HEAT:" + String(heatingEnabled ? "ON" : "OFF") + ",";
-    response += "MODE:" + String(ovenMode ? "OVEN" : "TOASTER") + ",";
-    response += "UPTIME:" + String(millis() / 1000) + ",";
-    response += "DEVICE_ID:" + DEVICE_ID;
+    if (isCaptivePortalMode) {
+        response = "SMARTOVEN_CAPTIVE:" + DEVICE_TYPE + ":" + DEVICE_ID + ":" + 
+                  WiFi.softAPIP().toString() + ":" + DEVICE_NAME + ":" + 
+                  String(currentTemp) + ":" + String(targetTemp) + ":" + FIRMWARE_VERSION;
+    } else {
+        response = "SMARTOVEN:" + DEVICE_TYPE + ":" + DEVICE_ID + ":" + 
+                  WiFi.localIP().toString() + ":" + DEVICE_NAME + ":" + 
+                  String(currentTemp) + ":" + String(targetTemp) + ":" + FIRMWARE_VERSION;
+    }
     
-    // 修复：使用APP发送请求的端口（remotePort）而不是硬编码的8889端口
     udp.beginPacket(udp.remoteIP(), udp.remotePort());
     udp.write(response.c_str());
     udp.endPacket();
     
-    Serial.println("发送发现响应到端口" + String(udp.remotePort()) + ": " + response);
+    Serial.println("发送发现响应: " + response);
 }
 
 void broadcastDiscovery() {
@@ -896,10 +877,6 @@ void setup() {
         connectToWiFi();
     }
     
-    // 启动TCP服务器用于APP连接
-    tcpServer.begin();
-    Serial.println("TCP服务器已启动，监听端口: " + String(DEFAULT_PORT));
-    
     Serial.println("初始化完成");
 }
 
@@ -939,13 +916,18 @@ void handleSerialCommands() {
                 beep(50);
                 Serial.println("蜂鸣器短响");
             } else if (command == "GET_STATUS") {
-                // 返回APP期望的格式：TEMP:25.50,TARGET:180.00,HEAT:0,MODE:1,UPTIME:123
-                String statusResponse = "TEMP:" + String(currentTemp) + 
-                                      ",TARGET:" + String(targetTemp) + 
-                                      ",HEAT:" + String(heatingEnabled ? "1" : "0") + 
-                                      ",MODE:" + String(ovenMode ? "1" : "0") + 
-                                      ",UPTIME:" + String(millis() / 1000);
-                Serial.println(statusResponse);
+                Serial.println("=== 设备状态 ===");
+                Serial.println("设备ID: " + DEVICE_ID);
+                Serial.println("固件版本: " + FIRMWARE_VERSION);
+                Serial.println("当前温度: " + String(currentTemp) + "°C");
+                Serial.println("目标温度: " + String(targetTemp) + "°C");
+                Serial.println("加热状态: " + String(heatingEnabled ? "开启" : "关闭"));
+                Serial.println("WiFi状态: " + String(WiFi.status() == WL_CONNECTED ? "已连接" : "未连接"));
+                Serial.println("IP地址: " + (isCaptivePortalMode ? WiFi.softAPIP().toString() : WiFi.localIP().toString()));
+                Serial.println("LED状态: " + String(digitalRead(LED_PIN) ? "亮" : "灭"));
+                Serial.println("温度校准偏移: " + String(temperatureOffset) + "°C");
+                Serial.println("温度校准系数: " + String(temperatureScale));
+                Serial.println("==============");
             } else if (command == "GET_TEMP") {
                 Serial.println("当前温度: " + String(currentTemp) + "°C");
             } else if (command.startsWith("CALIBRATE_TEMP")) {
@@ -997,96 +979,6 @@ void handleSerialCommands() {
 }
 
 // =========================================
-// TCP服务器处理函数
-// =========================================
-
-void handleTCPConnection() {
-    // 检查是否有新的客户端连接
-    if (tcpServer.hasClient()) {
-        // 如果已经有客户端连接，断开旧的连接
-        if (tcpClient && tcpClient.connected()) {
-            tcpClient.stop();
-            Serial.println("TCP客户端已断开");
-        }
-        
-        // 接受新的客户端连接
-        tcpClient = tcpServer.available();
-        if (tcpClient) {
-            Serial.println("TCP客户端已连接: " + tcpClient.remoteIP().toString());
-            
-            // 发送欢迎消息
-            tcpClient.println("SmartOven Controller v" + FIRMWARE_VERSION);
-            tcpClient.println("连接成功，请输入命令");
-        }
-    }
-    
-    // 处理已连接的客户端数据
-    if (tcpClient && tcpClient.connected()) {
-        if (tcpClient.available()) {
-            String command = tcpClient.readStringUntil('\n');
-            command.trim();
-            
-            if (command.length() > 0) {
-                Serial.println("TCP收到命令: " + command);
-                handleTCPCommand(command);
-            }
-        }
-    }
-}
-
-void handleTCPCommand(String command) {
-    if (command == "GET_STATUS") {
-        // 返回设备状态信息
-        String statusResponse = "TEMP:" + String(currentTemp) + 
-                              ",TARGET:" + String(targetTemp) + 
-                              ",HEAT:" + String(heatingEnabled ? "1" : "0") + 
-                              ",MODE:" + String(ovenMode ? "1" : "0") + 
-                              ",UPTIME:" + String(millis() / 1000);
-        tcpClient.println(statusResponse);
-        Serial.println("TCP发送状态: " + statusResponse);
-    } else if (command == "GET_TEMP") {
-        tcpClient.println("当前温度: " + String(currentTemp) + "°C");
-    } else if (command.startsWith("SET_TEMP")) {
-        // 设置目标温度格式: SET_TEMP 180.0
-        int spaceIndex = command.indexOf(' ');
-        if (spaceIndex > 0) {
-            String tempStr = command.substring(spaceIndex + 1);
-            float newTemp = tempStr.toFloat();
-            
-            if (newTemp >= 0 && newTemp <= 300) {
-                targetTemp = newTemp;
-                tcpClient.println("目标温度已设置为: " + String(targetTemp) + "°C");
-                Serial.println("TCP设置目标温度: " + String(targetTemp) + "°C");
-            } else {
-                tcpClient.println("错误: 温度范围应为0-300°C");
-            }
-        }
-    } else if (command == "HEAT_ON") {
-        heatingEnabled = true;
-        tcpClient.println("加热已开启");
-        Serial.println("TCP开启加热");
-    } else if (command == "HEAT_OFF") {
-        heatingEnabled = false;
-        tcpClient.println("加热已关闭");
-        Serial.println("TCP关闭加热");
-    } else if (command == "OVEN_MODE") {
-        ovenMode = true;
-        tcpClient.println("已切换到烤箱模式");
-        Serial.println("TCP切换到烤箱模式");
-    } else if (command == "TOASTER_MODE") {
-        ovenMode = false;
-        tcpClient.println("已切换到烤面包机模式");
-        Serial.println("TCP切换到烤面包机模式");
-    } else if (command == "PING") {
-        tcpClient.println("PONG");
-    } else {
-        tcpClient.println("未知命令，可用命令:");
-        tcpClient.println("GET_STATUS, GET_TEMP, SET_TEMP 温度值");
-        tcpClient.println("HEAT_ON, HEAT_OFF, OVEN_MODE, TOASTER_MODE, PING");
-    }
-}
-
-// =========================================
 // 主循环
 // =========================================
 
@@ -1111,9 +1003,6 @@ void loop() {
     
     // 处理设备发现
     handleDiscovery();
-    
-    // 处理TCP连接
-    handleTCPConnection();
     
     // 处理串口命令
     handleSerialCommands();
