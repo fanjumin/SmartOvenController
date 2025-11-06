@@ -12,7 +12,7 @@ CALIBRATION_CONFIG = {
     "calibration_command": "CALIBRATE_TEMP 15",  # 校准命令
     "last_calibration_time": "2024-01-01 00:00:00",  # 最后校准时间
     "device_id": "oven-8591756",  # 设备ID
-    "firmware_version": "0.5.0"   # 固件版本
+    "firmware_version": "0.6.0"   # 固件版本
 }
 
 def get_calibration_script():

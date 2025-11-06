@@ -70,6 +70,23 @@
             opacity: 0.9;
         }
 
+        .admin-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .logout-btn, .change-password-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
         .status-card {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
@@ -153,12 +170,6 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .control-btn.tertiary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
         .control-btn:active {
             transform: scale(0.95);
         }
@@ -200,22 +211,21 @@
         }
 
         .admin-btn.wifi {
-            background: #3b82f6;
+            background: rgba(59, 130, 246, 0.2);
             color: white;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .admin-btn.restart {
-            background: #f59e0b;
+            background: rgba(245, 158, 11, 0.2);
             color: white;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .admin-btn.reset {
-            background: #ef4444;
+            background: rgba(239, 68, 68, 0.2);
             color: white;
-        }
-
-        .admin-btn:active {
-            transform: scale(0.95);
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .api-section {
@@ -235,68 +245,24 @@
         }
 
         .api-endpoints {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
         }
 
         .api-endpoint {
-            margin-bottom: 8px;
-            padding: 5px;
-            border-left: 3px solid #10b981;
-            background: rgba(16, 185, 129, 0.1);
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: monospace;
         }
 
         .footer {
             text-align: center;
-            margin-top: 30px;
             padding: 20px;
-            font-size: 12px;
             opacity: 0.7;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .logout-btn, .change-password-btn {
-            padding: 8px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover, .change-password-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .logout-btn:active, .change-password-btn:active {
-            transform: translateY(0);
-        }
-
-        @media (max-width: 480px) {
-            .status-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .quick-controls {
-                flex-direction: column;
-            }
-            
-            .control-btn {
-                min-width: auto;
-            }
+            font-size: 14px;
         }
     </style>
 </head>
@@ -333,18 +299,44 @@
             </div>
         </div>
 
-        <!-- 基础控制 -->
+        <!-- 温度控制 -->
         <div class="control-section">
+            <h3 style="text-align: center; margin-bottom: 20px; font-size: 20px;">温度控制</h3>
+            
+            <!-- 温度调整按钮 -->
+            <div class="temp-controls" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                <button class="temp-btn" onclick="changeTemp(-5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-5°</button>
+                <button class="temp-btn" onclick="changeTemp(-1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-1°</button>
+                <button class="temp-btn" onclick="changeTemp(1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+1°</button>
+                <button class="temp-btn" onclick="changeTemp(5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+5°</button>
+            </div>
+            
+            <!-- 直接设置温度 -->
+            <div class="temp-input-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: 500;">直接设置温度 (°C)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="temp-input" style="flex: 1; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 16px;" placeholder="输入目标温度" min="0" max="300" step="1">
+                    <button onclick="setCustomTemp()" style="padding: 15px 20px; border: none; border-radius: 10px; background: #10b981; color: white; font-size: 16px; cursor: pointer;">设置</button>
+                </div>
+            </div>
+            
+            <!-- 预设温度 -->
+            <div class="temp-presets" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                <button onclick="setPresetTemp(50)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">50°C</button>
+                <button onclick="setPresetTemp(100)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">100°C</button>
+                <button onclick="setPresetTemp(150)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">150°C</button>
+                <button onclick="setPresetTemp(180)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">180°C</button>
+                <button onclick="setPresetTemp(200)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">200°C</button>
+                <button onclick="setPresetTemp(250)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">250°C</button>
+            </div>
+            
+            <!-- 基础控制 -->
             <div class="quick-controls">
                 <button class="control-btn primary" onclick="toggleHeating()">
                     <span>🔥</span>
                     <span>启动加热</span>
                 </button>
-                <button class="control-btn secondary" onclick="quickSetTemp(180)">
-                    <span>🌡️</span>
-                    <span>180°C</span>
-                </button>
-                <button class="control-btn tertiary" onclick="refreshData()">
+                <button class="control-btn secondary" onclick="refreshData()">
                     <span>🔄</span>
                     <span>刷新</span>
                 </button>
@@ -387,7 +379,8 @@
             <p>© 2025 智能电烤箱项目</p>
         </div>
     </div>
-            <script>
+
+    <script>
         // 设备状态变量
         let deviceStatus = {
             currentTemp: 0,
@@ -506,8 +499,31 @@
             }
         }
 
-        // 快速设置温度
-        async function quickSetTemp(temp) {
+        // 温度调整函数
+        function changeTemp(delta) {
+            const newTemp = Math.max(0, Math.min(300, deviceStatus.targetTemp + delta));
+            setTargetTemp(newTemp);
+        }
+
+        // 设置预设温度
+        function setPresetTemp(temp) {
+            setTargetTemp(temp);
+        }
+
+        // 设置自定义温度
+        function setCustomTemp() {
+            const input = document.getElementById('temp-input');
+            const temp = parseInt(input.value);
+            if (!isNaN(temp) && temp >= 0 && temp <= 300) {
+                setTargetTemp(temp);
+                input.value = '';
+            } else {
+                alert('请输入0-300°C之间的有效温度值');
+            }
+        }
+
+        // 设置目标温度
+        async function setTargetTemp(temp) {
             try {
                 const response = await fetch('/control', {
                     method: 'POST',
@@ -520,6 +536,7 @@
                 });
                 
                 if (response.ok) {
+                    deviceStatus.targetTemp = temp;
                     refreshData();
                 } else {
                     alert('温度设置失败');
@@ -569,63 +586,6 @@
                 }
             }
         }
-    </script>
-</body>
-</html>
-        </div>
-
-        <!-- 功能网格 -->
-        <div class="feature-grid">
-            <!-- 温度控制 -->
-            <div class="feature-card" onclick="openTemperatureControl()">
-                <div class="feature-icon">🌡️</div>
-                <div class="feature-title">温度控制</div>
-                <div class="feature-description">
-                    精确控制烤箱温度，设置目标温度，监控实时温度变化，确保最佳烘焙效果
-                </div>
-                <div class="temperature-preview" id="temp-preview">
-                    <small>当前: --°C | 目标: --°C</small>
-                </div>
-            </div>
-
-            <!-- WiFi配置 -->
-            <div class="feature-card" onclick="openWifiConfig()">
-                <div class="feature-icon">📶</div>
-                <div class="feature-title">WiFi配置</div>
-                <div class="feature-description">
-                    管理设备网络连接，扫描可用WiFi，配置网络参数，确保设备稳定联网
-                </div>
-                <div class="wifi-preview" id="wifi-preview">
-                    <small>状态: -- | 信号: --</small>
-                </div>
-            </div>
-
-            <!-- 设备状态 -->
-            <div class="feature-card" onclick="openDeviceStatus()">
-                <div class="feature-icon">📊</div>
-                <div class="feature-title">设备状态</div>
-                <div class="feature-description">
-                    查看设备详细信息，监控系统资源，分析温度趋势，导出运行数据
-                </div>
-                <div class="status-preview" id="status-preview">
-                    <small>内存: -- | 加热: --</small>
-                </div>
-            </div>
-
-            <!-- 设置与帮助 -->
-            <div class="feature-card" onclick="openSettingsHelp()">
-                <div class="feature-icon">⚙️</div>
-                <div class="feature-title">设置与帮助</div>
-                <div class="feature-description">
-                    系统设置调整，设备管理操作，查看帮助文档，获取技术支持
-                </div>
-                <div class="settings-preview" id="settings-preview">
-                    <small>单位: °C | 精度: 标准</small>
-                </div>
-            </div>
-        </div>
-
-
     </script>
 </body>
 </html>

@@ -745,6 +745,7 @@ void setupWebServer() {
     // 配置静态文件服务（仅在非强制门户模式下使用）
     if (!isCaptivePortalMode) {
         webServer.serveStatic("/login.html", SPIFFS, "/login.html");
+        webServer.serveStatic("/index.html", SPIFFS, "/index.html");
         webServer.serveStatic("/css/", SPIFFS, "/css/");
         webServer.serveStatic("/js/", SPIFFS, "/js/");
         webServer.serveStatic("/images/", SPIFFS, "/images/");

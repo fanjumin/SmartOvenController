@@ -255,7 +255,7 @@
         </div>
 
         <div class="footer">
-            <p>智能电烤箱控制器 v0.3.1</p>
+            <p>智能电烤箱控制器 v0.6.0</p>
             <p>© 2025 智能电烤箱项目</p>
         </div>
     </div>
@@ -349,7 +349,7 @@
                     wifiConnected: true,
                     wifiSSID: 'SmartOven_5G',
                     deviceId: 'OVEN-2024-001',
-                    firmwareVersion: 'v0.3.1',
+                    firmwareVersion: 'v0.6.0',
                     uptime: 86400,
                     freeHeap: 32000
                 });
@@ -380,7 +380,7 @@
             console.log('更新状态显示:', status);
             
             // 解析设备返回的实际数据格式
-            // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.5.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+            // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.6.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
             
             // 更新温度显示
             const currentTemp = status.temperature || status.currentTemp || 0;

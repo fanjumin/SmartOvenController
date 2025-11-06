@@ -79,7 +79,7 @@ def calibrate_to_15c():
             "target_temperature": 15.0,
             "calibration_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "device_id": "oven-8591756",
-            "firmware_version": "0.5.0",
+            "firmware_version": "0.6.0",
             "calibration_command": "CALIBRATE_TEMP 15",
             "response": response_text if response else "无响应"
         }
