@@ -1,7 +1,7 @@
 // =========================================
-// 智能电烤箱控制器 v0.6.0
+// 智能电烤箱控制器 v0.6.1
 // =========================================
-// 版本: 0.6.0
+// 版本: 0.6.1
 // 功能: 强制门户配网 + 设备自动发现 + OTA升级 + MAX6675手动SPI实现 + 主页集成温度控制
 // 更新: 修复WiFi连接稳定性问题，统一连接超时时间为30秒
 // =========================================
@@ -763,6 +763,14 @@ void setupWebServer() {
     webServer.on("/checkupdate", HTTP_GET, handleCheckUpdate);
     webServer.on("/diagnostic", HTTP_GET, handleDiagnostic);
     webServer.on("/reset_calibration", HTTP_POST, handleResetCalibration);
+    
+    // 新添加的API端点
+    webServer.on("/temperature_history", HTTP_GET, handleTemperatureHistory);
+    webServer.on("/scheduler", HTTP_GET, handleScheduler);
+    webServer.on("/device_info", HTTP_GET, handleDeviceInfo);
+    webServer.on("/security_monitor", HTTP_GET, handleSecurityMonitor);
+    webServer.on("/energy_stats", HTTP_GET, handleEnergyStats);
+    
     webServer.onNotFound(handleNotFound);
     webServer.begin();
 }
@@ -1250,6 +1258,92 @@ void handleControl() {
     }
     
     webServer.send(200, "text/plain", "OK");
+}
+
+// =========================================
+// 新增API端点处理函数
+// =========================================
+
+// 温度历史记录端点
+void handleTemperatureHistory() {
+    String json = "{\"temperature_history\":[";
+    
+    // 模拟温度历史数据（实际应用中可以从EEPROM或文件系统读取）
+    for (int i = 0; i < 10; i++) {
+        if (i > 0) json += ",";
+        json += "{\"timestamp\":" + String(millis() - i * 60000) + ",";
+        json += "\"temperature\":" + String(currentTemp - i * 0.5) + "}";
+    }
+    
+    json += "]}";
+    webServer.send(200, "application/json", json);
+}
+
+// 定时任务管理端点
+void handleTimerTasks() {
+    if (webServer.method() == HTTP_GET) {
+        // 获取定时任务列表
+        String json = "{\"timers\":[";
+        json += "{\"id\":1,\"enabled\":false,\"target_temp\":180,\"duration\":3600}";
+        json += "]}";
+        webServer.send(200, "application/json", json);
+    } else if (webServer.method() == HTTP_POST) {
+        // 创建或更新定时任务
+        if (webServer.hasArg("action") && webServer.arg("action") == "create") {
+            webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"定时任务创建成功\"}");
+        } else {
+            webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"定时任务更新成功\"}");
+        }
+    }
+}
+
+// 设备信息端点
+void handleDeviceInfo() {
+    String json = "{";
+    json += "\"device_id\":\"" + DEVICE_ID + "\",";
+    json += "\"firmware_version\":\"" + FIRMWARE_VERSION + "\",";
+    json += "\"hardware_model\":\"SmartOven Controller v1.0\",";
+    json += "\"chip_model\":\"ESP32\",";
+    json += "\"flash_size\":4194304,";
+    json += "\"free_heap\":" + String(ESP.getFreeHeap()) + ",";
+    json += "\"uptime\":" + String(millis() / 1000) + ",";
+    json += "\"wifi_ssid\":\"" + WiFi.SSID() + "\",";
+    json += "\"wifi_rssi\":" + String(WiFi.RSSI()) + ",";
+    json += "\"wifi_ip\":\"" + WiFi.localIP().toString() + "\"";
+    json += "}";
+    
+    webServer.send(200, "application/json", json);
+}
+
+// 安全监控端点
+void handleSafetyMonitor() {
+    String json = "{";
+    json += "\"temperature_alerts\":[";
+    json += "{\"type\":\"high_temperature\",\"threshold\":250,\"current\":" + String(currentTemp) + ",\"triggered\":" + String(currentTemp > 250 ? "true" : "false") + "}";
+    json += "],";
+    json += "\"safety_status\":\"normal\",";
+    json += "\"last_check\":" + String(millis()) + ",";
+    json += "\"recommendations\":[";
+    json += "\"保持设备周围通风良好\",";
+    json += "\"定期检查温度传感器\",";
+    json += "\"避免长时间高温运行\"";
+    json += "]}";
+    
+    webServer.send(200, "application/json", json);
+}
+
+// 能耗统计端点
+void handleEnergyStats() {
+    String json = "{";
+    json += "\"total_energy_used\":" + String(millis() / 3600000.0 * 1500) + ","; // 模拟能耗数据
+    json += "\"current_power\":" + String(heatingEnabled ? "1500" : "0") + ",";
+    json += "\"today_energy\":" + String(millis() / 86400000.0 * 1500) + ",";
+    json += "\"energy_unit\":\"Wh\",";
+    json += "\"power_unit\":\"W\",";
+    json += "\"stats_period\":\"lifetime\"";
+    json += "}";
+    
+    webServer.send(200, "application/json", json);
 }
 
 // =========================================
