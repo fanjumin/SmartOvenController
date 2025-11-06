@@ -2,7 +2,8 @@
 
 class MobileOvenController {
     constructor() {
-        this.baseURL = window.location.origin;
+        // 使用实际的设备IP地址，而不是当前网页的origin
+        this.baseURL = 'http://192.168.16.104';
         this.settings = this.loadSettings();
         this.init();
     }
@@ -164,17 +165,23 @@ class MobileOvenController {
 
     // 格式化设备状态
     formatDeviceStatus(data) {
+        // 解析设备返回的实际数据格式
+        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.5.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+        
+        const currentTemp = data.temperature || data.currentTemp || 0;
+        const targetTemp = data.target_temperature || data.targetTemp || 0;
+        
         return {
-            currentTemp: this.formatTemperature(data.currentTemp || 0),
-            targetTemp: this.formatTemperature(data.targetTemp || 0),
-            tempDiff: this.formatTemperature((data.targetTemp || 0) - (data.currentTemp || 0)),
-            heatingEnabled: data.heatingEnabled || false,
-            wifiConnected: data.wifiConnected || false,
+            currentTemp: this.formatTemperature(currentTemp),
+            targetTemp: this.formatTemperature(targetTemp),
+            tempDiff: this.formatTemperature(targetTemp - currentTemp),
+            heatingEnabled: data.heating_enabled || data.heatingEnabled || false,
+            wifiConnected: data.wifi_connected || data.wifiConnected || false,
             wifiSSID: data.wifiSSID || '--',
-            ipAddress: data.ipAddress || '--',
+            ipAddress: data.ip_address || data.ipAddress || '--',
             rssi: data.rssi || '--',
-            deviceId: data.deviceId || '--',
-            firmwareVersion: data.firmwareVersion || '--',
+            deviceId: data.device_id || data.deviceId || '--',
+            firmwareVersion: data.firmware_version || data.firmwareVersion || '--',
             uptime: this.formatUptime(data.uptime || 0),
             freeHeap: data.freeHeap || 0,
             lastUpdate: new Date().toLocaleString()

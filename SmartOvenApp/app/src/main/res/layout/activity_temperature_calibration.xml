@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/background">
+
+    <!-- 标题 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="温度校准"
+        android:textSize="24sp"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- 当前温度显示 -->
+    <TextView
+        android:id="@+id/current_temp_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="当前温度: --°C"
+        android:textSize="20sp"
+        android:textColor="@color/text_primary"
+        android:gravity="center"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/temp_display_bg"
+        android:padding="12dp" />
+
+    <!-- 校准状态显示 -->
+    <TextView
+        android:id="@+id/calibration_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="校准状态: 未校准"
+        android:textSize="16sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- 实际温度输入区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="输入实际温度值:"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/actual_temp_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入实际测量的温度值"
+            android:inputType="numberDecimal"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_bg" />
+
+    </LinearLayout>
+
+    <!-- 校准说明 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="校准说明: 使用温度计测量烤箱实际温度，输入测量值进行校准"
+        android:textSize="14sp"
+        android:textColor="@color/text_hint"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"
+        android:padding="12dp"
+        android:background="@drawable/info_bg" />
+
+    <!-- 校准按钮区域 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/calibrate_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="执行校准"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/button_primary" />
+
+        <Button
+            android:id="@+id/reset_calibration_btn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="重置校准"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/button_secondary" />
+
+    </LinearLayout>
+
+    <!-- 校准结果显示 -->
+    <TextView
+        android:id="@+id/calibration_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:textColor="@color/success"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"
+        android:visibility="gone" />
+
+    <!-- 返回按钮 -->
+    <Button
+        android:id="@+id/back_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="返回温度控制"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:background="@drawable/button_outline"
+        android:textColor="@color/primary" />
+
+</LinearLayout>

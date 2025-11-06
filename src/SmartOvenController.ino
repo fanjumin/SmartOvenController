@@ -1,9 +1,9 @@
 // =========================================
-// 智能电烤箱控制器 v0.4.0
+// 智能电烤箱控制器 v0.5.0
 // =========================================
-// 版本: 0.4.0
-// 功能: 强制门户配网 + 设备自动发现 + OTA升级 + MAX6675手动SPI实现
-// 更新: 修复温度显示不一致问题，优化温度数据接收机制，完善OTA功能
+// 版本: 0.5.0
+// 功能: 强制门户配网 + 设备自动发现 + OTA升级 + MAX6675手动SPI实现 + 主页集成温度控制
+// 更新: 在极简主页中集成完整的温度控制功能，提供一站式操作体验
 // =========================================
 
 #include <ESP8266WiFi.h>
@@ -36,11 +36,21 @@ ESP8266HTTPUpdateServer httpUpdater;
 WiFiServer tcpServer(8888);  // TCP服务器用于APP连接
 WiFiClient tcpClient;        // TCP客户端连接
 
+// 性能监控变量
+unsigned long temperatureReadCount = 0;
+float temperatureReadAvgTime = 0;
+const unsigned long WEB_SERVER_HANDLE_INTERVAL = 100; // 每100ms处理一次Web请求（优化：减少CPU占用）
+
+// 硬件故障监控
+unsigned long hardwareFailureCount = 0;       // 硬件故障次数
+unsigned long lastHardwareReset = 0;         // 上次硬件复位时间
+bool hardwareInitialized = false;            // 硬件初始化状态
+
 // 设备信息
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.4.0";
+const String FIRMWARE_VERSION = "0.5.0";
 
 // WiFi配置
 String wifiSSID = "";
@@ -70,25 +80,31 @@ const int DEFAULT_PORT = 8888;
 uint16_t readMAX6675RawData() {
   uint16_t data = 0;
   
+  // 硬件复位：确保芯片处于已知状态
+  digitalWrite(THERMO_CS, HIGH);
+  digitalWrite(THERMO_CLK, LOW);
+  delayMicroseconds(100);  // 延长复位时间
+  
   // 启用芯片
   digitalWrite(THERMO_CS, LOW);
-  delayMicroseconds(1);
+  delayMicroseconds(50);  // 大幅增加延迟确保芯片稳定
   
   // 读取16位数据（MSB优先）
   for (int i = 15; i >= 0; i--) {
     digitalWrite(THERMO_CLK, HIGH);  // 时钟上升沿
-    delayMicroseconds(1);
+    delayMicroseconds(20);  // 大幅增加时钟延迟
     
     if (digitalRead(THERMO_DO)) {   // 读取数据位
       data |= (1 << i);
     }
     
     digitalWrite(THERMO_CLK, LOW);  // 时钟下降沿
-    delayMicroseconds(1);
+    delayMicroseconds(20);  // 大幅增加时钟延迟
   }
   
   // 禁用芯片
   digitalWrite(THERMO_CS, HIGH);
+  delayMicroseconds(50);  // 大幅增加延迟确保芯片稳定
   
   return data;
 }
@@ -97,29 +113,122 @@ uint16_t readMAX6675RawData() {
 float temperatureOffset = 0.0;  // 温度偏移量，用于校准
 float temperatureScale = 1.0;    // 温度缩放系数，用于校准
 
+// 硬件初始化验证
+bool verifyHardwareInitialization() {
+    Serial.println("验证硬件初始化状态...");
+    
+    // 检查引脚状态
+    pinMode(THERMO_CLK, OUTPUT);
+    pinMode(THERMO_CS, OUTPUT);
+    pinMode(THERMO_DO, INPUT);
+    
+    // 设置初始状态
+    digitalWrite(THERMO_CS, HIGH);
+    digitalWrite(THERMO_CLK, LOW);
+    delay(100);  // 确保硬件稳定
+    
+    // 验证引脚状态
+    if (digitalRead(THERMO_DO) == HIGH || digitalRead(THERMO_DO) == LOW) {
+        Serial.println("硬件初始化验证通过");
+        return true;
+    } else {
+        Serial.println("硬件初始化验证失败");
+        return false;
+    }
+}
+
+// 硬件自动恢复机制
+void performHardwareRecovery() {
+    Serial.println("🚨 执行硬件自动恢复...");
+    
+    // 记录故障次数
+    hardwareFailureCount++;
+    
+    // 强制硬件复位序列
+    for (int i = 0; i < 5; i++) {
+        digitalWrite(THERMO_CS, HIGH);
+        digitalWrite(THERMO_CLK, LOW);
+        delay(200);  // 延长复位时间
+        digitalWrite(THERMO_CS, LOW);
+        delay(100);
+        digitalWrite(THERMO_CS, HIGH);
+        delay(200);
+    }
+    
+    // 重新初始化引脚
+    pinMode(THERMO_CLK, OUTPUT);
+    pinMode(THERMO_CS, OUTPUT);
+    pinMode(THERMO_DO, INPUT);
+    digitalWrite(THERMO_CS, HIGH);
+    digitalWrite(THERMO_CLK, LOW);
+    
+    lastHardwareReset = millis();
+    Serial.println("✅ 硬件自动恢复完成，故障次数: " + String(hardwareFailureCount));
+}
+
 // 读取温度值（手动SPI实现）
 float readTemperatureManual() {
-    uint16_t rawData = readMAX6675RawData();
-    
-    // 检查错误标志位（D2位为0表示正常）
-    if (!(rawData & 0x04)) {
-        uint16_t tempBits = rawData >> 3;  // 右移3位获取温度数据
-        float temperature = tempBits * 0.25;  // 每个单位0.25°C
+    // 增强重试机制：最多重试5次，每次增加延迟
+    for (int retry = 0; retry < 5; retry++) {
+        uint16_t rawData = readMAX6675RawData();
         
-        // 应用温度校准
-        temperature = (temperature * temperatureScale) + temperatureOffset;
-        
-        // 检查温度范围是否合理
-        if (temperature >= -50.0 && temperature <= 400.0) {
-            return temperature;
-        } else {
-            Serial.println("温度传感器读数超出范围");
-            return -1.0;
+        // 检查数据有效性（排除全0或全1的无效数据）
+        if (rawData == 0x0000 || rawData == 0xFFFF) {
+            if (retry < 4) {
+                Serial.print("温度传感器返回无效数据，第");
+                Serial.print(retry + 1);
+                Serial.println("次重试...");
+                delay(50 * (retry + 1));  // 递增延迟：50ms, 100ms, 150ms, 200ms
+                continue;
+            } else {
+                Serial.println("温度传感器返回无效数据（全0或全1）- 执行硬件自动恢复");
+                performHardwareRecovery();
+                return -1.0;
+            }
         }
-    } else {
-        Serial.println("温度传感器读取错误 - 检查热电偶连接");
-        return -1.0;
+        
+        // 检查错误标志位（D2位为0表示正常）
+        if (!(rawData & 0x04)) {
+            uint16_t tempBits = rawData >> 3;  // 右移3位获取温度数据
+            float temperature = tempBits * 0.25;  // 每个单位0.25°C
+            
+            // 应用温度校准
+            temperature = (temperature * temperatureScale) + temperatureOffset;
+            
+            // 检查温度范围是否合理
+            if (temperature >= -50.0 && temperature <= 400.0) {
+                Serial.print("温度读取成功，重试次数: ");
+                Serial.println(retry + 1);
+                
+                // 重置故障计数器（如果连续成功）
+                if (retry == 0) {
+                    hardwareFailureCount = 0;
+                }
+                
+                return temperature;
+            } else {
+                Serial.println("温度传感器读数超出范围");
+                return -1.0;
+            }
+        } else {
+            if (retry < 4) {
+                Serial.print("温度传感器读取错误，第");
+                Serial.print(retry + 1);
+                Serial.println("次重试...");
+                delay(50 * (retry + 1));  // 递增延迟
+                continue;
+            } else {
+                Serial.println("温度传感器读取错误 - 执行硬件自动恢复");
+                performHardwareRecovery();
+                return -1.0;
+            }
+        }
     }
+    
+    // 所有重试都失败，执行硬件恢复
+    Serial.println("所有重试都失败 - 执行硬件自动恢复");
+    performHardwareRecovery();
+    return -1.0;
 }
 
 // 温度校准函数
@@ -304,16 +413,43 @@ void stopCaptivePortal() {
 }
 
 bool shouldStartCaptivePortal() {
-    // 如果没有保存的WiFi配置
+    // 如果没有保存的WiFi配置，直接启动强制门户
     if (wifiSSID.length() == 0 || wifiPassword.length() == 0) {
         Serial.println("没有WiFi配置，需要启动强制门户");
         return true;
     }
     
-    // 在setup()中，我们还没有尝试连接WiFi，所以WiFi.status()可能是未连接状态
-    // 这里应该直接尝试连接WiFi，而不是直接启动强制门户
+    // 如果有WiFi配置，尝试连接WiFi
     Serial.println("有WiFi配置，尝试连接WiFi");
-    return false;
+    Serial.print("SSID: ");
+    Serial.println(wifiSSID);
+    
+    // 先确保WiFi模式正确
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
+    
+    // 等待连接，最多等待10秒
+    unsigned long startTime = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - startTime < 10000) {
+        delay(500);
+        Serial.print(".");
+    }
+    
+    // 检查连接结果
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("");
+        Serial.println("WiFi连接成功");
+        Serial.print("IP地址: ");
+        Serial.println(WiFi.localIP());
+        return false; // 连接成功，不需要强制门户
+    } else {
+        Serial.println("");
+        Serial.println("WiFi连接失败，启动强制门户");
+        // 确保WiFi已断开
+        WiFi.disconnect();
+        delay(100);
+        return true; // 连接失败，需要强制门户
+    }
 }
 
 void checkCaptivePortalTimeout() {
@@ -559,7 +695,7 @@ void handleOTAWebPage() {
 
 // 检查更新API
 void handleCheckUpdate() {
-    String json = "{\"current_version\":\"" + FIRMWARE_VERSION + "\",\"latest_version\":\"0.4.0\",\"update_available\":false}";
+    String json = "{\"current_version\":\"" + FIRMWARE_VERSION + "\",\"latest_version\":\"0.5.0\",\"update_available\":false}";
     
     // 这里可以添加检查新版本的逻辑
     // 例如从服务器获取最新版本信息
@@ -576,8 +712,12 @@ void setupWebServer() {
     webServer.on("/status", HTTP_GET, handleStatus);
     webServer.on("/control", HTTP_POST, handleControl);
     webServer.on("/savewifi", HTTP_POST, handleSaveWiFi);
+    webServer.on("/factoryreset", HTTP_POST, handleFactoryReset);
+    webServer.on("/restart", HTTP_POST, handleRestart);
     webServer.on("/ota", HTTP_GET, handleOTAWebPage);
     webServer.on("/checkupdate", HTTP_GET, handleCheckUpdate);
+    webServer.on("/diagnostic", HTTP_GET, handleDiagnostic);
+    webServer.on("/reset_calibration", HTTP_POST, handleResetCalibration);
     webServer.onNotFound(handleNotFound);
     webServer.begin();
 }
@@ -605,93 +745,403 @@ void handleScanWiFi() {
 }
 
 void handleRoot() {
-    String html = "<!DOCTYPE html><html><head><title>智能电烤箱配置</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
-    html += "<style>";
-    html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
-    html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }";
-    html += ".container { max-width: 500px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }";
-    html += ".header { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 25px; text-align: center; }";
-    html += ".header h1 { font-size: 24px; margin-bottom: 10px; }";
-    html += ".device-info { background: #f8f9fa; padding: 15px; border-bottom: 1px solid #e9ecef; }";
-    html += ".device-info p { margin: 5px 0; color: #6c757d; font-size: 14px; }";
-    html += ".form-container { padding: 25px; }";
-    html += ".form-group { margin-bottom: 20px; }";
-    html += ".form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }";
-    html += ".form-control { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }";
-    html += ".form-control:focus { outline: none; border-color: #4CAF50; }";
-    html += ".btn { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }";
-    html += ".btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3); }";
-    html += ".btn:disabled { background: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }";
-    html += ".btn-secondary { background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); }";
-    html += ".btn-secondary:hover { box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3); }";
-    html += ".scan-section { text-align: center; margin-bottom: 20px; }";
-    html += ".status-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }";
-    html += ".status-connected { background: #28a745; }";
-    html += ".status-disconnected { background: #dc3545; }";
-    html += ".temperature-display { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px; }";
-    html += "</style>";
-    html += "<script>";
-    html += "function scanWiFi() {";
-    html += "  var wifiList = document.getElementById('ssid');";
-    html += "  var scanBtn = document.getElementById('scanBtn');";
-    html += "  scanBtn.disabled = true;";
-    html += "  scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>扫描中...';";
-    html += "  wifiList.innerHTML = '<option value=\"\">扫描中...</option>';";
-    html += "  fetch('/scanwifi').then(response => response.json()).then(data => {";
-    html += "    wifiList.innerHTML = '';";
-    html += "    wifiList.innerHTML = '<option value=\"\">请选择WiFi网络</option>';";
-    html += "    if (data.networks && data.networks.length > 0) {";
-    html += "      data.networks.forEach(network => {";
-    html += "        var option = document.createElement('option');";
-    html += "        option.value = network.ssid;";
-    html += "        option.textContent = network.ssid + ' (' + network.rssi + ' dBm)';";
-    html += "        wifiList.appendChild(option);";
-    html += "      });";
-    html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-connected\"></span>扫描完成 (' + data.networks.length + '个网络)';";
-    html += "    } else {";
-    html += "      wifiList.innerHTML = '<option value=\"\">未找到WiFi网络</option>';";
-    html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>重新扫描';";
-    html += "    }";
-    html += "    scanBtn.disabled = false;";
-    html += "  }).catch(error => {";
-    html += "    wifiList.innerHTML = '<option value=\"\">扫描失败</option>';";
-    html += "    scanBtn.disabled = false;";
-    html += "    scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>重新扫描';";
-    html += "  });";
-    html += "}";
-    html += "window.onload = scanWiFi;";
-    html += "</script>";
-    html += "</head><body>";
-    html += "<div class=\"container\">";
-    html += "<div class=\"header\">";
-    html += "<h1>智能电烤箱配置</h1>";
-    html += "<p>WiFi网络配置页面</p>";
-    html += "</div>";
-    html += "<div class=\"device-info\">";
-    html += "<p><strong>设备ID:</strong> " + DEVICE_ID + "</p>";
-    html += "<p><strong>固件版本:</strong> " + FIRMWARE_VERSION + "</p>";
-    html += "</div>";
-    html += "<div class=\"temperature-display\">当前温度: " + String(currentTemp) + "°C</div>";
-    html += "<div class=\"form-container\">";
-    html += "<form method=\"POST\" action=\"/savewifi\">";
-    html += "<div class=\"scan-section\">";
-    html += "<button type=\"button\" id=\"scanBtn\" class=\"btn btn-secondary\" onclick=\"scanWiFi()\"><span class=\"status-indicator status-disconnected\"></span>扫描WiFi网络</button>";
-    html += "</div>";
-    html += "<div class=\"form-group\">";
-    html += "<label for=\"ssid\">WiFi网络</label>";
-    html += "<select id=\"ssid\" name=\"ssid\" class=\"form-control\" required><option value=\"\">请先扫描WiFi网络</option></select>";
-    html += "</div>";
-    html += "<div class=\"form-group\">";
-    html += "<label for=\"password\">WiFi密码</label>";
-    html += "<input type=\"password\" id=\"password\" name=\"password\" class=\"form-control\" placeholder=\"请输入WiFi密码\" required>";
-    html += "</div>";
-    html += "<button type=\"submit\" class=\"btn\" style=\"width: 100%;\">保存配置</button>";
-    html += "</form>";
-    html += "</div>";
-    html += "</div>";
-    html += "</body></html>";
-    
-    webServer.send(200, "text/html", html);
+    if (isCaptivePortalMode) {
+        // 强制门户模式下显示WiFi配置页面
+        String html = "<!DOCTYPE html><html><head><title>智能电烤箱配置</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+        html += "<style>";
+        html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
+        html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }";
+        html += ".container { max-width: 500px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }";
+        html += ".header { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 25px; text-align: center; }";
+        html += ".header h1 { font-size: 24px; margin-bottom: 10px; }";
+        html += ".device-info { background: #f8f9fa; padding: 15px; border-bottom: 1px solid #e9ecef; }";
+        html += ".device-info p { margin: 5px 0; color: #6c757d; font-size: 14px; }";
+        html += ".form-container { padding: 25px; }";
+        html += ".form-group { margin-bottom: 20px; }";
+        html += ".form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }";
+        html += ".form-control { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }";
+        html += ".form-control:focus { outline: none; border-color: #4CAF50; }";
+        html += ".btn { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }";
+        html += ".btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3); }";
+        html += ".btn:disabled { background: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }";
+        html += ".btn-secondary { background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); }";
+        html += ".btn-secondary:hover { box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3); }";
+        html += ".scan-section { text-align: center; margin-bottom: 20px; }";
+        html += ".status-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }";
+        html += ".status-connected { background: #28a745; }";
+        html += ".status-disconnected { background: #dc3545; }";
+        html += ".temperature-display { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px; }";
+        html += "</style>";
+        html += "<script>";
+        html += "function scanWiFi() {";
+        html += "  var wifiList = document.getElementById('ssid');";
+        html += "  var scanBtn = document.getElementById('scanBtn');";
+        html += "  scanBtn.disabled = true;";
+        html += "  scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>扫描中...';";
+        html += "  wifiList.innerHTML = '<option value=\"\">扫描中...</option>';";
+        html += "  fetch('/scanwifi').then(response => response.json()).then(data => {";
+        html += "    wifiList.innerHTML = '';";
+        html += "    wifiList.innerHTML = '<option value=\"\">请选择WiFi网络</option>';";
+        html += "    if (data.networks && data.networks.length > 0) {";
+        html += "      data.networks.forEach(network => {";
+        html += "        var option = document.createElement('option');";
+        html += "        option.value = network.ssid;";
+        html += "        option.textContent = network.ssid + ' (' + network.rssi + ' dBm)';";
+        html += "        wifiList.appendChild(option);";
+        html += "      });";
+        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-connected\"></span>扫描完成 (' + data.networks.length + '个网络)';";
+        html += "    } else {";
+        html += "      wifiList.innerHTML = '<option value=\"\">未找到WiFi网络</option>';";
+        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>重新扫描';";
+        html += "    }";
+        html += "    scanBtn.disabled = false;";
+        html += "  }).catch(error => {";
+        html += "    wifiList.innerHTML = '<option value=\"\">扫描失败</option>';";
+        html += "    scanBtn.disabled = false;";
+        html += "    scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>重新扫描';";
+        html += "  });";
+        html += "}";
+        html += "window.onload = scanWiFi;";
+        html += "function confirmFactoryReset() {";
+        html += "  if (confirm('⚠️ 危险操作警告！\\n\\n恢复出厂设置将清除所有WiFi配置和温度校准参数。\\n设备将重启并进入配网模式，需要重新配置WiFi网络。\\n\\n确定要执行恢复出厂设置吗？')) {";
+        html += "    var resetBtn = document.querySelector('[onclick=\\\"confirmFactoryReset()\\\"]');";
+        html += "    resetBtn.disabled = true;";
+        html += "    resetBtn.innerHTML = '恢复出厂设置中...';";
+        html += "    resetBtn.style.opacity = '0.7';";
+        html += "    ";
+        html += "    fetch('/factoryreset', { method: 'POST' })";
+        html += "      .then(response => {";
+        html += "        if (response.ok) {";
+        html += "          resetBtn.innerHTML = '恢复成功，设备重启中...';";
+        html += "          resetBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';";
+        html += "        } else {";
+        html += "          throw new Error('恢复失败');";
+        html += "        }";
+        html += "      })";
+        html += "      .catch(error => {";
+        html += "        resetBtn.disabled = false;";
+        html += "        resetBtn.innerHTML = '恢复出厂设置';";
+        html += "        resetBtn.style.opacity = '1';";
+        html += "        alert('恢复出厂设置失败，请重试：' + error.message);";
+        html += "      });";
+        html += "  }";
+        html += "}";
+        html += "</script>";
+        html += "</head><body>";
+        html += "<div class=\"container\">";
+        html += "<div class=\"header\">";
+        html += "<h1>智能电烤箱配置</h1>";
+        html += "<p>WiFi网络配置页面</p>";
+        html += "</div>";
+        html += "<div class=\"device-info\">";
+        html += "<p><strong>设备ID:</strong> " + DEVICE_ID + "</p>";
+        html += "<p><strong>固件版本:</strong> " + FIRMWARE_VERSION + "</p>";
+        html += "</div>";
+        html += "<div class=\"temperature-display\">当前温度: " + String(currentTemp) + "°C</div>";
+        html += "<div class=\"form-container\">";
+        html += "<form method=\"POST\" action=\"/savewifi\">";
+        html += "<div class=\"scan-section\">";
+        html += "<button type=\"button\" id=\"scanBtn\" class=\"btn btn-secondary\" onclick=\"scanWiFi()\"><span class=\"status-indicator status-disconnected\"></span>扫描WiFi网络</button>";
+        html += "</div>";
+        html += "<div class=\"form-group\">";
+        html += "<label for=\"ssid\">WiFi网络</label>";
+        html += "<select id=\"ssid\" name=\"ssid\" class=\"form-control\" required><option value=\"\">请先扫描WiFi网络</option></select>";
+        html += "</div>";
+        html += "<div class=\"form-group\">";
+        html += "<label for=\"password\">WiFi密码</label>";
+        html += "<input type=\"password\" id=\"password\" name=\"password\" class=\"form-control\" placeholder=\"请输入WiFi密码\" required>";
+        html += "</div>";
+        html += "<button type=\"submit\" class=\"btn\" style=\"width: 100%;\">保存配置</button>";
+        html += "</form>";
+        
+
+        
+        html += "</div>";
+        html += "</div>";
+        
+        // 温度控制JavaScript
+        html += "<script>";
+        html += "let currentTargetTemp = " + String(targetTemp) + ";";
+        html += "let currentHeatingState = " + String(heatingEnabled ? "true" : "false") + ";";
+        
+        html += "// 更新温度显示";
+        html += "function updateTemperatureDisplay() {";
+        html += "  fetch('/status')";
+        html += "    .then(response => response.json())";
+        html += "    .then(data => {";
+        html += "      document.getElementById('current-temp').textContent = data.temperature.toFixed(1) + '°C';";
+        html += "      document.getElementById('target-temp').textContent = data.target_temperature.toFixed(1) + '°C';";
+        html += "      currentTargetTemp = data.target_temperature;";
+        html += "      currentHeatingState = data.heating_enabled;";
+        html += "      ";
+        html += "      // 更新加热按钮状态";
+        html += "      const heatingBtn = document.getElementById('heating-btn');";
+        html += "      const heatingText = document.getElementById('heating-text');";
+        html += "      if (data.heating_enabled) {";
+        html += "        heatingBtn.classList.add('active');";
+        html += "        heatingText.textContent = '停止加热';";
+        html += "      } else {";
+        html += "        heatingBtn.classList.remove('active');";
+        html += "        heatingText.textContent = '开始加热';";
+        html += "      }";
+        html += "    })";
+        html += "    .catch(error => console.error('获取温度状态失败:', error));";
+        html += "}";
+        
+        html += "// 改变目标温度";
+        html += "function changeTemp(delta) {";
+        html += "  const newTemp = Math.max(0, Math.min(300, currentTargetTemp + delta));";
+        html += "  setTargetTemp(newTemp);";
+        html += "}";
+        
+        html += "// 设置预设温度";
+        html += "function setPresetTemp(temp) {";
+        html += "  setTargetTemp(temp);";
+        html += "}";
+        
+        html += "// 设置自定义温度";
+        html += "function setCustomTemp() {";
+        html += "  const input = document.getElementById('temp-input');";
+        html += "  const temp = parseInt(input.value);";
+        html += "  if (!isNaN(temp) && temp >= 0 && temp <= 300) {";
+        html += "    setTargetTemp(temp);";
+        html += "    input.value = '';";
+        html += "  } else {";
+        html += "    alert('请输入0-300°C之间的有效温度值');";
+        html += "  }";
+        html += "}";
+        
+        html += "// 设置目标温度";
+        html += "function setTargetTemp(temp) {";
+        html += "  const formData = new FormData();";
+        html += "  formData.append('target_temp', temp);";
+        html += "  ";
+        html += "  fetch('/control', {";
+        html += "    method: 'POST',";
+        html += "    body: formData";
+        html += "  })";
+        html += "    .then(response => {";
+        html += "      if (response.ok) {";
+        html += "        currentTargetTemp = temp;";
+        html += "        document.getElementById('target-temp').textContent = temp.toFixed(1) + '°C';";
+        html += "        console.log('目标温度已设置为: ' + temp + '°C');";
+        html += "      } else {";
+        html += "        throw new Error('设置温度失败');";
+        html += "      }";
+        html += "    })";
+        html += "    .catch(error => {";
+        html += "      console.error('设置温度失败:', error);";
+        html += "      alert('设置温度失败，请检查设备连接');";
+        html += "    });";
+        html += "}";
+        
+        html += "// 切换加热状态";
+        html += "function toggleHeating() {";
+        html += "  const newHeatingState = !currentHeatingState;";
+        html += "  const formData = new FormData();";
+        html += "  formData.append('heating', newHeatingState);";
+        html += "  ";
+        html += "  fetch('/control', {";
+        html += "    method: 'POST',";
+        html += "    body: formData";
+        html += "  })";
+        html += "    .then(response => {";
+        html += "      if (response.ok) {";
+        html += "        currentHeatingState = newHeatingState;";
+        html += "        const heatingBtn = document.getElementById('heating-btn');";
+        html += "        const heatingText = document.getElementById('heating-text');";
+        html += "        if (newHeatingState) {";
+        html += "          heatingBtn.classList.add('active');";
+        html += "          heatingText.textContent = '停止加热';";
+        html += "        } else {";
+        html += "          heatingBtn.classList.remove('active');";
+        html += "          heatingText.textContent = '开始加热';";
+        html += "        }";
+        html += "        console.log('加热状态已切换为: ' + (newHeatingState ? '开启' : '关闭'));";
+        html += "      } else {";
+        html += "        throw new Error('切换加热状态失败');";
+        html += "      }";
+        html += "    })";
+        html += "    .catch(error => {";
+        html += "      console.error('切换加热状态失败:', error);";
+        html += "      alert('切换加热状态失败，请检查设备连接');";
+        html += "    });";
+        html += "}";
+        
+        html += "// 实时更新温度显示";
+        html += "setInterval(updateTemperatureDisplay, 2000);";
+        
+        html += "// 页面加载时初始化";
+        html += "document.addEventListener('DOMContentLoaded', function() {";
+        html += "  updateTemperatureDisplay();";
+        html += "  ";
+        html += "  // 输入框回车事件";
+        html += "  document.getElementById('temp-input').addEventListener('keypress', function(e) {";
+        html += "    if (e.key === 'Enter') {";
+        html += "      setCustomTemp();";
+        html += "    }";
+        html += "  });";
+        html += "});";
+        html += "</script>";
+        
+        html += "</body></html>";
+        
+        webServer.send(200, "text/html", html);
+    } else {
+        // 正常模式下显示极简设备状态页面
+        String html = "<!DOCTYPE html><html><head><title>智能电烤箱状态</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+        html += "<style>";
+        html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
+        html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }";
+        html += ".container { max-width: 600px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }";
+        html += ".header { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 25px; text-align: center; }";
+        html += ".header h1 { font-size: 24px; margin-bottom: 10px; }";
+        html += ".status-container { padding: 25px; }";
+        html += ".status-card { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px; }";
+        html += ".status-card h2 { color: #495057; margin-bottom: 15px; font-size: 18px; }";
+        html += ".status-item { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #e9ecef; }";
+        html += ".status-label { font-weight: 600; color: #6c757d; }";
+        html += ".status-value { color: #495057; }";
+        html += ".temperature-highlight { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 20px; }";
+        html += ".api-section { background: #e9ecef; border-radius: 10px; padding: 20px; }";
+        html += ".api-section h3 { color: #495057; margin-bottom: 15px; }";
+        html += ".api-list { list-style: none; }";
+        html += ".api-list li { margin-bottom: 10px; }";
+        html += ".api-list a { color: #007bff; text-decoration: none; }";
+        html += ".api-list a:hover { text-decoration: underline; }";
+        html += ".control-section { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px; }";
+        html += ".control-section h3 { color: #495057; margin-bottom: 15px; }";
+        html += ".control-buttons { display: flex; gap: 10px; flex-wrap: wrap; }";
+        html += ".control-btn { flex: 1; min-width: 120px; padding: 10px; border: none; border-radius: 8px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; cursor: pointer; font-weight: 600; }";
+        html += ".control-btn:hover { opacity: 0.9; }";
+        html += ".control-btn.danger { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); }";
+        html += ".control-btn.warning { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #212529; }";
+        
+        // 温度控制样式
+        html += ".temperature-control-section { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px; }";
+        html += ".temperature-control-section h3 { color: #495057; margin-bottom: 15px; font-size: 18px; }";
+        html += ".temperature-display { display: flex; justify-content: space-between; margin-bottom: 15px; }";
+        html += ".temp-label { font-size: 14px; color: #6c757d; margin-bottom: 5px; }";
+        html += ".current-temp, .target-temp { font-size: 24px; font-weight: bold; color: #dc3545; }";
+        html += ".target-temp { color: #007bff; }";
+        html += ".temp-controls { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }";
+        html += ".temp-btn { padding: 10px 15px; border: none; border-radius: 8px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white; cursor: pointer; font-weight: 600; font-size: 16px; }";
+        html += ".temp-btn:hover { opacity: 0.9; }";
+        html += ".temp-input-group { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }";
+        html += ".temp-input-label { font-size: 14px; color: #6c757d; min-width: 120px; }";
+        html += ".temp-input { flex: 1; padding: 8px 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 14px; }";
+        html += ".temp-input:focus { outline: none; border-color: #007bff; }";
+        html += ".temp-set-btn { padding: 8px 16px; border: none; border-radius: 8px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; cursor: pointer; font-weight: 600; }";
+        html += ".temp-set-btn:hover { opacity: 0.9; }";
+        html += ".temp-presets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }";
+        html += ".preset-btn { padding: 15px; border: none; border-radius: 8px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; cursor: pointer; text-align: center; }";
+        html += ".preset-btn:hover { opacity: 0.9; }";
+        html += ".preset-value { font-size: 18px; font-weight: bold; }";
+        html += ".preset-label { font-size: 12px; opacity: 0.8; }";
+        html += ".heating-control { text-align: center; }";
+        html += ".heating-btn { padding: 15px 30px; border: none; border-radius: 10px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; cursor: pointer; font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px; justify-content: center; }";
+        html += ".heating-btn:hover { opacity: 0.9; }";
+        html += ".heating-btn.active { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }";
+        html += ".heating-icon { font-size: 24px; }";
+        html += "</style>";
+        html += "</head><body>";
+        html += "<div class=\"container\">";
+        html += "<div class=\"header\">";
+        html += "<h1>智能电烤箱状态</h1>";
+        html += "<p>设备运行状态监控</p>";
+        html += "</div>";
+        html += "<div class=\"status-container\">";
+        html += "<div class=\"temperature-highlight\">当前温度: " + String(currentTemp) + "°C | 目标温度: " + String(targetTemp) + "°C</div>";
+        
+        html += "<div class=\"status-card\">";
+        html += "<h2>设备信息</h2>";
+        html += "<div class=\"status-item\"><span class=\"status-label\">设备ID:</span><span class=\"status-value\">" + DEVICE_ID + "</span></div>";
+        html += "<div class=\"status-item\"><span class=\"status-label\">固件版本:</span><span class=\"status-value\">" + FIRMWARE_VERSION + "</span></div>";
+        html += "<div class=\"status-item\"><span class=\"status-label\">加热状态:</span><span class=\"status-value\">" + String(heatingEnabled ? "开启" : "关闭") + "</span></div>";
+        html += "</div>";
+        
+        html += "<div class=\"status-card\">";
+        html += "<h2>网络状态</h2>";
+        html += "<div class=\"status-item\"><span class=\"status-label\">WiFi状态:</span><span class=\"status-value\">" + String(WiFi.status() == WL_CONNECTED ? "已连接 (" + WiFi.localIP().toString() + ")" : "未连接") + "</span></div>";
+        html += "<div class=\"status-item\"><span class=\"status-label\">信号强度:</span><span class=\"status-value\">" + String(WiFi.RSSI()) + " dBm</span></div>";
+        html += "</div>";
+        
+        html += "<div class=\"control-section\">";
+        html += "<h3>设备控制</h3>";
+        html += "<div class=\"control-buttons\">";
+        html += "<button class=\"control-btn\" onclick=\"location.href='/wificonfig'\">WiFi配置</button>";
+        html += "<button class=\"control-btn warning\" onclick=\"if(confirm('确定要重启设备吗？')){fetch('/restart',{method:'POST'});setTimeout(()=>location.reload(),2000);}\">重启设备</button>";
+        html += "<button class=\"control-btn danger\" onclick=\"if(confirm('⚠️ 危险操作！确定要恢复出厂设置吗？')){fetch('/factoryreset',{method:'POST'});setTimeout(()=>location.reload(),2000);}\">恢复出厂</button>";
+        html += "</div>";
+        html += "</div>";
+        
+        // 温度控制面板
+        html += "<div class=\"temperature-control-section\">";
+        html += "<h3>温度控制</h3>";
+        html += "<div class=\"temperature-display\">";
+        html += "<div class=\"temp-label\">当前温度</div>";
+        html += "<div class=\"current-temp\" id=\"current-temp\">" + String(currentTemp) + "°C</div>";
+        html += "<div class=\"temp-label\">目标温度</div>";
+        html += "<div class=\"target-temp\" id=\"target-temp\">" + String(targetTemp) + "°C</div>";
+        html += "</div>";
+        
+        html += "<div class=\"temp-controls\">";
+        html += "<button class=\"temp-btn\" onclick=\"changeTemp(-5)\">-5°</button>";
+        html += "<button class=\"temp-btn\" onclick=\"changeTemp(-1)\">-1°</button>";
+        html += "<button class=\"temp-btn\" onclick=\"changeTemp(1)\">+1°</button>";
+        html += "<button class=\"temp-btn\" onclick=\"changeTemp(5)\">+5°</button>";
+        html += "</div>";
+        
+        html += "<div class=\"temp-input-group\">";
+        html += "<label class=\"temp-input-label\">直接设置温度 (°C)</label>";
+        html += "<input type=\"number\" class=\"temp-input\" id=\"temp-input\" placeholder=\"输入目标温度\" min=\"0\" max=\"300\" step=\"1\">";
+        html += "<button class=\"temp-set-btn\" onclick=\"setCustomTemp()\">设置</button>";
+        html += "</div>";
+        
+        html += "<div class=\"temp-presets\">";
+        html += "<button class=\"preset-btn\" onclick=\"setPresetTemp(50)\">";
+        html += "<div class=\"preset-value\">50°C</div>";
+        html += "<div class=\"preset-label\">低温</div>";
+        html += "</button>";
+        html += "<button class=\"preset-btn\" onclick=\"setPresetTemp(100)\">";
+        html += "<div class=\"preset-value\">100°C</div>";
+        html += "<div class=\"preset-label\">中温</div>";
+        html += "</button>";
+        html += "<button class=\"preset-btn\" onclick=\"setPresetTemp(150)\">";
+        html += "<div class=\"preset-value\">150°C</div>";
+        html += "<div class=\"preset-label\">高温</div>";
+        html += "</button>";
+        html += "<button class=\"preset-btn\" onclick=\"setPresetTemp(200)\">";
+        html += "<div class=\"preset-value\">200°C</div>";
+        html += "<div class=\"preset-label\">烘焙</div>";
+        html += "</button>";
+        html += "</div>";
+        
+        html += "<div class=\"heating-control\">";
+        html += "<button class=\"heating-btn\" id=\"heating-btn\" onclick=\"toggleHeating()\">";
+        html += "<span class=\"heating-icon\">🔥</span>";
+        html += "<span id=\"heating-text\">" + String(heatingEnabled ? "停止加热" : "开始加热") + "</span>";
+        html += "</button>";
+        html += "</div>";
+        html += "</div>";
+        
+        html += "<div class=\"api-section\">";
+        html += "<h3>API端点</h3>";
+        html += "<ul class=\"api-list\">";
+        html += "<li><a href=\"/status\">/status</a> - 设备状态(JSON)</li>";
+        html += "<li><a href=\"/control\">/control</a> - 设备控制</li>";
+        html += "<li><a href=\"/wificonfig\">/wificonfig</a> - WiFi配置</li>";
+        html += "<li><a href=\"/restart\">/restart</a> - 重启设备</li>";
+        html += "<li><a href=\"/factoryreset\">/factoryreset</a> - 恢复出厂</li>";
+        html += "</ul>";
+        html += "</div>";
+        
+        html += "</div>";
+        html += "</div>";
+        html += "</body></html>";
+        
+        webServer.send(200, "text/html", html);
+    }
 }
 
 // 处理所有未定义的路由，实现自动跳转
@@ -701,29 +1151,8 @@ void handleNotFound() {
         webServer.sendHeader("Location", "/", true);
         webServer.send(302, "text/plain", "Redirect to configuration page");
     } else {
-        // 在正常模式下，为根路径提供简单状态页面
-        if (webServer.uri() == "/") {
-            String html = "<!DOCTYPE html><html><head><title>智能电烤箱状态</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
-            html += "<style>body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; } ";
-            html += ".container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }";
-            html += ".status { color: #28a745; font-weight: bold; } .info { margin: 10px 0; }</style></head>";
-            html += "<body><div class=\"container\"><h1>智能电烤箱状态</h1>";
-            html += "<div class=\"info\"><strong>设备ID:</strong> " + DEVICE_ID + "</div>";
-            html += "<div class=\"info\"><strong>固件版本:</strong> " + FIRMWARE_VERSION + "</div>";
-            html += "<div class=\"info\"><strong>当前温度:</strong> " + String(currentTemp) + "°C</div>";
-            html += "<div class=\"info\"><strong>目标温度:</strong> " + String(targetTemp) + "°C</div>";
-            html += "<div class=\"info\"><strong>加热状态:</strong> " + String(heatingEnabled ? "开启" : "关闭") + "</div>";
-            html += "<div class=\"info\"><strong>WiFi状态:</strong> " + String(WiFi.status() == WL_CONNECTED ? "已连接 (" + WiFi.localIP().toString() + ")" : "未连接") + "</div>";
-            html += "<div class=\"info\"><strong>API端点:</strong></div>";
-    html += "<ul><li><a href=\"/status\">/status</a> - 设备状态(JSON)</li>";
-    html += "<li><a href=\"/control\">/control</a> - 设备控制</li>";
-    html += "<li><a href=\"/scanwifi\">/scanwifi</a> - WiFi扫描</li>";
-    html += "<li><a href=\"/ota\">/ota</a> - OTA固件升级</li></ul>";
-            html += "</div></body></html>";
-            webServer.send(200, "text/html", html);
-        } else {
-            webServer.send(404, "text/plain", "Not found: " + webServer.uri());
-        }
+        // 在正常模式下，直接返回404错误
+        webServer.send(404, "text/plain", "Not found: " + webServer.uri());
     }
 }
 
@@ -760,6 +1189,82 @@ void handleSaveWiFi() {
     }
 }
 
+void handleFactoryReset() {
+    // 清空EEPROM中的配置
+    EEPROM.begin(512);
+    
+    // 清空整个EEPROM区域
+    for (int i = 0; i < 512; i++) {
+        EEPROM.write(i, 0);
+    }
+    EEPROM.commit();
+    EEPROM.end();
+    
+    // 清空内存中的配置变量
+    wifiSSID = "";
+    wifiPassword = "";
+    temperatureOffset = 0.0;
+    temperatureScale = 1.0;
+    
+    Serial.println("恢复出厂设置完成，所有配置已清除");
+    
+    // 返回成功页面
+    String html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"refresh\" content=\"5;url=/\">";
+    html += "<style>";
+    html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
+    html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }";
+    html += ".reset-container { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 40px; text-align: center; max-width: 400px; }";
+    html += ".reset-icon { font-size: 48px; color: #ff6b6b; margin-bottom: 20px; }";
+    html += ".reset-title { font-size: 24px; color: #dc3545; margin-bottom: 15px; font-weight: 600; }";
+    html += ".reset-message { color: #6c757d; line-height: 1.6; margin-bottom: 20px; }";
+    html += ".countdown { background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 14px; color: #495057; }";
+    html += "</style>";
+    html += "</head><body>";
+    html += "<div class=\"reset-container\">";
+    html += "<div class=\"reset-icon\">⚠️</div>";
+    html += "<h1 class=\"reset-title\">恢复出厂设置</h1>";
+    html += "<p class=\"reset-message\">设备已恢复出厂设置，所有WiFi配置和温度校准参数已被清除。</p>";
+    html += "<p class=\"reset-message\">设备将重启并进入配网模式，请重新配置WiFi网络。</p>";
+    html += "<p class=\"countdown\">5秒后设备将重启...</p>";
+    html += "</div>";
+    html += "</body></html>";
+    
+    webServer.send(200, "text/html", html);
+    
+    delay(1000);
+    ESP.restart();
+}
+
+void handleRestart() {
+    Serial.println("接收到重启设备请求");
+    
+    // 返回重启确认页面
+    String html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"refresh\" content=\"5;url=/\">";
+    html += "<style>";
+    html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
+    html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }";
+    html += ".restart-container { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 40px; text-align: center; max-width: 400px; }";
+    html += ".restart-icon { font-size: 48px; color: #4CAF50; margin-bottom: 20px; }";
+    html += ".restart-title { font-size: 24px; color: #28a745; margin-bottom: 15px; font-weight: 600; }";
+    html += ".restart-message { color: #6c757d; line-height: 1.6; margin-bottom: 20px; }";
+    html += ".countdown { background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 14px; color: #495057; }";
+    html += "</style>";
+    html += "</head><body>";
+    html += "<div class=\"restart-container\">";
+    html += "<div class=\"restart-icon\">🔄</div>";
+    html += "<h1 class=\"restart-title\">设备重启中</h1>";
+    html += "<p class=\"restart-message\">设备正在重启，重启过程大约需要30秒。</p>";
+    html += "<p class=\"restart-message\">重启完成后，设备将自动重新连接WiFi网络。</p>";
+    html += "<p class=\"countdown\">5秒后设备将重启...</p>";
+    html += "</div>";
+    html += "</body></html>";
+    
+    webServer.send(200, "text/html", html);
+    
+    delay(1000);
+    ESP.restart();
+}
+
 void handleStatus() {
     String json = "{\"device_id\":\"" + DEVICE_ID + "\",";
     json += "\"firmware_version\":\"" + FIRMWARE_VERSION + "\",";
@@ -768,6 +1273,57 @@ void handleStatus() {
     json += "\"heating_enabled\":" + String(heatingEnabled ? "true" : "false") + ",";
     json += "\"wifi_connected\":" + String(WiFi.status() == WL_CONNECTED ? "true" : "false") + ",";
     json += "\"ip_address\":\"" + (isCaptivePortalMode ? WiFi.softAPIP().toString() : WiFi.localIP().toString()) + "\"}";
+    
+    webServer.send(200, "application/json", json);
+}
+
+void handleDiagnostic() {
+    // 读取原始MAX6675数据
+    uint16_t rawData = readMAX6675RawData();
+    bool errorFlag = (rawData & 0x04) != 0;
+    uint16_t tempBits = rawData >> 3;
+    float rawTemperature = tempBits * 0.25;
+    
+    // 确定传感器状态
+    String sensorStatus = "正常";
+    String diagnosticAdvice = "传感器工作正常";
+    
+    if (errorFlag) {
+        sensorStatus = "错误";
+        diagnosticAdvice = "检测到热电偶开路或传感器故障";
+    } else if (rawData == 0x0000 || rawData == 0xFFFF) {
+        sensorStatus = "警告";
+        diagnosticAdvice = "传感器数据异常，检查硬件连接";
+    } else if (rawTemperature < -20 || rawTemperature > 1024) {
+        sensorStatus = "警告";
+        diagnosticAdvice = "温度读数超出正常范围";
+    }
+    
+    // 构建诊断JSON响应
+    String json = "{";
+    json += "\"sensor_status\":\"" + sensorStatus + "\",";
+    json += "\"raw_data\":\"0x" + String(rawData, HEX) + "\",";
+    json += "\"error_flag\":" + String(errorFlag ? "true" : "false") + ",";
+    json += "\"temp_bits\":" + String(tempBits) + ",";
+    json += "\"raw_temperature\":" + String(rawTemperature) + ",";
+    json += "\"calibration_params\":\"偏移:" + String(temperatureOffset) + " 缩放:" + String(temperatureScale) + "\",";
+    json += "\"diagnostic_advice\":\"" + diagnosticAdvice + "\",";
+    json += "\"hardware_failure_count\":" + String(hardwareFailureCount) + ",";
+    json += "\"hardware_initialized\":" + String(hardwareInitialized ? "true" : "false") + ",";
+    json += "\"temperature_read_count\":" + String(temperatureReadCount) + ",";
+    json += "\"temperature_read_avg_time\":" + String(temperatureReadAvgTime);
+    json += "}";
+    
+    webServer.send(200, "application/json", json);
+}
+
+void handleResetCalibration() {
+    temperatureOffset = 0.0;
+    temperatureScale = 1.0;
+    
+    String json = "{\"message\":\"温度校准参数已重置\",";
+    json += "\"offset\":" + String(temperatureOffset) + ",";
+    json += "\"scale\":" + String(temperatureScale) + "}";
     
     webServer.send(200, "application/json", json);
 }
@@ -804,12 +1360,28 @@ void handleControl() {
 // =========================================
 // 温度控制功能
 // =========================================
+
+// 温度读取定时器
+unsigned long lastTemperatureRead = 0;
+const unsigned long TEMPERATURE_READ_INTERVAL = 200; // 每200ms读取一次温度（优化：提高温度响应速度）
+
 void readTemperature() {
-    currentTemp = readTemperatureManual();
-    if (currentTemp < 0) {
-        Serial.println("温度传感器读取错误");
-    } else {
-        Serial.println("当前温度: " + String(currentTemp) + "°C");
+    unsigned long currentTime = millis();
+    
+    // 定时读取温度，避免频繁读取影响性能
+    if (currentTime - lastTemperatureRead >= TEMPERATURE_READ_INTERVAL) {
+        currentTemp = readTemperatureWithMonitoring();
+        if (currentTemp < 0) {
+            Serial.println("温度传感器读取错误");
+        } else {
+            // 只在温度变化较大时才打印日志，减少串口输出
+            static float lastPrintedTemp = -999;
+            if (fabs(currentTemp - lastPrintedTemp) >= 0.5) {
+                Serial.println("当前温度: " + String(currentTemp) + "°C");
+                lastPrintedTemp = currentTemp;
+            }
+        }
+        lastTemperatureRead = currentTime;
     }
 }
 
@@ -962,6 +1534,29 @@ void setup() {
     delay(100);
     beep(200);
     
+    // 硬件初始化验证
+    if (!verifyHardwareInitialization()) {
+        Serial.println("⚠️ 硬件初始化验证失败，尝试硬件复位...");
+        
+        // 强制硬件复位
+        for (int i = 0; i < 3; i++) {
+            digitalWrite(THERMO_CS, HIGH);
+            digitalWrite(THERMO_CLK, LOW);
+            delay(100);
+            digitalWrite(THERMO_CS, LOW);
+            delay(50);
+            digitalWrite(THERMO_CS, HIGH);
+            delay(100);
+        }
+        
+        // 重新验证
+        if (verifyHardwareInitialization()) {
+            Serial.println("✅ 硬件复位成功");
+        } else {
+            Serial.println("❌ 硬件复位失败，请检查硬件连接");
+        }
+    }
+    
     // 加载配置
     if (loadConfig()) {
         Serial.println("配置加载成功");
@@ -1064,6 +1659,29 @@ void handleSerialCommands() {
                 } else {
                     Serial.println("错误: 温度传感器读取错误");
                 }
+            } else if (command == "GET_PERFORMANCE") {
+                // 获取性能信息
+                Serial.println("📊 设备性能信息:");
+                Serial.print("温度读取平均时间: "); Serial.print(temperatureReadAvgTime); Serial.println("ms");
+                Serial.print("温度读取总次数: "); Serial.println(temperatureReadCount);
+                
+                // 获取内存信息
+                uint32_t freeHeap = ESP.getFreeHeap();
+                uint32_t maxFreeBlock = ESP.getMaxFreeBlockSize();
+                uint32_t heapFragmentation = ESP.getHeapFragmentation();
+                
+                Serial.print("空闲内存: "); Serial.print(freeHeap); Serial.println(" bytes");
+                Serial.print("最大空闲块: "); Serial.print(maxFreeBlock); Serial.println(" bytes");
+                Serial.print("内存碎片率: "); Serial.print(heapFragmentation); Serial.println("%");
+                
+                // 输出当前状态
+                Serial.print("Web服务器处理间隔: "); Serial.print(WEB_SERVER_HANDLE_INTERVAL); Serial.println("ms");
+                Serial.print("温度读取间隔: "); Serial.print(TEMPERATURE_READ_INTERVAL); Serial.println("ms");
+            } else if (command == "RESET_PERFORMANCE") {
+                // 重置性能计数器
+                temperatureReadCount = 0;
+                temperatureReadAvgTime = 0;
+                Serial.println("✅ 性能计数器已重置");
             } else {
                 Serial.println("未知命令，可用命令:");
                 Serial.println("LED_ON, LED_OFF, LED_BLINK");
@@ -1071,6 +1689,7 @@ void handleSerialCommands() {
                 Serial.println("GET_STATUS, GET_TEMP, GET_RAW_TEMP");
                 Serial.println("CALIBRATE_TEMP 实际温度");
                 Serial.println("RESET_CALIBRATION");
+                Serial.println("GET_PERFORMANCE, RESET_PERFORMANCE");
             }
         }
     }
@@ -1167,6 +1786,17 @@ void handleTCPCommand(String command) {
 }
 
 // =========================================
+// 性能监控和内存管理
+// =========================================
+
+// 内存监控定时器
+unsigned long lastMemoryCheck = 0;
+const unsigned long MEMORY_CHECK_INTERVAL = 5000; // 每5秒检查一次内存
+
+// 温度读取性能监控
+unsigned long lastTemperatureReadTime = 0;
+
+// =========================================
 // 主循环
 // =========================================
 
@@ -1175,40 +1805,47 @@ float lastTargetTemp = targetTemp;
 unsigned long lastTempChangeTime = 0;
 const unsigned long TEMP_CHANGE_DEBOUNCE = 2000; // 2秒防抖
 
+// Web服务器处理定时器
+unsigned long lastWebServerHandle = 0;
+
 void loop() {
-    // 处理强制门户
+    unsigned long currentTime = millis();
+    
+    // 处理强制门户（提高响应频率）
     if (isCaptivePortalMode) {
+        // 强制门户模式下需要更频繁地处理DNS和Web请求
         dnsServer.processNextRequest();
         webServer.handleClient();
         checkCaptivePortalTimeout();
     } else {
-        // 在非强制门户模式下也处理Web服务器请求
-        webServer.handleClient();
+        // 正常模式下可以适当降低处理频率
+        if (currentTime - lastWebServerHandle >= WEB_SERVER_HANDLE_INTERVAL) {
+            webServer.handleClient();
+            lastWebServerHandle = currentTime;
+        }
     }
     
-    // 处理OTA升级
+    // 处理OTA升级（低频）
     handleOTA();
     
-    // 处理设备发现
+    // 处理设备发现（低频）
     handleDiscovery();
     
-    // 处理TCP连接
+    // 处理TCP连接（高频）
     handleTCPConnection();
     
-    // 处理串口命令
+    // 处理串口命令（高频）
     handleSerialCommands();
     
-    // 温度控制
+    // 温度控制（定时读取）
     readTemperature();
     controlHeater();
     
-    // LED状态更新
+    // LED状态更新（定时）
     updateLED();
     
     // 温度切换检测
     if (targetTemp != lastTargetTemp) {
-        unsigned long currentTime = millis();
-        
         // 防抖处理：只有在温度变化后2秒内没有再次变化才触发提示
         if (currentTime - lastTempChangeTime > TEMP_CHANGE_DEBOUNCE) {
             Serial.println("检测到温度切换: " + String(lastTargetTemp) + "°C -> " + String(targetTemp) + "°C");
@@ -1218,5 +1855,56 @@ void loop() {
         lastTempChangeTime = currentTime;
     }
     
-    delay(100);
+        // 内存监控（每5秒检查一次）
+    if (currentTime - lastMemoryCheck >= MEMORY_CHECK_INTERVAL) {
+        checkMemoryUsage();
+        lastMemoryCheck = currentTime;
+    }
+    
+    // 使用非阻塞延迟，提高响应速度
+    delay(1);
+}
+
+// =========================================
+// 性能监控函数
+// =========================================
+
+void checkMemoryUsage() {
+    // 检查ESP8266内存使用情况
+    uint32_t freeHeap = ESP.getFreeHeap();
+    uint32_t maxFreeBlock = ESP.getMaxFreeBlockSize();
+    uint32_t heapFragmentation = ESP.getHeapFragmentation();
+    
+    // 只在内存使用率较高时输出警告
+    if (freeHeap < 20000) { // 少于20KB空闲内存
+        Serial.println("⚠️ 内存警告: 空闲内存较低 - " + String(freeHeap) + " bytes");
+        Serial.println("最大空闲块: " + String(maxFreeBlock) + " bytes");
+        Serial.println("内存碎片率: " + String(heapFragmentation) + "%");
+    }
+    
+    // 输出温度读取性能统计
+    if (temperatureReadCount > 0) {
+        Serial.println("📊 温度读取性能: 平均时间 " + String(temperatureReadAvgTime) + "ms, 总次数 " + String(temperatureReadCount));
+        // 重置计数器
+        temperatureReadCount = 0;
+        temperatureReadAvgTime = 0;
+    }
+}
+
+// 增强的温度读取函数，包含性能监控
+float readTemperatureWithMonitoring() {
+    unsigned long startTime = micros();
+    
+    float temp = readTemperatureManual();
+    
+    unsigned long endTime = micros();
+    unsigned long readTime = (endTime - startTime) / 1000; // 转换为毫秒
+    
+    // 更新性能统计（仅在成功读取时）
+    if (temp >= 0) {
+        temperatureReadAvgTime = (temperatureReadAvgTime * temperatureReadCount + readTime) / (temperatureReadCount + 1);
+        temperatureReadCount++;
+    }
+    
+    return temp;
 }

@@ -19,4 +19,26 @@
     <color name="status_scanning">#FF9800</color>
     <color name="status_heating">#F44336</color>
     <color name="status_stopped">#4CAF50</color>
+    
+    <!-- OTA升级页面专用颜色 -->
+    <color name="status_background">#E3F2FD</color>
+    <color name="warning_background">#FFF3E0</color>
+    
+    <!-- 温度控制页面专用颜色 -->
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="text_hint">#BDBDBD</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="info">#2196F3</color>
+    <color name="button_primary_bg">#2196F3</color>
+    <color name="button_secondary_bg">#E0E0E0</color>
+    <color name="button_outline_border">#2196F3</color>
+    <color name="edit_text_bg">#FFFFFF</color>
+    <color name="edit_text_border">#BDBDBD</color>
+    <color name="temp_display_bg">#E3F2FD</color>
+    <color name="info_bg">#F5F5F5</color>
+    <color name="outline">#BDBDBD</color>
+    <color name="disabled">#F5F5F5</color>
+    <color name="info_background">#E3F2FD</color>
+    <color name="info_border">#BBDEFB</color>
 </resources>

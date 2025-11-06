@@ -198,6 +198,38 @@
         .status-connected {
             background: #d4edda;
             color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .diagnostic-panel {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .diagnostic-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #007bff;
+        }
+
+        .diagnostic-item {
+            margin: 5px 0;
+            font-size: 14px;
+        }
             border: 1px solid #c3e6cb;
         }
 
@@ -333,6 +365,36 @@
                 <p><strong>设备ID:</strong> <span id="deviceId">--</span></p>
                 <p><strong>固件版本:</strong> <span id="firmwareVersion">--</span></p>
                 <p><strong>IP地址:</strong> <span id="ipAddress">--</span></p>
+            </div>
+
+            <!-- 温度传感器诊断面板 -->
+            <div id="temperatureDiagnostic" class="diagnostic-panel" style="display: none;">
+                <div class="diagnostic-title">🔧 温度传感器诊断</div>
+                <div class="diagnostic-item">
+                    <strong>传感器状态:</strong> <span id="sensorStatus">--</span>
+                </div>
+                <div class="diagnostic-item">
+                    <strong>原始数据:</strong> <span id="rawData">--</span>
+                </div>
+                <div class="diagnostic-item">
+                    <strong>错误标志:</strong> <span id="errorFlag">--</span>
+                </div>
+                <div class="diagnostic-item">
+                    <strong>温度位:</strong> <span id="tempBits">--</span>
+                </div>
+                <div class="diagnostic-item">
+                    <strong>未校准温度:</strong> <span id="rawTemperature">--</span>
+                </div>
+                <div class="diagnostic-item">
+                    <strong>校准参数:</strong> <span id="calibrationParams">--</span>
+                </div>
+                <div class="diagnostic-item">
+                    <strong>诊断建议:</strong> <span id="diagnosticAdvice">--</span>
+                </div>
+                <div class="button-group" style="margin-top: 10px;">
+                    <button id="diagnosticBtn" class="btn btn-secondary">运行诊断</button>
+                    <button id="resetCalibrationBtn" class="btn btn-secondary">重置校准</button>
+                </div>
             </div>
         </div>
     </div>
@@ -570,6 +632,76 @@
                     errorElement.style.display = 'none';
                 }, 5000);
             }
+
+            // 温度传感器诊断功能
+            async runTemperatureDiagnostic() {
+                if (!this.isConnected) {
+                    this.showError('设备未连接，无法运行诊断');
+                    return;
+                }
+
+                try {
+                    const ip = this.deviceIp;
+                    const response = await fetch(`http://${ip}/diagnostic`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const diagnosticData = await response.json();
+                    this.updateDiagnosticPanel(diagnosticData);
+                    
+                    // 显示诊断面板
+                    document.getElementById('temperatureDiagnostic').style.display = 'block';
+                    
+                } catch (error) {
+                    this.showError(`诊断失败: ${error.message}`);
+                }
+            }
+
+            updateDiagnosticPanel(data) {
+                // 更新诊断信息
+                document.getElementById('sensorStatus').textContent = data.sensor_status || '--';
+                document.getElementById('rawData').textContent = data.raw_data || '--';
+                document.getElementById('errorFlag').textContent = data.error_flag || '--';
+                document.getElementById('tempBits').textContent = data.temp_bits || '--';
+                document.getElementById('rawTemperature').textContent = data.raw_temperature || '--';
+                document.getElementById('calibrationParams').textContent = data.calibration_params || '--';
+                document.getElementById('diagnosticAdvice').textContent = data.diagnostic_advice || '--';
+
+                // 根据传感器状态设置样式
+                const diagnosticPanel = document.getElementById('temperatureDiagnostic');
+                if (data.sensor_status === '正常') {
+                    diagnosticPanel.className = 'diagnostic-panel status-ok';
+                } else if (data.sensor_status === '警告') {
+                    diagnosticPanel.className = 'diagnostic-panel status-warning';
+                } else {
+                    diagnosticPanel.className = 'diagnostic-panel status-error';
+                }
+            }
+
+            async resetTemperatureCalibration() {
+                if (!this.isConnected) {
+                    this.showError('设备未连接，无法重置校准');
+                    return;
+                }
+
+                try {
+                    const ip = this.deviceIp;
+                    const response = await fetch(`http://${ip}/reset_calibration`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        this.showConnectionStatus('校准参数已重置', true);
+                        // 重新运行诊断
+                        await this.runTemperatureDiagnostic();
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    this.showError(`重置校准失败: ${error.message}`);
+                }
+            }
         }
 
         // 初始化应用
@@ -634,6 +766,15 @@
 
             document.getElementById('refreshBtn').addEventListener('click', async () => {
                 await ovenController.loadDeviceStatus();
+            });
+
+            // 诊断按钮事件
+            document.getElementById('diagnosticBtn').addEventListener('click', async () => {
+                await ovenController.runTemperatureDiagnostic();
+            });
+
+            document.getElementById('resetCalibrationBtn').addEventListener('click', async () => {
+                await ovenController.resetTemperatureCalibration();
             });
 
             // 温度输入框回车事件
