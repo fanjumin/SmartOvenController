@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>æºè½çµç¤ç®±æ§å¶å¨</title>
+    <title>鏅鸿兘鐢电儰绠辨帶鍒跺櫒</title>
     <style>
         * {
             margin: 0;
@@ -289,55 +289,55 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>æºè½çµç¤ç®±æ§å¶å¨</h1>
-            <p>v0.3.0 - è¿ç¨æ§å¶</p>
+            <h1>鏅鸿兘鐢电儰绠辨帶鍒跺櫒</h1>
+            <p>v0.3.0 - 杩滅▼鎺у埗</p>
         </div>
 
         <div id="connectionStatus" class="connection-status status-disconnected" style="display: none;">
-            æ­£å¨è¿æ¥è®¾å¤...
+            姝ｅ湪杩炴帴璁惧...
         </div>
 
         <div id="errorMessage" class="error-message" style="display: none;"></div>
 
         <div id="loading" class="loading">
-            æ­£å¨å è½½è®¾å¤ä¿¡æ¯...
+            姝ｅ湪鍔犺浇璁惧淇℃伅...
         </div>
 
         <div id="manualIpSection" class="control-panel" style="display: block;">
             <div class="control-group">
-                <label class="control-label">è®¾å¤IPå°å</label>
+                <label class="control-label">璁惧IP鍦板潃</label>
                 <input type="text" id="manualIpInput" class="temperature-input" 
-                       placeholder="ä¾å¦: 192.168.1.100" value="192.168.16.104">
+                       placeholder="渚嬪: 192.168.1.100" value="192.168.16.104">
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                    å¦æèªå¨æ«æå¤±è´¥ï¼è¯·æå¨è¾å¥è®¾å¤IPå°å
+                    濡傛灉鑷姩鎵弿澶辫触锛岃鎵嬪姩杈撳叆璁惧IP鍦板潃
                 </p>
             </div>
             <div class="button-group">
-                <button id="connectBtn" class="btn btn-primary">è¿æ¥è®¾å¤</button>
-                <button id="scanBtn" class="btn btn-secondary">èªå¨æ«æ</button>
+                <button id="connectBtn" class="btn btn-primary">杩炴帴璁惧</button>
+                <button id="scanBtn" class="btn btn-secondary">鑷姩鎵弿</button>
             </div>
         </div>
 
         <div id="content" style="display: none;">
             <div class="status-panel">
                 <div class="status-item">
-                    <span class="status-label">å½åæ¸©åº¦</span>
-                    <span id="currentTemp" class="status-value temperature">-- Â°C</span>
+                    <span class="status-label">褰撳墠娓╁害</span>
+                    <span id="currentTemp" class="status-value temperature">-- 掳C</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">ç®æ æ¸©åº¦</span>
-                    <span id="targetTemp" class="status-value">-- Â°C</span>
+                    <span class="status-label">鐩爣娓╁害</span>
+                    <span id="targetTemp" class="status-value">-- 掳C</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">å ç­ç¶æ</span>
+                    <span class="status-label">鍔犵儹鐘舵€?/span>
                     <span id="heatingStatus" class="status-value">--</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">WiFiè¿æ¥</span>
+                    <span class="status-label">WiFi杩炴帴</span>
                     <span id="wifiStatus" class="status-value">--</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">LEDç¶æ</span>
+                    <span class="status-label">LED鐘舵€?/span>
                     <span id="ledStatus" class="status-value">
                         <span class="led-indicator led-off"></span>--
                     </span>
@@ -346,54 +346,54 @@
 
             <div class="control-panel">
                 <div class="control-group">
-                    <label class="control-label">ç®æ æ¸©åº¦è®¾ç½® (Â°C)</label>
+                    <label class="control-label">鐩爣娓╁害璁剧疆 (掳C)</label>
                     <input type="number" id="targetTempInput" class="temperature-input" 
-                           min="0" max="300" step="5" value="180" placeholder="è®¾ç½®ç®æ æ¸©åº¦">
+                           min="0" max="300" step="5" value="180" placeholder="璁剧疆鐩爣娓╁害">
                 </div>
 
                 <div class="button-group">
-                    <button id="startBtn" class="btn btn-primary">å¼å§å ç­</button>
-                    <button id="stopBtn" class="btn btn-secondary">åæ­¢å ç­</button>
+                    <button id="startBtn" class="btn btn-primary">寮€濮嬪姞鐑?/button>
+                    <button id="stopBtn" class="btn btn-secondary">鍋滄鍔犵儹</button>
                 </div>
 
                 <div class="button-group" style="margin-top: 15px;">
-                    <button id="refreshBtn" class="btn btn-secondary">å·æ°ç¶æ</button>
+                    <button id="refreshBtn" class="btn btn-secondary">鍒锋柊鐘舵€?/button>
                 </div>
             </div>
 
             <div class="device-info">
-                <p><strong>è®¾å¤ID:</strong> <span id="deviceId">--</span></p>
-                <p><strong>åºä»¶çæ¬:</strong> <span id="firmwareVersion">--</span></p>
-                <p><strong>IPå°å:</strong> <span id="ipAddress">--</span></p>
+                <p><strong>璁惧ID:</strong> <span id="deviceId">--</span></p>
+                <p><strong>鍥轰欢鐗堟湰:</strong> <span id="firmwareVersion">--</span></p>
+                <p><strong>IP鍦板潃:</strong> <span id="ipAddress">--</span></p>
             </div>
 
-            <!-- æ¸©åº¦ä¼ æå¨è¯æ­é¢æ¿ -->
+            <!-- 娓╁害浼犳劅鍣ㄨ瘖鏂潰鏉?-->
             <div id="temperatureDiagnostic" class="diagnostic-panel" style="display: none;">
-                <div class="diagnostic-title">ð§ æ¸©åº¦ä¼ æå¨è¯æ­</div>
+                <div class="diagnostic-title">馃敡 娓╁害浼犳劅鍣ㄨ瘖鏂?/div>
                 <div class="diagnostic-item">
-                    <strong>ä¼ æå¨ç¶æ:</strong> <span id="sensorStatus">--</span>
+                    <strong>浼犳劅鍣ㄧ姸鎬?</strong> <span id="sensorStatus">--</span>
                 </div>
                 <div class="diagnostic-item">
-                    <strong>åå§æ°æ®:</strong> <span id="rawData">--</span>
+                    <strong>鍘熷鏁版嵁:</strong> <span id="rawData">--</span>
                 </div>
                 <div class="diagnostic-item">
-                    <strong>éè¯¯æ å¿:</strong> <span id="errorFlag">--</span>
+                    <strong>閿欒鏍囧織:</strong> <span id="errorFlag">--</span>
                 </div>
                 <div class="diagnostic-item">
-                    <strong>æ¸©åº¦ä½:</strong> <span id="tempBits">--</span>
+                    <strong>娓╁害浣?</strong> <span id="tempBits">--</span>
                 </div>
                 <div class="diagnostic-item">
-                    <strong>æªæ ¡åæ¸©åº¦:</strong> <span id="rawTemperature">--</span>
+                    <strong>鏈牎鍑嗘俯搴?</strong> <span id="rawTemperature">--</span>
                 </div>
                 <div class="diagnostic-item">
-                    <strong>æ ¡ååæ°:</strong> <span id="calibrationParams">--</span>
+                    <strong>鏍″噯鍙傛暟:</strong> <span id="calibrationParams">--</span>
                 </div>
                 <div class="diagnostic-item">
-                    <strong>è¯æ­å»ºè®®:</strong> <span id="diagnosticAdvice">--</span>
+                    <strong>璇婃柇寤鸿:</strong> <span id="diagnosticAdvice">--</span>
                 </div>
                 <div class="button-group" style="margin-top: 10px;">
-                    <button id="diagnosticBtn" class="btn btn-secondary">è¿è¡è¯æ­</button>
-                    <button id="resetCalibrationBtn" class="btn btn-secondary">éç½®æ ¡å</button>
+                    <button id="diagnosticBtn" class="btn btn-secondary">杩愯璇婃柇</button>
+                    <button id="resetCalibrationBtn" class="btn btn-secondary">閲嶇疆鏍″噯</button>
                 </div>
             </div>
         </div>
@@ -409,11 +409,11 @@
             }
 
             async init() {
-                // æ¾ç¤ºæå¨IPè¾å¥çé¢
+                // 鏄剧ず鎵嬪姩IP杈撳叆鐣岄潰
                 document.getElementById('manualIpSection').style.display = 'block';
                 document.getElementById('loading').style.display = 'none';
                 
-                // å°è¯èªå¨æ«æè®¾å¤
+                // 灏濊瘯鑷姩鎵弿璁惧
                 await this.detectDeviceIp();
                 if (this.deviceIp) {
                     await this.loadDeviceStatus();
@@ -422,11 +422,8 @@
             }
 
             async detectDeviceIp() {
-                // å°è¯å¸¸è§çè®¾å¤IPå°åï¼ä¼åAPæ¨¡å¼å°åï¼
-                const commonIps = [
-                    '192.168.16.104',   // ç¨æ·æä¾çè®¾å¤IPï¼ç«¯å£80ï¼
-                    '192.168.4.1',      // ESP8266 APæ¨¡å¼é»è®¤IPï¼ç«¯å£80ï¼
-                    '192.168.1.1',
+                // 灏濊瘯甯歌鐨勮澶嘔P鍦板潃锛堜紭鍏圓P妯″紡鍦板潃锛?                const commonIps = [
+                    '192.168.16.104',   // 鐢ㄦ埛鎻愪緵鐨勮澶嘔P锛堢鍙?0锛?                    '192.168.4.1',      // ESP8266 AP妯″紡榛樿IP锛堢鍙?0锛?                    '192.168.1.1',
                     '192.168.1.100',
                     '192.168.1.101',
                     '192.168.1.102',
@@ -443,26 +440,23 @@
                         });
                         if (response.ok) {
                             this.deviceIp = ip;
-                            this.showConnectionStatus('è¿æ¥æå', true);
+                            this.showConnectionStatus('杩炴帴鎴愬姛', true);
                             return;
                         }
                     } catch (error) {
-                        // ç»§ç»­å°è¯ä¸ä¸ä¸ªIP
+                        // 缁х画灏濊瘯涓嬩竴涓狪P
                         continue;
                     }
                 }
 
-                // å¦ææ²¡ææ¾å°è®¾å¤ï¼æ¾ç¤ºæå¨è¾å¥çé¢
-            this.showError('èªå¨æ«ææªæ¾å°è®¾å¤ï¼è¯·æå¨è¾å¥IPå°å');
+                // 濡傛灉娌℃湁鎵惧埌璁惧锛屾樉绀烘墜鍔ㄨ緭鍏ョ晫闈?            this.showError('鑷姩鎵弿鏈壘鍒拌澶囷紝璇锋墜鍔ㄨ緭鍏P鍦板潃');
             }
 
             async testConnection() {
                 try {
-                    // è®¾å¤Webæå¡å¨è¿è¡å¨ç«¯å£80ï¼ä¸éè¦æå®ç«¯å£
-                    const ip = this.deviceIp;
+                    // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80锛屼笉闇€瑕佹寚瀹氱鍙?                    const ip = this.deviceIp;
                     
-                    // æ·»å è¯¦ç»çè¿æ¥è¯æ­
-                    console.log(`å°è¯è¿æ¥è®¾å¤: http://${ip}/status`);
+                    // 娣诲姞璇︾粏鐨勮繛鎺ヨ瘖鏂?                    console.log(`灏濊瘯杩炴帴璁惧: http://${ip}/status`);
                     
                     const response = await fetch(`http://${ip}/status`, { 
                         method: 'GET',
@@ -470,23 +464,23 @@
                     });
                     
                     if (response.ok) {
-                        this.showConnectionStatus('è¿æ¥æå', true);
-                        console.log('è®¾å¤Webæå¡å¨ååºæ­£å¸¸');
+                        this.showConnectionStatus('杩炴帴鎴愬姛', true);
+                        console.log('璁惧Web鏈嶅姟鍣ㄥ搷搴旀甯?);
                         return true;
                     } else {
-                        this.showError(`HTTPéè¯¯: ${response.status}`);
+                        this.showError(`HTTP閿欒: ${response.status}`);
                         return false;
                     }
                 } catch (error) {
-                    console.error('è¿æ¥å¤±è´¥è¯¦æ:', error);
+                    console.error('杩炴帴澶辫触璇︽儏:', error);
                     
-                    // æä¾æ´è¯¦ç»çéè¯¯ä¿¡æ¯
+                    // 鎻愪緵鏇磋缁嗙殑閿欒淇℃伅
                     if (error.name === 'TypeError') {
-                        this.showError('ç½ç»è¿æ¥å¤±è´¥ï¼è¯·æ£æ¥è®¾å¤æ¯å¦å¨çº¿');
+                        this.showError('缃戠粶杩炴帴澶辫触锛岃妫€鏌ヨ澶囨槸鍚﹀湪绾?);
                     } else if (error.name === 'AbortError') {
-                        this.showError('è¿æ¥è¶æ¶ï¼è®¾å¤Webæå¡å¨å¯è½æªå¯å¨');
+                        this.showError('杩炴帴瓒呮椂锛岃澶嘩eb鏈嶅姟鍣ㄥ彲鑳芥湭鍚姩');
                     } else {
-                        this.showError(`è¿æ¥å¤±è´¥: ${error.message}`);
+                        this.showError(`杩炴帴澶辫触: ${error.message}`);
                     }
                 }
                 return false;
@@ -494,7 +488,7 @@
 
             async loadDeviceStatus() {
                 try {
-                    // è®¾å¤Webæå¡å¨è¿è¡å¨ç«¯å£80
+                    // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80
                     const ip = this.deviceIp;
                     
                     const response = await fetch(`http://${ip}/status`);
@@ -507,66 +501,64 @@
                     this.isConnected = true;
                     
                 } catch (error) {
-                    this.showError(`è·åç¶æå¤±è´¥: ${error.message}`);
+                    this.showError(`鑾峰彇鐘舵€佸け璐? ${error.message}`);
                     this.isConnected = false;
                 }
             }
 
             updateUI(data) {
-                // æ´æ°æ¸©åº¦æ¾ç¤º
-                document.getElementById('currentTemp').textContent = data.temperature + ' Â°C';
-                document.getElementById('targetTemp').textContent = data.target_temperature + ' Â°C';
+                // 鏇存柊娓╁害鏄剧ず
+                document.getElementById('currentTemp').textContent = data.temperature + ' 掳C';
+                document.getElementById('targetTemp').textContent = data.target_temperature + ' 掳C';
                 
-                // æ´æ°å ç­ç¶æ
-                const heatingStatus = document.getElementById('heatingStatus');
+                // 鏇存柊鍔犵儹鐘舵€?                const heatingStatus = document.getElementById('heatingStatus');
                 if (data.heating_enabled) {
-                    heatingStatus.textContent = 'å ç­ä¸­';
+                    heatingStatus.textContent = '鍔犵儹涓?;
                     heatingStatus.className = 'status-value heating';
                 } else {
-                    heatingStatus.textContent = 'å¾æº';
+                    heatingStatus.textContent = '寰呮満';
                     heatingStatus.className = 'status-value';
                 }
                 
-                // æ´æ°WiFiç¶æ
-                const wifiStatus = document.getElementById('wifiStatus');
+                // 鏇存柊WiFi鐘舵€?                const wifiStatus = document.getElementById('wifiStatus');
                 if (data.wifi_connected) {
-                    wifiStatus.textContent = 'å·²è¿æ¥';
+                    wifiStatus.textContent = '宸茶繛鎺?;
                     wifiStatus.className = 'status-value connected';
                 } else {
-                    wifiStatus.textContent = 'æªè¿æ¥';
+                    wifiStatus.textContent = '鏈繛鎺?;
                     wifiStatus.className = 'status-value disconnected';
                 }
                 
-                // æ´æ°LEDç¶æï¼åºäºå ç­ç¶ææ¨æ­ï¼
+                // 鏇存柊LED鐘舵€侊紙鍩轰簬鍔犵儹鐘舵€佹帹鏂級
                 const ledIndicator = document.querySelector('.led-indicator');
                 const ledStatus = document.getElementById('ledStatus');
                 
                 if (data.heating_enabled) {
                     ledIndicator.className = 'led-indicator led-on';
-                    ledStatus.innerHTML = '<span class="led-indicator led-on"></span>å ç­ä¸­ - å¸¸äº®';
+                    ledStatus.innerHTML = '<span class="led-indicator led-on"></span>鍔犵儹涓?- 甯镐寒';
                 } else {
                     ledIndicator.className = 'led-indicator led-blinking';
-                    ledStatus.innerHTML = '<span class="led-indicator led-blinking"></span>å¾æº - æ¢éª';
+                    ledStatus.innerHTML = '<span class="led-indicator led-blinking"></span>寰呮満 - 鎱㈤棯';
                 }
                 
-                // æ´æ°è®¾å¤ä¿¡æ¯
+                // 鏇存柊璁惧淇℃伅
                 document.getElementById('deviceId').textContent = data.device_id;
                 document.getElementById('firmwareVersion').textContent = data.firmware_version;
                 document.getElementById('ipAddress').textContent = data.ip_address;
                 
-                // æ¾ç¤ºåå®¹åºå
+                // 鏄剧ず鍐呭鍖哄煙
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
             }
 
             async controlDevice(targetTemp, heatingEnabled) {
                 if (!this.isConnected) {
-                    this.showError('è®¾å¤æªè¿æ¥');
+                    this.showError('璁惧鏈繛鎺?);
                     return false;
                 }
 
                 try {
-                    // è®¾å¤Webæå¡å¨è¿è¡å¨ç«¯å£80
+                    // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80
                     const ip = this.deviceIp;
                     
                     const formData = new URLSearchParams();
@@ -582,21 +574,19 @@
                     });
 
                     if (response.ok) {
-                        this.showConnectionStatus('æ§å¶å½ä»¤åéæå', true);
-                        await this.loadDeviceStatus(); // ç«å³å·æ°ç¶æ
-                        return true;
+                        this.showConnectionStatus('鎺у埗鍛戒护鍙戦€佹垚鍔?, true);
+                        await this.loadDeviceStatus(); // 绔嬪嵆鍒锋柊鐘舵€?                        return true;
                     } else {
                         throw new Error(`HTTP ${response.status}`);
                     }
                 } catch (error) {
-                    this.showError(`æ§å¶å¤±è´¥: ${error.message}`);
+                    this.showError(`鎺у埗澶辫触: ${error.message}`);
                     return false;
                 }
             }
 
             startAutoUpdate() {
-                // æ¯5ç§èªå¨æ´æ°ç¶æ
-                this.updateInterval = setInterval(() => {
+                // 姣?绉掕嚜鍔ㄦ洿鏂扮姸鎬?                this.updateInterval = setInterval(() => {
                     if (this.isConnected) {
                         this.loadDeviceStatus();
                     }
@@ -616,7 +606,7 @@
                 statusElement.className = `connection-status ${isSuccess ? 'status-connected' : 'status-disconnected'}`;
                 statusElement.style.display = 'block';
                 
-                // 3ç§åèªå¨éè
+                // 3绉掑悗鑷姩闅愯棌
                 setTimeout(() => {
                     statusElement.style.display = 'none';
                 }, 3000);
@@ -627,16 +617,15 @@
                 errorElement.textContent = message;
                 errorElement.style.display = 'block';
                 
-                // 5ç§åèªå¨éè
+                // 5绉掑悗鑷姩闅愯棌
                 setTimeout(() => {
                     errorElement.style.display = 'none';
                 }, 5000);
             }
 
-            // æ¸©åº¦ä¼ æå¨è¯æ­åè½
-            async runTemperatureDiagnostic() {
+            // 娓╁害浼犳劅鍣ㄨ瘖鏂姛鑳?            async runTemperatureDiagnostic() {
                 if (!this.isConnected) {
-                    this.showError('è®¾å¤æªè¿æ¥ï¼æ æ³è¿è¡è¯æ­');
+                    this.showError('璁惧鏈繛鎺ワ紝鏃犳硶杩愯璇婃柇');
                     return;
                 }
 
@@ -650,16 +639,16 @@
                     const diagnosticData = await response.json();
                     this.updateDiagnosticPanel(diagnosticData);
                     
-                    // æ¾ç¤ºè¯æ­é¢æ¿
+                    // 鏄剧ず璇婃柇闈㈡澘
                     document.getElementById('temperatureDiagnostic').style.display = 'block';
                     
                 } catch (error) {
-                    this.showError(`è¯æ­å¤±è´¥: ${error.message}`);
+                    this.showError(`璇婃柇澶辫触: ${error.message}`);
                 }
             }
 
             updateDiagnosticPanel(data) {
-                // æ´æ°è¯æ­ä¿¡æ¯
+                // 鏇存柊璇婃柇淇℃伅
                 document.getElementById('sensorStatus').textContent = data.sensor_status || '--';
                 document.getElementById('rawData').textContent = data.raw_data || '--';
                 document.getElementById('errorFlag').textContent = data.error_flag || '--';
@@ -668,11 +657,10 @@
                 document.getElementById('calibrationParams').textContent = data.calibration_params || '--';
                 document.getElementById('diagnosticAdvice').textContent = data.diagnostic_advice || '--';
 
-                // æ ¹æ®ä¼ æå¨ç¶æè®¾ç½®æ ·å¼
-                const diagnosticPanel = document.getElementById('temperatureDiagnostic');
-                if (data.sensor_status === 'æ­£å¸¸') {
+                // 鏍规嵁浼犳劅鍣ㄧ姸鎬佽缃牱寮?                const diagnosticPanel = document.getElementById('temperatureDiagnostic');
+                if (data.sensor_status === '姝ｅ父') {
                     diagnosticPanel.className = 'diagnostic-panel status-ok';
-                } else if (data.sensor_status === 'è­¦å') {
+                } else if (data.sensor_status === '璀﹀憡') {
                     diagnosticPanel.className = 'diagnostic-panel status-warning';
                 } else {
                     diagnosticPanel.className = 'diagnostic-panel status-error';
@@ -681,7 +669,7 @@
 
             async resetTemperatureCalibration() {
                 if (!this.isConnected) {
-                    this.showError('è®¾å¤æªè¿æ¥ï¼æ æ³éç½®æ ¡å');
+                    this.showError('璁惧鏈繛鎺ワ紝鏃犳硶閲嶇疆鏍″噯');
                     return;
                 }
 
@@ -692,32 +680,30 @@
                     });
                     
                     if (response.ok) {
-                        this.showConnectionStatus('æ ¡ååæ°å·²éç½®', true);
-                        // éæ°è¿è¡è¯æ­
+                        this.showConnectionStatus('鏍″噯鍙傛暟宸查噸缃?, true);
+                        // 閲嶆柊杩愯璇婃柇
                         await this.runTemperatureDiagnostic();
                     } else {
                         throw new Error(`HTTP ${response.status}`);
                     }
                 } catch (error) {
-                    this.showError(`éç½®æ ¡åå¤±è´¥: ${error.message}`);
+                    this.showError(`閲嶇疆鏍″噯澶辫触: ${error.message}`);
                 }
             }
         }
 
-        // åå§ååºç¨
-        document.addEventListener('DOMContentLoaded', () => {
+        // 鍒濆鍖栧簲鐢?        document.addEventListener('DOMContentLoaded', () => {
             const ovenController = new SmartOvenController();
 
-            // æå¨è¿æ¥äºä»¶
+            // 鎵嬪姩杩炴帴浜嬩欢
             document.getElementById('connectBtn').addEventListener('click', async () => {
                 let manualIp = document.getElementById('manualIpInput').value.trim();
                 if (!manualIp) {
-                    ovenController.showError('è¯·è¾å¥è®¾å¤IPå°å');
+                    ovenController.showError('璇疯緭鍏ヨ澶嘔P鍦板潃');
                     return;
                 }
                 
-                // è®¾å¤Webæå¡å¨è¿è¡å¨ç«¯å£80ï¼ä¸éè¦æ·»å ç«¯å£
-                // å¦æç¨æ·è¾å¥äºç«¯å£ï¼ç§»é¤ç«¯å£é¨å
+                // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80锛屼笉闇€瑕佹坊鍔犵鍙?                // 濡傛灉鐢ㄦ埛杈撳叆浜嗙鍙ｏ紝绉婚櫎绔彛閮ㄥ垎
                 if (manualIp.includes(':')) {
                     manualIp = manualIp.split(':')[0];
                 }
@@ -727,13 +713,12 @@
                     await ovenController.loadDeviceStatus();
                     ovenController.startAutoUpdate();
                     
-                    // éèæå¨è¾å¥çé¢ï¼æ¾ç¤ºæ§å¶çé¢
-                    document.getElementById('manualIpSection').style.display = 'none';
+                    // 闅愯棌鎵嬪姩杈撳叆鐣岄潰锛屾樉绀烘帶鍒剁晫闈?                    document.getElementById('manualIpSection').style.display = 'none';
                     document.getElementById('content').style.display = 'block';
                 }
             });
 
-            // èªå¨æ«æäºä»¶
+            // 鑷姩鎵弿浜嬩欢
             document.getElementById('scanBtn').addEventListener('click', async () => {
                 document.getElementById('manualIpSection').style.display = 'none';
                 document.getElementById('loading').style.display = 'block';
@@ -749,11 +734,11 @@
                 }
             });
 
-            // äºä»¶çå¬
+            // 浜嬩欢鐩戝惉
             document.getElementById('startBtn').addEventListener('click', async () => {
                 const targetTemp = parseInt(document.getElementById('targetTempInput').value);
                 if (targetTemp < 0 || targetTemp > 300) {
-                    ovenController.showError('æ¸©åº¦èå´: 0-300Â°C');
+                    ovenController.showError('娓╁害鑼冨洿: 0-300掳C');
                     return;
                 }
                 await ovenController.controlDevice(targetTemp, true);
@@ -768,7 +753,7 @@
                 await ovenController.loadDeviceStatus();
             });
 
-            // è¯æ­æé®äºä»¶
+            // 璇婃柇鎸夐挳浜嬩欢
             document.getElementById('diagnosticBtn').addEventListener('click', async () => {
                 await ovenController.runTemperatureDiagnostic();
             });
@@ -777,14 +762,13 @@
                 await ovenController.resetTemperatureCalibration();
             });
 
-            // æ¸©åº¦è¾å¥æ¡åè½¦äºä»¶
-            document.getElementById('targetTempInput').addEventListener('keypress', (e) => {
+            // 娓╁害杈撳叆妗嗗洖杞︿簨浠?            document.getElementById('targetTempInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     document.getElementById('startBtn').click();
                 }
             });
 
-            // é¡µé¢å¯è§æ§ååæ¶è°æ´è½®è¯¢
+            // 椤甸潰鍙鎬у彉鍖栨椂璋冩暣杞
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     ovenController.stopAutoUpdate();

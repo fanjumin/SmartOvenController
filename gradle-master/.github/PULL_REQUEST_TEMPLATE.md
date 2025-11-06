@@ -19,7 +19,7 @@
 ### Reviewing cheatsheet
 
 Before merging the PR, comments starting with 
-- ❌ ❓**must** be fixed
-- 🤔 💅 **should** be fixed
-- 💭 **may** be fixed
-- 🎉 celebrate happy things
+- â â**must** be fixed
+- ð¤ ð **should** be fixed
+- ð­ **may** be fixed
+- ð celebrate happy things

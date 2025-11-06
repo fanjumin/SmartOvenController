@@ -1,69 +1,69 @@
 #!/usr/bin/env python3
 """
-检查设备性能统计信息
-包括内存占用、温度读取性能等
+æ£æ¥è®¾å¤æ§è½ç»è®¡ä¿¡æ¯
+åæ¬åå­å ç¨ãæ¸©åº¦è¯»åæ§è½ç­
 """
 
 import socket
 import time
 
 def get_performance_stats():
-    """获取设备性能统计信息"""
-    print("=== 设备性能统计检查 ===")
+    """è·åè®¾å¤æ§è½ç»è®¡ä¿¡æ¯"""
+    print("=== è®¾å¤æ§è½ç»è®¡æ£æ¥ ===")
     
-    # 设备IP和端口
+    # è®¾å¤IPåç«¯å£
     device_ip = "192.168.16.104"
     device_port = 8888
     
     try:
-        # 创建TCP连接
+        # åå»ºTCPè¿æ¥
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(10)
         sock.connect((device_ip, device_port))
         
-        # 接收欢迎消息
+        # æ¥æ¶æ¬¢è¿æ¶æ¯
         welcome = sock.recv(1024).decode('utf-8')
-        print(f"设备欢迎消息: {welcome.strip()}")
+        print(f"è®¾å¤æ¬¢è¿æ¶æ¯: {welcome.strip()}")
         
-        # 发送GET_PERFORMANCE命令
+        # åéGET_PERFORMANCEå½ä»¤
         command = "GET_PERFORMANCE\n"
         sock.send(command.encode('utf-8'))
-        print(f"发送命令: {command.strip()}")
+        print(f"åéå½ä»¤: {command.strip()}")
         
-        # 接收性能统计信息
+        # æ¥æ¶æ§è½ç»è®¡ä¿¡æ¯
         performance_data = ""
         start_time = time.time()
         
-        while time.time() - start_time < 5:  # 最多等待5秒
+        while time.time() - start_time < 5:  # æå¤ç­å¾5ç§
             try:
                 data = sock.recv(1024).decode('utf-8')
                 if data:
                     performance_data += data
-                    # 检查是否收到完整响应
-                    if "温度读取性能" in performance_data or "内存警告" in performance_data:
+                    # æ£æ¥æ¯å¦æ¶å°å®æ´ååº
+                    if "æ¸©åº¦è¯»åæ§è½" in performance_data or "åå­è­¦å" in performance_data:
                         break
             except socket.timeout:
                 break
         
-        print("性能统计信息:")
+        print("æ§è½ç»è®¡ä¿¡æ¯:")
         print(performance_data)
         
-        # 如果性能统计为空，尝试获取设备状态
+        # å¦ææ§è½ç»è®¡ä¸ºç©ºï¼å°è¯è·åè®¾å¤ç¶æ
         if not performance_data.strip():
-            print("\n⚠️ 未收到性能统计信息，尝试获取设备状态...")
+            print("\nâ ï¸ æªæ¶å°æ§è½ç»è®¡ä¿¡æ¯ï¼å°è¯è·åè®¾å¤ç¶æ...")
             sock.send("GET_STATUS\n".encode('utf-8'))
             status_response = sock.recv(1024).decode('utf-8')
-            print(f"设备状态: {status_response.strip()}")
+            print(f"è®¾å¤ç¶æ: {status_response.strip()}")
         
         sock.close()
-        print("✅ 性能检查完成")
+        print("â æ§è½æ£æ¥å®æ")
         
     except Exception as e:
-        print(f"❌ 性能检查失败: {e}")
+        print(f"â æ§è½æ£æ¥å¤±è´¥: {e}")
 
 def test_temperature_response_time():
-    """测试温度响应时间"""
-    print("\n=== 温度响应时间测试 ===")
+    """æµè¯æ¸©åº¦ååºæ¶é´"""
+    print("\n=== æ¸©åº¦ååºæ¶é´æµè¯ ===")
     
     device_ip = "192.168.16.104"
     device_port = 8888
@@ -73,11 +73,11 @@ def test_temperature_response_time():
         sock.settimeout(5)
         sock.connect((device_ip, device_port))
         
-        # 接收欢迎消息
+        # æ¥æ¶æ¬¢è¿æ¶æ¯
         welcome = sock.recv(1024).decode('utf-8')
-        print(f"设备连接成功")
+        print(f"è®¾å¤è¿æ¥æå")
         
-        # 测试多次温度获取的响应时间
+        # æµè¯å¤æ¬¡æ¸©åº¦è·åçååºæ¶é´
         response_times = []
         for i in range(5):
             start_time = time.time()
@@ -85,27 +85,27 @@ def test_temperature_response_time():
             response = sock.recv(1024).decode('utf-8')
             end_time = time.time()
             
-            response_time = (end_time - start_time) * 1000  # 转换为毫秒
+            response_time = (end_time - start_time) * 1000  # è½¬æ¢ä¸ºæ¯«ç§
             response_times.append(response_time)
             
-            print(f"第{i+1}次温度获取: {response.strip()} (响应时间: {response_time:.1f}ms)")
-            time.sleep(0.5)  # 间隔0.5秒
+            print(f"ç¬¬{i+1}æ¬¡æ¸©åº¦è·å: {response.strip()} (ååºæ¶é´: {response_time:.1f}ms)")
+            time.sleep(0.5)  # é´é0.5ç§
         
-        # 计算平均响应时间
+        # è®¡ç®å¹³åååºæ¶é´
         avg_response_time = sum(response_times) / len(response_times)
-        print(f"\n📊 温度获取性能统计:")
-        print(f"平均响应时间: {avg_response_time:.1f}ms")
-        print(f"最快响应时间: {min(response_times):.1f}ms")
-        print(f"最慢响应时间: {max(response_times):.1f}ms")
+        print(f"\nð æ¸©åº¦è·åæ§è½ç»è®¡:")
+        print(f"å¹³åååºæ¶é´: {avg_response_time:.1f}ms")
+        print(f"æå¿«ååºæ¶é´: {min(response_times):.1f}ms")
+        print(f"ææ¢ååºæ¶é´: {max(response_times):.1f}ms")
         
         sock.close()
         
     except Exception as e:
-        print(f"❌ 温度响应时间测试失败: {e}")
+        print(f"â æ¸©åº¦ååºæ¶é´æµè¯å¤±è´¥: {e}")
 
 def check_memory_usage():
-    """检查内存使用情况"""
-    print("\n=== 内存使用情况检查 ===")
+    """æ£æ¥åå­ä½¿ç¨æåµ"""
+    print("\n=== åå­ä½¿ç¨æåµæ£æ¥ ===")
     
     device_ip = "192.168.16.104"
     device_port = 8888
@@ -115,14 +115,14 @@ def check_memory_usage():
         sock.settimeout(5)
         sock.connect((device_ip, device_port))
         
-        # 接收欢迎消息
+        # æ¥æ¶æ¬¢è¿æ¶æ¯
         welcome = sock.recv(1024).decode('utf-8')
         
-        # 发送GET_STATUS命令获取基本信息
+        # åéGET_STATUSå½ä»¤è·ååºæ¬ä¿¡æ¯
         sock.send("GET_STATUS\n".encode('utf-8'))
         status_response = sock.recv(1024).decode('utf-8')
         
-        print("设备基本信息:")
+        print("è®¾å¤åºæ¬ä¿¡æ¯:")
         if "TEMP:" in status_response:
             parts = status_response.strip().split(',')
             for part in parts:
@@ -130,9 +130,9 @@ def check_memory_usage():
                     key, value = part.split(':', 1)
                     print(f"  {key}: {value}")
         
-        # 尝试获取性能信息
+        # å°è¯è·åæ§è½ä¿¡æ¯
         sock.send("GET_PERFORMANCE\n".encode('utf-8'))
-        time.sleep(1)  # 给设备时间处理
+        time.sleep(1)  # ç»è®¾å¤æ¶é´å¤ç
         
         performance_data = ""
         try:
@@ -141,15 +141,15 @@ def check_memory_usage():
             pass
         
         if performance_data:
-            print("\n性能信息:")
+            print("\næ§è½ä¿¡æ¯:")
             print(performance_data)
         else:
-            print("\n⚠️ 未收到性能统计信息")
+            print("\nâ ï¸ æªæ¶å°æ§è½ç»è®¡ä¿¡æ¯")
         
         sock.close()
         
     except Exception as e:
-        print(f"❌ 内存检查失败: {e}")
+        print(f"â åå­æ£æ¥å¤±è´¥: {e}")
 
 if __name__ == "__main__":
     get_performance_stats()

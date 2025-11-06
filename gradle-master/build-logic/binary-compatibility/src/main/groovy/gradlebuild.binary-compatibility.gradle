@@ -159,7 +159,7 @@ def checkBinaryCompatibility = tasks.register("checkBinaryCompatibility", gradle
         it.description = """
             <p>See the <a href="https://bt-internal-docs.grdev.net/gbt/how-to/release/release-troubleshooting/#binary-compatibility-check-failed-">documentation</a> for more details.</p>
             <p>
-            We check the binary compatibility by comparing the current code’s binary interfaces
+            We check the binary compatibility by comparing the current codeâ€™s binary interfaces
             against THE LATEST VERSION WHICH IS RELEASED FROM RELEASE BRANCH (from `released-version.json` on this branch)
             AND LOWER THAN CURRENT BASE VERSION (from `version.txt` on this branch).
             The difference must identically match <a href="${mainApiChangesJsonFile.asFile.path}">accepted-public-api-changes.json</a> like .json file in <a href="${apiChangesJsonDirectory.asFile.path}">accepted-changes</a> directory, no more, no less - otherwise the task will fail.

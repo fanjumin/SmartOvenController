@@ -22,7 +22,7 @@ The build should create debugging run configurations for you [automatically](../
 Before you start debugging, start the "Daemon debug" or "Debug Launcher" configuration.
 It will be automatically reused for subsequent test runs.
 
-Be careful when stopping the test — ensure you stop the test itself, not the debugger.
+Be careful when stopping the test â€” ensure you stop the test itself, not the debugger.
 
 ### Gradle test executors
 

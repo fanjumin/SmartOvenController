@@ -5,65 +5,65 @@ import sys
 
 def check_device_status():
     try:
-        # 打开串口
+        # æå¼ä¸²å£
         ser = serial.Serial('COM11', 115200, timeout=5)
-        print("成功连接到COM11端口")
-        print("正在读取设备状态...")
+        print("æåè¿æ¥å°COM11ç«¯å£")
+        print("æ­£å¨è¯»åè®¾å¤ç¶æ...")
         print("-" * 50)
         
-        # 读取设备输出
+        # è¯»åè®¾å¤è¾åº
         start_time = time.time()
         reboot_count = 0
         last_reboot_time = start_time
         temperature_readings = []
         
-        while time.time() - start_time < 30:  # 监控30秒
+        while time.time() - start_time < 30:  # çæ§30ç§
             if ser.in_waiting > 0:
                 line = ser.readline().decode('utf-8', errors='ignore').strip()
                 if line:
-                    print(f"设备输出: {line}")
+                    print(f"è®¾å¤è¾åº: {line}")
                     
-                    # 检查是否重启
-                    if "智能电烤箱控制器" in line or "MAX6675" in line or "WiFi" in line:
+                    # æ£æ¥æ¯å¦éå¯
+                    if "æºè½çµç¤ç®±æ§å¶å¨" in line or "MAX6675" in line or "WiFi" in line:
                         current_time = time.time()
-                        if current_time - last_reboot_time < 10:  # 10秒内再次看到启动信息
+                        if current_time - last_reboot_time < 10:  # 10ç§ååæ¬¡çå°å¯å¨ä¿¡æ¯
                             reboot_count += 1
-                            print(f"⚠️  检测到设备重启 (第{reboot_count}次)")
+                            print(f"â ï¸  æ£æµå°è®¾å¤éå¯ (ç¬¬{reboot_count}æ¬¡)")
                         last_reboot_time = current_time
                     
-                    # 检查温度数据
-                    if "°C" in line or "温度" in line:
+                    # æ£æ¥æ¸©åº¦æ°æ®
+                    if "Â°C" in line or "æ¸©åº¦" in line:
                         temperature_readings.append(line)
-                        print(f"🌡️  温度数据: {line}")
+                        print(f"ð¡ï¸  æ¸©åº¦æ°æ®: {line}")
             
             time.sleep(0.1)
         
         ser.close()
         
         print("-" * 50)
-        print("\n📊 设备状态分析报告:")
-        print(f"1. 重启次数: {reboot_count} 次")
-        print(f"2. 温度读数数量: {len(temperature_readings)} 个")
+        print("\nð è®¾å¤ç¶æåææ¥å:")
+        print(f"1. éå¯æ¬¡æ°: {reboot_count} æ¬¡")
+        print(f"2. æ¸©åº¦è¯»æ°æ°é: {len(temperature_readings)} ä¸ª")
         
         if reboot_count > 2:
-            print("❌ 设备频繁重启 - 可能存在硬件或软件问题")
+            print("â è®¾å¤é¢ç¹éå¯ - å¯è½å­å¨ç¡¬ä»¶æè½¯ä»¶é®é¢")
         else:
-            print("✅ 设备启动稳定")
+            print("â è®¾å¤å¯å¨ç¨³å®")
             
         if len(temperature_readings) > 0:
-            print("✅ 温度传感器工作正常")
-            print(f"   最近温度读数: {temperature_readings[-1] if temperature_readings else '无'}")
+            print("â æ¸©åº¦ä¼ æå¨å·¥ä½æ­£å¸¸")
+            print(f"   æè¿æ¸©åº¦è¯»æ°: {temperature_readings[-1] if temperature_readings else 'æ '}")
         else:
-            print("❌ 未检测到温度数据 - 传感器可能有问题")
+            print("â æªæ£æµå°æ¸©åº¦æ°æ® - ä¼ æå¨å¯è½æé®é¢")
             
     except serial.SerialException as e:
-        print(f"❌ 无法打开串口: {e}")
-        print("请检查:")
-        print("1. COM11端口是否被其他程序占用")
-        print("2. 设备是否正确连接")
-        print("3. 串口驱动是否正常安装")
+        print(f"â æ æ³æå¼ä¸²å£: {e}")
+        print("è¯·æ£æ¥:")
+        print("1. COM11ç«¯å£æ¯å¦è¢«å¶ä»ç¨åºå ç¨")
+        print("2. è®¾å¤æ¯å¦æ­£ç¡®è¿æ¥")
+        print("3. ä¸²å£é©±å¨æ¯å¦æ­£å¸¸å®è£")
     except Exception as e:
-        print(f"❌ 发生错误: {e}")
+        print(f"â åçéè¯¯: {e}")
 
 if __name__ == "__main__":
     check_device_status()

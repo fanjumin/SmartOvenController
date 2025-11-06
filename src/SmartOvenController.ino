@@ -1,9 +1,9 @@
 // =========================================
-// 智能电烤箱控制器 v0.6.1
+// æºè½çµç¤ç®±æ§å¶å¨ v0.6.1
 // =========================================
-// 版本: 0.6.1
-// 功能: 强制门户配网 + 设备自动发现 + OTA升级 + MAX6675手动SPI实现 + 主页集成温度控制
-// 更新: 修复WiFi连接稳定性问题，统一连接超时时间为30秒
+// çæ¬: 0.6.1
+// åè½: å¼ºå¶é¨æ·éç½ + è®¾å¤èªå¨åç° + OTAåçº§ + MAX6675æå¨SPIå®ç° + ä¸»é¡µéææ¸©åº¦æ§å¶
+// æ´æ°: ä¿®å¤WiFiè¿æ¥ç¨³å®æ§é®é¢ï¼ç»ä¸è¿æ¥è¶æ¶æ¶é´ä¸º30ç§
 // =========================================
 
 #include <ESP8266WiFi.h>
@@ -15,148 +15,148 @@
 #include <SPI.h>
 #include <FS.h>
 // =========================================
-// 硬件引脚定义
+// ç¡¬ä»¶å¼èå®ä¹
 // =========================================
-#define THERMO_CLK   14  // MAX6675时钟 (D5/GPIO14)
-#define THERMO_CS    12  // MAX6675片选 (D6/GPIO12)
-#define THERMO_DO    13  // MAX6675数据输出 (D7/GPIO13)
-#define HEATER_PIN   5   // 加热器控制
-#define BUZZER_PIN   4   // 蜂鸣器 (GPIO4/D2)
-#define LED_PIN      2   // LED指示灯 (GPIO2/D4)
+#define THERMO_CLK   14  // MAX6675æ¶é (D5/GPIO14)
+#define THERMO_CS    12  // MAX6675çé (D6/GPIO12)
+#define THERMO_DO    13  // MAX6675æ°æ®è¾åº (D7/GPIO13)
+#define HEATER_PIN   5   // å ç­å¨æ§å¶
+#define BUZZER_PIN   4   // èé¸£å¨ (GPIO4/D2)
+#define LED_PIN      2   // LEDæç¤ºç¯ (GPIO2/D4)
 
 // =========================================
-// 全局变量定义
+// å¨å±åéå®ä¹
 // =========================================
 
-// 网络相关
+// ç½ç»ç¸å³
 ESP8266WebServer webServer(80);
 WiFiUDP udp;
 DNSServer dnsServer;
 ESP8266WebServer otaServer(8080);
 ESP8266HTTPUpdateServer httpUpdater;
-WiFiServer tcpServer(8888);  // TCP服务器用于APP连接
-WiFiClient tcpClient;        // TCP客户端连接
+WiFiServer tcpServer(8888);  // TCPæå¡å¨ç¨äºAPPè¿æ¥
+WiFiClient tcpClient;        // TCPå®¢æ·ç«¯è¿æ¥
 
-// 性能监控变量
+// æ§è½çæ§åé
 unsigned long temperatureReadCount = 0;
 float temperatureReadAvgTime = 0;
-const unsigned long WEB_SERVER_HANDLE_INTERVAL = 100; // 每100ms处理一次Web请求（优化：减少CPU占用）
+const unsigned long WEB_SERVER_HANDLE_INTERVAL = 100; // æ¯100mså¤çä¸æ¬¡Webè¯·æ±ï¼ä¼åï¼åå°CPUå ç¨ï¼
 
-// 硬件故障监控
-unsigned long hardwareFailureCount = 0;       // 硬件故障次数
-unsigned long lastHardwareReset = 0;         // 上次硬件复位时间
-bool hardwareInitialized = false;            // 硬件初始化状态
+// ç¡¬ä»¶æéçæ§
+unsigned long hardwareFailureCount = 0;       // ç¡¬ä»¶æéæ¬¡æ°
+unsigned long lastHardwareReset = 0;         // ä¸æ¬¡ç¡¬ä»¶å¤ä½æ¶é´
+bool hardwareInitialized = false;            // ç¡¬ä»¶åå§åç¶æ
 
-// 设备信息
+// è®¾å¤ä¿¡æ¯
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
 const String FIRMWARE_VERSION = "0.6.0";
 
-// WiFi配置
+// WiFiéç½®
 String wifiSSID = "";
 String wifiPassword = "";
 
-// 强制门户配置
+// å¼ºå¶é¨æ·éç½®
 bool isCaptivePortalMode = false;
 unsigned long captivePortalStartTime = 0;
-const unsigned long CAPTIVE_PORTAL_TIMEOUT = 300000; // 5分钟超时
+const unsigned long CAPTIVE_PORTAL_TIMEOUT = 300000; // 5åéè¶æ¶
 const String AP_SSID = "SmartOven-" + String(ESP.getChipId());
 const String AP_PASSWORD = "12345678";
 
-// 温度控制
+// æ¸©åº¦æ§å¶
 float currentTemp = 0.0;
 float targetTemp = 180.0;
 bool heatingEnabled = false;
-bool ovenMode = true; // 烤箱模式：true=烤箱模式，false=烤面包机模式
+bool ovenMode = true; // ç¤ç®±æ¨¡å¼ï¼true=ç¤ç®±æ¨¡å¼ï¼false=ç¤é¢åæºæ¨¡å¼
 
-// 网络端口配置
+// ç½ç»ç«¯å£éç½®
 const int DEFAULT_PORT = 8888;
 
 // =========================================
-// MAX6675手动SPI通信函数
+// MAX6675æå¨SPIéä¿¡å½æ°
 // =========================================
 
-// 读取MAX6675原始数据（16位）
+// è¯»åMAX6675åå§æ°æ®ï¼16ä½ï¼
 uint16_t readMAX6675RawData() {
   uint16_t data = 0;
   
-  // 硬件复位：确保芯片处于已知状态
+  // ç¡¬ä»¶å¤ä½ï¼ç¡®ä¿è¯çå¤äºå·²ç¥ç¶æ
   digitalWrite(THERMO_CS, HIGH);
   digitalWrite(THERMO_CLK, LOW);
-  delayMicroseconds(100);  // 延长复位时间
+  delayMicroseconds(100);  // å»¶é¿å¤ä½æ¶é´
   
-  // 启用芯片
+  // å¯ç¨è¯ç
   digitalWrite(THERMO_CS, LOW);
-  delayMicroseconds(50);  // 大幅增加延迟确保芯片稳定
+  delayMicroseconds(50);  // å¤§å¹å¢å å»¶è¿ç¡®ä¿è¯çç¨³å®
   
-  // 读取16位数据（MSB优先）
+  // è¯»å16ä½æ°æ®ï¼MSBä¼åï¼
   for (int i = 15; i >= 0; i--) {
-    digitalWrite(THERMO_CLK, HIGH);  // 时钟上升沿
-    delayMicroseconds(20);  // 大幅增加时钟延迟
+    digitalWrite(THERMO_CLK, HIGH);  // æ¶éä¸åæ²¿
+    delayMicroseconds(20);  // å¤§å¹å¢å æ¶éå»¶è¿
     
-    if (digitalRead(THERMO_DO)) {   // 读取数据位
+    if (digitalRead(THERMO_DO)) {   // è¯»åæ°æ®ä½
       data |= (1 << i);
     }
     
-    digitalWrite(THERMO_CLK, LOW);  // 时钟下降沿
-    delayMicroseconds(20);  // 大幅增加时钟延迟
+    digitalWrite(THERMO_CLK, LOW);  // æ¶éä¸éæ²¿
+    delayMicroseconds(20);  // å¤§å¹å¢å æ¶éå»¶è¿
   }
   
-  // 禁用芯片
+  // ç¦ç¨è¯ç
   digitalWrite(THERMO_CS, HIGH);
-  delayMicroseconds(50);  // 大幅增加延迟确保芯片稳定
+  delayMicroseconds(50);  // å¤§å¹å¢å å»¶è¿ç¡®ä¿è¯çç¨³å®
   
   return data;
 }
 
-// 温度校准参数
-float temperatureOffset = 0.0;  // 温度偏移量，用于校准
-float temperatureScale = 1.0;    // 温度缩放系数，用于校准
+// æ¸©åº¦æ ¡ååæ°
+float temperatureOffset = 0.0;  // æ¸©åº¦åç§»éï¼ç¨äºæ ¡å
+float temperatureScale = 1.0;    // æ¸©åº¦ç¼©æ¾ç³»æ°ï¼ç¨äºæ ¡å
 
-// 硬件初始化验证
+// ç¡¬ä»¶åå§åéªè¯
 bool verifyHardwareInitialization() {
-    Serial.println("验证硬件初始化状态...");
+    Serial.println("éªè¯ç¡¬ä»¶åå§åç¶æ...");
     
-    // 检查引脚状态
+    // æ£æ¥å¼èç¶æ
     pinMode(THERMO_CLK, OUTPUT);
     pinMode(THERMO_CS, OUTPUT);
     pinMode(THERMO_DO, INPUT);
     
-    // 设置初始状态
+    // è®¾ç½®åå§ç¶æ
     digitalWrite(THERMO_CS, HIGH);
     digitalWrite(THERMO_CLK, LOW);
-    delay(100);  // 确保硬件稳定
+    delay(100);  // ç¡®ä¿ç¡¬ä»¶ç¨³å®
     
-    // 验证引脚状态
+    // éªè¯å¼èç¶æ
     if (digitalRead(THERMO_DO) == HIGH || digitalRead(THERMO_DO) == LOW) {
-        Serial.println("硬件初始化验证通过");
+        Serial.println("ç¡¬ä»¶åå§åéªè¯éè¿");
         return true;
     } else {
-        Serial.println("硬件初始化验证失败");
+        Serial.println("ç¡¬ä»¶åå§åéªè¯å¤±è´¥");
         return false;
     }
 }
 
-// 硬件自动恢复机制
+// ç¡¬ä»¶èªå¨æ¢å¤æºå¶
 void performHardwareRecovery() {
-    Serial.println("🚨 执行硬件自动恢复...");
+    Serial.println("ð¨ æ§è¡ç¡¬ä»¶èªå¨æ¢å¤...");
     
-    // 记录故障次数
+    // è®°å½æéæ¬¡æ°
     hardwareFailureCount++;
     
-    // 强制硬件复位序列
+    // å¼ºå¶ç¡¬ä»¶å¤ä½åºå
     for (int i = 0; i < 5; i++) {
         digitalWrite(THERMO_CS, HIGH);
         digitalWrite(THERMO_CLK, LOW);
-        delay(200);  // 延长复位时间
+        delay(200);  // å»¶é¿å¤ä½æ¶é´
         digitalWrite(THERMO_CS, LOW);
         delay(100);
         digitalWrite(THERMO_CS, HIGH);
         delay(200);
     }
     
-    // 重新初始化引脚
+    // éæ°åå§åå¼è
     pinMode(THERMO_CLK, OUTPUT);
     pinMode(THERMO_CS, OUTPUT);
     pinMode(THERMO_DO, INPUT);
@@ -164,77 +164,77 @@ void performHardwareRecovery() {
     digitalWrite(THERMO_CLK, LOW);
     
     lastHardwareReset = millis();
-    Serial.println("✅ 硬件自动恢复完成，故障次数: " + String(hardwareFailureCount));
+    Serial.println("â ç¡¬ä»¶èªå¨æ¢å¤å®æï¼æéæ¬¡æ°: " + String(hardwareFailureCount));
 }
 
-// 读取温度值（手动SPI实现）
+// è¯»åæ¸©åº¦å¼ï¼æå¨SPIå®ç°ï¼
 float readTemperatureManual() {
-    // 增强重试机制：最多重试5次，每次增加延迟
+    // å¢å¼ºéè¯æºå¶ï¼æå¤éè¯5æ¬¡ï¼æ¯æ¬¡å¢å å»¶è¿
     for (int retry = 0; retry < 5; retry++) {
         uint16_t rawData = readMAX6675RawData();
         
-        // 检查数据有效性（排除全0或全1的无效数据）
+        // æ£æ¥æ°æ®æææ§ï¼æé¤å¨0æå¨1çæ ææ°æ®ï¼
         if (rawData == 0x0000 || rawData == 0xFFFF) {
             if (retry < 4) {
-                Serial.print("温度传感器返回无效数据，第");
+                Serial.print("æ¸©åº¦ä¼ æå¨è¿åæ ææ°æ®ï¼ç¬¬");
                 Serial.print(retry + 1);
-                Serial.println("次重试...");
-                delay(50 * (retry + 1));  // 递增延迟：50ms, 100ms, 150ms, 200ms
+                Serial.println("æ¬¡éè¯...");
+                delay(50 * (retry + 1));  // éå¢å»¶è¿ï¼50ms, 100ms, 150ms, 200ms
                 continue;
             } else {
-                Serial.println("温度传感器返回无效数据（全0或全1）- 执行硬件自动恢复");
+                Serial.println("æ¸©åº¦ä¼ æå¨è¿åæ ææ°æ®ï¼å¨0æå¨1ï¼- æ§è¡ç¡¬ä»¶èªå¨æ¢å¤");
                 performHardwareRecovery();
                 return -1.0;
             }
         }
         
-        // 检查错误标志位（D2位为0表示正常）
+        // æ£æ¥éè¯¯æ å¿ä½ï¼D2ä½ä¸º0è¡¨ç¤ºæ­£å¸¸ï¼
         if (!(rawData & 0x04)) {
-            uint16_t tempBits = rawData >> 3;  // 右移3位获取温度数据
-            float temperature = tempBits * 0.25;  // 每个单位0.25°C
+            uint16_t tempBits = rawData >> 3;  // å³ç§»3ä½è·åæ¸©åº¦æ°æ®
+            float temperature = tempBits * 0.25;  // æ¯ä¸ªåä½0.25Â°C
             
-            // 应用温度校准
+            // åºç¨æ¸©åº¦æ ¡å
             temperature = (temperature * temperatureScale) + temperatureOffset;
             
-            // 检查温度范围是否合理
+            // æ£æ¥æ¸©åº¦èå´æ¯å¦åç
             if (temperature >= -50.0 && temperature <= 400.0) {
-                Serial.print("温度读取成功，重试次数: ");
+                Serial.print("æ¸©åº¦è¯»åæåï¼éè¯æ¬¡æ°: ");
                 Serial.println(retry + 1);
                 
-                // 重置故障计数器（如果连续成功）
+                // éç½®æéè®¡æ°å¨ï¼å¦æè¿ç»­æåï¼
                 if (retry == 0) {
                     hardwareFailureCount = 0;
                 }
                 
                 return temperature;
             } else {
-                Serial.println("温度传感器读数超出范围");
+                Serial.println("æ¸©åº¦ä¼ æå¨è¯»æ°è¶åºèå´");
                 return -1.0;
             }
         } else {
             if (retry < 4) {
-                Serial.print("温度传感器读取错误，第");
+                Serial.print("æ¸©åº¦ä¼ æå¨è¯»åéè¯¯ï¼ç¬¬");
                 Serial.print(retry + 1);
-                Serial.println("次重试...");
-                delay(50 * (retry + 1));  // 递增延迟
+                Serial.println("æ¬¡éè¯...");
+                delay(50 * (retry + 1));  // éå¢å»¶è¿
                 continue;
             } else {
-                Serial.println("温度传感器读取错误 - 执行硬件自动恢复");
+                Serial.println("æ¸©åº¦ä¼ æå¨è¯»åéè¯¯ - æ§è¡ç¡¬ä»¶èªå¨æ¢å¤");
                 performHardwareRecovery();
                 return -1.0;
             }
         }
     }
     
-    // 所有重试都失败，执行硬件恢复
-    Serial.println("所有重试都失败 - 执行硬件自动恢复");
+    // ææéè¯é½å¤±è´¥ï¼æ§è¡ç¡¬ä»¶æ¢å¤
+    Serial.println("ææéè¯é½å¤±è´¥ - æ§è¡ç¡¬ä»¶èªå¨æ¢å¤");
     performHardwareRecovery();
     return -1.0;
 }
 
-// 温度校准函数
+// æ¸©åº¦æ ¡åå½æ°
 void calibrateTemperature(float actualTemp, float measuredTemp) {
-    // 计算校准参数
+    // è®¡ç®æ ¡ååæ°
     if (measuredTemp != 0) {
         temperatureScale = actualTemp / measuredTemp;
         temperatureOffset = actualTemp - (measuredTemp * temperatureScale);
@@ -243,58 +243,58 @@ void calibrateTemperature(float actualTemp, float measuredTemp) {
         temperatureScale = 1.0;
     }
     
-    Serial.println("温度校准完成:");
-    Serial.print("实际温度: "); Serial.print(actualTemp); Serial.println("°C");
-    Serial.print("测量温度: "); Serial.print(measuredTemp); Serial.println("°C");
-    Serial.print("校准偏移: "); Serial.print(temperatureOffset); Serial.println("°C");
-    Serial.print("校准系数: "); Serial.println(temperatureScale);
+    Serial.println("æ¸©åº¦æ ¡åå®æ:");
+    Serial.print("å®éæ¸©åº¦: "); Serial.print(actualTemp); Serial.println("Â°C");
+    Serial.print("æµéæ¸©åº¦: "); Serial.print(measuredTemp); Serial.println("Â°C");
+    Serial.print("æ ¡ååç§»: "); Serial.print(temperatureOffset); Serial.println("Â°C");
+    Serial.print("æ ¡åç³»æ°: "); Serial.println(temperatureScale);
     
-    // 保存校准参数到EEPROM
+    // ä¿å­æ ¡ååæ°å°EEPROM
     saveConfig();
-    Serial.println("温度校准参数已保存到EEPROM");
+    Serial.println("æ¸©åº¦æ ¡ååæ°å·²ä¿å­å°EEPROM");
 }
 
-// 设备发现
+// è®¾å¤åç°
 bool discoveryEnabled = true;
-const unsigned long DISCOVERY_INTERVAL = 10000; // 10秒广播一次
+const unsigned long DISCOVERY_INTERVAL = 10000; // 10ç§å¹¿æ­ä¸æ¬¡
 unsigned long lastDiscoveryTime = 0;
 
-// LED状态控制
+// LEDç¶ææ§å¶
 bool ledState = false;
 unsigned long lastLedUpdate = 0;
-const unsigned long LED_BLINK_INTERVAL = 500; // LED闪烁间隔
+const unsigned long LED_BLINK_INTERVAL = 500; // LEDéªçé´é
 
-// 烘焙结束状态控制
+// ççç»æç¶ææ§å¶
 bool bakingCompleteState = false;
 unsigned long bakingCompleteStartTime = 0;
-const unsigned long BAKING_COMPLETE_DURATION = 10000; // 烘焙结束快闪持续时间10秒
+const unsigned long BAKING_COMPLETE_DURATION = 10000; // ççç»æå¿«éªæç»­æ¶é´10ç§
 
 // =========================================
-// EEPROM配置存储
+// EEPROMéç½®å­å¨
 // =========================================
 struct Config {
     char ssid[32];
     char password[64];
-    float temperatureOffset;  // 温度校准偏移量
-    float temperatureScale;    // 温度校准系数
-    char signature[16];  // 增加签名空间，避免缓冲区溢出
+    float temperatureOffset;  // æ¸©åº¦æ ¡ååç§»é
+    float temperatureScale;    // æ¸©åº¦æ ¡åç³»æ°
+    char signature[16];  // å¢å ç­¾åç©ºé´ï¼é¿åç¼å²åºæº¢åº
 };
 
 void saveConfig() {
     Config config;
-    // 清空配置结构体
+    // æ¸ç©ºéç½®ç»æä½
     memset(&config, 0, sizeof(config));
     
-    // 安全复制字符串
+    // å®å¨å¤å¶å­ç¬¦ä¸²
     strncpy(config.ssid, wifiSSID.c_str(), sizeof(config.ssid) - 1);
     strncpy(config.password, wifiPassword.c_str(), sizeof(config.password) - 1);
     strncpy(config.signature, "SMARTOVEN", sizeof(config.signature) - 1);
     
-    // 保存温度校准参数
+    // ä¿å­æ¸©åº¦æ ¡ååæ°
     config.temperatureOffset = temperatureOffset;
     config.temperatureScale = temperatureScale;
     
-    // 确保字符串以null结尾
+    // ç¡®ä¿å­ç¬¦ä¸²ä»¥nullç»å°¾
     config.ssid[sizeof(config.ssid) - 1] = '\0';
     config.password[sizeof(config.password) - 1] = '\0';
     config.signature[sizeof(config.signature) - 1] = '\0';
@@ -304,20 +304,20 @@ void saveConfig() {
     EEPROM.commit();
     EEPROM.end();
     
-    Serial.println("配置已保存到EEPROM");
+    Serial.println("éç½®å·²ä¿å­å°EEPROM");
     Serial.print("SSID: ");
     Serial.println(config.ssid);
-    Serial.print("密码长度: ");
+    Serial.print("å¯ç é¿åº¦: ");
     Serial.println(strlen(config.password));
-    Serial.print("温度校准偏移: ");
+    Serial.print("æ¸©åº¦æ ¡ååç§»: ");
     Serial.print(config.temperatureOffset);
-    Serial.println("°C");
-    Serial.print("温度校准系数: ");
+    Serial.println("Â°C");
+    Serial.print("æ¸©åº¦æ ¡åç³»æ°: ");
     Serial.println(config.temperatureScale);
-    Serial.print("签名: ");
+    Serial.print("ç­¾å: ");
     Serial.println(config.signature);
     
-    // 蜂鸣器提示配置已保存
+    // èé¸£å¨æç¤ºéç½®å·²ä¿å­
     beepConfigSaved();
 }
 
@@ -327,40 +327,40 @@ bool loadConfig() {
     EEPROM.get(0, config);
     EEPROM.end();
     
-    Serial.println("从EEPROM加载配置...");
-    Serial.print("读取到的签名: ");
+    Serial.println("ä»EEPROMå è½½éç½®...");
+    Serial.print("è¯»åå°çç­¾å: ");
     Serial.println(config.signature);
-    Serial.print("读取到的SSID: ");
+    Serial.print("è¯»åå°çSSID: ");
     Serial.println(config.ssid);
-    Serial.print("读取到的密码长度: ");
+    Serial.print("è¯»åå°çå¯ç é¿åº¦: ");
     Serial.println(strlen(config.password));
-    Serial.print("读取到的温度校准偏移: ");
+    Serial.print("è¯»åå°çæ¸©åº¦æ ¡ååç§»: ");
     Serial.print(config.temperatureOffset);
-    Serial.println("°C");
-    Serial.print("读取到的温度校准系数: ");
+    Serial.println("Â°C");
+    Serial.print("è¯»åå°çæ¸©åº¦æ ¡åç³»æ°: ");
     Serial.println(config.temperatureScale);
     
     if (strcmp(config.signature, "SMARTOVEN") == 0) {
         wifiSSID = String(config.ssid);
         wifiPassword = String(config.password);
         
-        // 加载温度校准参数
+        // å è½½æ¸©åº¦æ ¡ååæ°
         temperatureOffset = config.temperatureOffset;
         temperatureScale = config.temperatureScale;
         
-        Serial.println("配置验证成功，加载有效配置");
-        Serial.print("温度校准偏移: ");
+        Serial.println("éç½®éªè¯æåï¼å è½½ææéç½®");
+        Serial.print("æ¸©åº¦æ ¡ååç§»: ");
         Serial.print(temperatureOffset);
-        Serial.println("°C");
-        Serial.print("温度校准系数: ");
+        Serial.println("Â°C");
+        Serial.print("æ¸©åº¦æ ¡åç³»æ°: ");
         Serial.println(temperatureScale);
         return true;
     } else {
-        Serial.println("配置验证失败，签名不匹配");
-        // 清空配置
+        Serial.println("éç½®éªè¯å¤±è´¥ï¼ç­¾åä¸å¹é");
+        // æ¸ç©ºéç½®
         wifiSSID = "";
         wifiPassword = "";
-        // 重置温度校准参数
+        // éç½®æ¸©åº¦æ ¡ååæ°
         temperatureOffset = 0.0;
         temperatureScale = 1.0;
         return false;
@@ -368,70 +368,70 @@ bool loadConfig() {
 }
 
 // =========================================
-// 强制门户功能
+// å¼ºå¶é¨æ·åè½
 // =========================================
 void startCaptivePortal() {
-    Serial.println("启动强制门户模式...");
+    Serial.println("å¯å¨å¼ºå¶é¨æ·æ¨¡å¼...");
     
-    // 断开现有连接
+    // æ­å¼ç°æè¿æ¥
     WiFi.disconnect();
     delay(100);
     
-    // 创建AP热点
+    // åå»ºAPç­ç¹
     WiFi.mode(WIFI_AP);
     WiFi.softAP(AP_SSID.c_str(), AP_PASSWORD.c_str());
     
-    Serial.print("AP热点: ");
+    Serial.print("APç­ç¹: ");
     Serial.println(AP_SSID);
-    Serial.print("IP地址: ");
+    Serial.print("IPå°å: ");
     Serial.println(WiFi.softAPIP());
     
-    // 启动DNS劫持
+    // å¯å¨DNSå«æ
     dnsServer.start(53, "*", WiFi.softAPIP());
     
-    // 启动Web服务器
+    // å¯å¨Webæå¡å¨
     setupWebServer();
     webServer.begin();
     
-    // 启动设备发现（强制门户模式下也需要支持设备发现）
+    // å¯å¨è®¾å¤åç°ï¼å¼ºå¶é¨æ·æ¨¡å¼ä¸ä¹éè¦æ¯æè®¾å¤åç°ï¼
     udp.begin(8888);
     
     isCaptivePortalMode = true;
     captivePortalStartTime = millis();
     
-    Serial.println("强制门户已启动，UDP监听端口8888已开启");
+    Serial.println("å¼ºå¶é¨æ·å·²å¯å¨ï¼UDPçå¬ç«¯å£8888å·²å¼å¯");
 }
 
 void stopCaptivePortal() {
-    Serial.println("停止强制门户模式...");
+    Serial.println("åæ­¢å¼ºå¶é¨æ·æ¨¡å¼...");
     
     dnsServer.stop();
     WiFi.softAPdisconnect(true);
     isCaptivePortalMode = false;
     captivePortalStartTime = 0;
     
-    Serial.println("强制门户已停止");
+    Serial.println("å¼ºå¶é¨æ·å·²åæ­¢");
 }
 
 bool shouldStartCaptivePortal() {
-    // 如果没有保存的WiFi配置，直接启动强制门户
+    // å¦ææ²¡æä¿å­çWiFiéç½®ï¼ç´æ¥å¯å¨å¼ºå¶é¨æ·
     if (wifiSSID.length() == 0 || wifiPassword.length() == 0) {
-        Serial.println("没有WiFi配置，需要启动强制门户");
+        Serial.println("æ²¡æWiFiéç½®ï¼éè¦å¯å¨å¼ºå¶é¨æ·");
         return true;
     }
     
-    // 如果有WiFi配置，尝试连接WiFi
-    Serial.println("有WiFi配置，尝试连接WiFi");
+    // å¦ææWiFiéç½®ï¼å°è¯è¿æ¥WiFi
+    Serial.println("æWiFiéç½®ï¼å°è¯è¿æ¥WiFi");
     Serial.print("SSID: ");
     Serial.println(wifiSSID);
-    Serial.print("密码长度: ");
+    Serial.print("å¯ç é¿åº¦: ");
     Serial.println(wifiPassword.length());
     
-    // 先确保WiFi模式正确
+    // åç¡®ä¿WiFiæ¨¡å¼æ­£ç¡®
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
     
-    // 等待连接，最多等待30秒（与connectToWiFi保持一致）
+    // ç­å¾è¿æ¥ï¼æå¤ç­å¾30ç§ï¼ä¸connectToWiFiä¿æä¸è´ï¼
     unsigned long startTime = millis();
     int connectionAttempts = 0;
     
@@ -440,76 +440,76 @@ bool shouldStartCaptivePortal() {
         Serial.print(".");
         connectionAttempts++;
         
-        // 每5秒输出一次连接状态
+        // æ¯5ç§è¾åºä¸æ¬¡è¿æ¥ç¶æ
         if (connectionAttempts % 10 == 0) {
             Serial.println("");
-            Serial.print("连接状态: ");
+            Serial.print("è¿æ¥ç¶æ: ");
             switch(WiFi.status()) {
-                case WL_IDLE_STATUS: Serial.println("空闲状态"); break;
-                case WL_NO_SSID_AVAIL: Serial.println("网络不可用"); break;
-                case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
-                case WL_CONNECTED: Serial.println("已连接"); break;
-                case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
-                case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
-                case WL_DISCONNECTED: Serial.println("已断开"); break;
-                default: Serial.println("未知状态"); break;
+                case WL_IDLE_STATUS: Serial.println("ç©ºé²ç¶æ"); break;
+                case WL_NO_SSID_AVAIL: Serial.println("ç½ç»ä¸å¯ç¨"); break;
+                case WL_SCAN_COMPLETED: Serial.println("æ«æå®æ"); break;
+                case WL_CONNECTED: Serial.println("å·²è¿æ¥"); break;
+                case WL_CONNECT_FAILED: Serial.println("è¿æ¥å¤±è´¥"); break;
+                case WL_CONNECTION_LOST: Serial.println("è¿æ¥ä¸¢å¤±"); break;
+                case WL_DISCONNECTED: Serial.println("å·²æ­å¼"); break;
+                default: Serial.println("æªç¥ç¶æ"); break;
             }
         }
     }
     
-    // 检查连接结果
+    // æ£æ¥è¿æ¥ç»æ
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("");
-        Serial.println("WiFi连接成功");
-        Serial.print("IP地址: ");
+        Serial.println("WiFiè¿æ¥æå");
+        Serial.print("IPå°å: ");
         Serial.println(WiFi.localIP());
-        Serial.print("连接耗时: ");
+        Serial.print("è¿æ¥èæ¶: ");
         Serial.print((millis() - startTime) / 1000.0);
-        Serial.println("秒");
-        return false; // 连接成功，不需要强制门户
+        Serial.println("ç§");
+        return false; // è¿æ¥æåï¼ä¸éè¦å¼ºå¶é¨æ·
     } else {
         Serial.println("");
-        Serial.println("WiFi连接失败，启动强制门户");
-        Serial.print("最终连接状态: ");
+        Serial.println("WiFiè¿æ¥å¤±è´¥ï¼å¯å¨å¼ºå¶é¨æ·");
+        Serial.print("æç»è¿æ¥ç¶æ: ");
         switch(WiFi.status()) {
-            case WL_IDLE_STATUS: Serial.println("空闲状态"); break;
-            case WL_NO_SSID_AVAIL: Serial.println("网络不可用"); break;
-            case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
-            case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
-            case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
-            case WL_DISCONNECTED: Serial.println("已断开"); break;
-            default: Serial.println("未知状态"); break;
+            case WL_IDLE_STATUS: Serial.println("ç©ºé²ç¶æ"); break;
+            case WL_NO_SSID_AVAIL: Serial.println("ç½ç»ä¸å¯ç¨"); break;
+            case WL_SCAN_COMPLETED: Serial.println("æ«æå®æ"); break;
+            case WL_CONNECT_FAILED: Serial.println("è¿æ¥å¤±è´¥"); break;
+            case WL_CONNECTION_LOST: Serial.println("è¿æ¥ä¸¢å¤±"); break;
+            case WL_DISCONNECTED: Serial.println("å·²æ­å¼"); break;
+            default: Serial.println("æªç¥ç¶æ"); break;
         }
-        // 确保WiFi已断开
+        // ç¡®ä¿WiFiå·²æ­å¼
         WiFi.disconnect();
         delay(100);
-        return true; // 连接失败，需要强制门户
+        return true; // è¿æ¥å¤±è´¥ï¼éè¦å¼ºå¶é¨æ·
     }
 }
 
 void checkCaptivePortalTimeout() {
     if (isCaptivePortalMode && 
         millis() - captivePortalStartTime > CAPTIVE_PORTAL_TIMEOUT) {
-        Serial.println("强制门户超时，尝试连接保存的WiFi");
+        Serial.println("å¼ºå¶é¨æ·è¶æ¶ï¼å°è¯è¿æ¥ä¿å­çWiFi");
         stopCaptivePortal();
         connectToWiFi();
     }
 }
 
 // =========================================
-// WiFi连接管理
+// WiFiè¿æ¥ç®¡ç
 // =========================================
 void connectToWiFi() {
     if (wifiSSID.length() == 0 || wifiPassword.length() == 0) {
-        Serial.println("没有WiFi配置，启动强制门户");
+        Serial.println("æ²¡æWiFiéç½®ï¼å¯å¨å¼ºå¶é¨æ·");
         startCaptivePortal();
         return;
     }
     
-    Serial.println("尝试连接WiFi...");
+    Serial.println("å°è¯è¿æ¥WiFi...");
     Serial.print("SSID: ");
     Serial.println(wifiSSID);
-    Serial.print("密码长度: ");
+    Serial.print("å¯ç é¿åº¦: ");
     Serial.println(wifiPassword.length());
     
     WiFi.mode(WIFI_STA);
@@ -518,71 +518,71 @@ void connectToWiFi() {
     unsigned long startTime = millis();
     int connectionAttempts = 0;
     
-    // 增加连接超时到30秒，并添加更详细的连接状态
+    // å¢å è¿æ¥è¶æ¶å°30ç§ï¼å¹¶æ·»å æ´è¯¦ç»çè¿æ¥ç¶æ
     while (WiFi.status() != WL_CONNECTED && millis() - startTime < 30000) {
         delay(500);
         Serial.print(".");
         connectionAttempts++;
         
-        // 每5秒输出一次连接状态
+        // æ¯5ç§è¾åºä¸æ¬¡è¿æ¥ç¶æ
         if (connectionAttempts % 10 == 0) {
             Serial.println("");
-            Serial.print("连接状态: ");
+            Serial.print("è¿æ¥ç¶æ: ");
             switch(WiFi.status()) {
-                case WL_IDLE_STATUS: Serial.println("空闲状态"); break;
-                case WL_NO_SSID_AVAIL: Serial.println("网络不可用"); break;
-                case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
-                case WL_CONNECTED: Serial.println("已连接"); break;
-                case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
-                case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
-                case WL_DISCONNECTED: Serial.println("已断开"); break;
-                default: Serial.println("未知状态"); break;
+                case WL_IDLE_STATUS: Serial.println("ç©ºé²ç¶æ"); break;
+                case WL_NO_SSID_AVAIL: Serial.println("ç½ç»ä¸å¯ç¨"); break;
+                case WL_SCAN_COMPLETED: Serial.println("æ«æå®æ"); break;
+                case WL_CONNECTED: Serial.println("å·²è¿æ¥"); break;
+                case WL_CONNECT_FAILED: Serial.println("è¿æ¥å¤±è´¥"); break;
+                case WL_CONNECTION_LOST: Serial.println("è¿æ¥ä¸¢å¤±"); break;
+                case WL_DISCONNECTED: Serial.println("å·²æ­å¼"); break;
+                default: Serial.println("æªç¥ç¶æ"); break;
             }
         }
     }
     
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("");
-        Serial.println("WiFi连接成功!");
-        Serial.print("IP地址: ");
+        Serial.println("WiFiè¿æ¥æå!");
+        Serial.print("IPå°å: ");
         Serial.println(WiFi.localIP());
-        Serial.print("连接耗时: ");
+        Serial.print("è¿æ¥èæ¶: ");
         Serial.print((millis() - startTime) / 1000.0);
-        Serial.println("秒");
+        Serial.println("ç§");
         
-        // 启动Web服务器
+        // å¯å¨Webæå¡å¨
         setupWebServer();
         
-        // 启动OTA服务器
+        // å¯å¨OTAæå¡å¨
         setupOTA();
         
-        // 启动设备发现
+        // å¯å¨è®¾å¤åç°
         udp.begin(8888);
         
-        // 设置LED为常亮状态
+        // è®¾ç½®LEDä¸ºå¸¸äº®ç¶æ
         digitalWrite(LED_PIN, HIGH);
     } else {
         Serial.println("");
-        Serial.println("WiFi连接失败，启动强制门户");
-        Serial.print("最终连接状态: ");
+        Serial.println("WiFiè¿æ¥å¤±è´¥ï¼å¯å¨å¼ºå¶é¨æ·");
+        Serial.print("æç»è¿æ¥ç¶æ: ");
         switch(WiFi.status()) {
-            case WL_IDLE_STATUS: Serial.println("空闲状态"); break;
-            case WL_NO_SSID_AVAIL: Serial.println("网络不可用"); break;
-            case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
-            case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
-            case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
-            case WL_DISCONNECTED: Serial.println("已断开"); break;
-            default: Serial.println("未知状态"); break;
+            case WL_IDLE_STATUS: Serial.println("ç©ºé²ç¶æ"); break;
+            case WL_NO_SSID_AVAIL: Serial.println("ç½ç»ä¸å¯ç¨"); break;
+            case WL_SCAN_COMPLETED: Serial.println("æ«æå®æ"); break;
+            case WL_CONNECT_FAILED: Serial.println("è¿æ¥å¤±è´¥"); break;
+            case WL_CONNECTION_LOST: Serial.println("è¿æ¥ä¸¢å¤±"); break;
+            case WL_DISCONNECTED: Serial.println("å·²æ­å¼"); break;
+            default: Serial.println("æªç¥ç¶æ"); break;
         }
         startCaptivePortal();
     }
 }
 
 // =========================================
-// 设备自动发现功能
+// è®¾å¤èªå¨åç°åè½
 // =========================================
 void handleDiscovery() {
-    // 处理接收到的发现请求
+    // å¤çæ¥æ¶å°çåç°è¯·æ±
     int packetSize = udp.parsePacket();
     if (packetSize) {
         char packetBuffer[255];
@@ -591,19 +591,19 @@ void handleDiscovery() {
             packetBuffer[len] = 0;
             String request = String(packetBuffer);
             
-            Serial.print("收到UDP数据包，大小: ");
+            Serial.print("æ¶å°UDPæ°æ®åï¼å¤§å°: ");
             Serial.print(packetSize);
-            Serial.print(" 字节，内容: ");
+            Serial.print(" å­èï¼åå®¹: ");
             Serial.println(request);
             
             if (request.startsWith("DISCOVER_SMARTOVEN")) {
-                Serial.println("收到设备发现请求");
+                Serial.println("æ¶å°è®¾å¤åç°è¯·æ±");
                 sendDiscoveryResponse();
             }
         }
     }
     
-    // 定期广播设备信息
+    // å®æå¹¿æ­è®¾å¤ä¿¡æ¯
     if (discoveryEnabled && millis() - lastDiscoveryTime > DISCOVERY_INTERVAL) {
         broadcastDiscovery();
         lastDiscoveryTime = millis();
@@ -613,7 +613,7 @@ void handleDiscovery() {
 void sendDiscoveryResponse() {
     String response;
     
-    // 使用APP期望的格式：DEVICE_INFO:NAME:设备名称,MAC:MAC地址,PORT:端口号,...
+    // ä½¿ç¨APPææçæ ¼å¼ï¼DEVICE_INFO:NAME:è®¾å¤åç§°,MAC:MACå°å,PORT:ç«¯å£å·,...
     response = "DEVICE_INFO:";
     response += "NAME:" + DEVICE_NAME + ",";
     response += "MAC:" + WiFi.macAddress() + ",";
@@ -627,12 +627,12 @@ void sendDiscoveryResponse() {
     response += "UPTIME:" + String(millis() / 1000) + ",";
     response += "DEVICE_ID:" + DEVICE_ID;
     
-    // 修复：使用APP发送请求的端口（remotePort）而不是硬编码的8889端口
+    // ä¿®å¤ï¼ä½¿ç¨APPåéè¯·æ±çç«¯å£ï¼remotePortï¼èä¸æ¯ç¡¬ç¼ç ç8889ç«¯å£
     udp.beginPacket(udp.remoteIP(), udp.remotePort());
     udp.write(response.c_str());
     udp.endPacket();
     
-    Serial.println("发送发现响应到端口" + String(udp.remotePort()) + ": " + response);
+    Serial.println("åéåç°ååºå°ç«¯å£" + String(udp.remotePort()) + ": " + response);
 }
 
 void broadcastDiscovery() {
@@ -642,17 +642,17 @@ void broadcastDiscovery() {
     udp.write(broadcastMsg.c_str());
     udp.endPacket();
     
-    Serial.println("广播设备信息: " + broadcastMsg);
+    Serial.println("å¹¿æ­è®¾å¤ä¿¡æ¯: " + broadcastMsg);
 }
 
 // =========================================
-// OTA升级功能
+// OTAåçº§åè½
 // =========================================
 void setupOTA() {
     httpUpdater.setup(&otaServer);
     otaServer.begin();
-    Serial.println("OTA服务器已启动，端口: 8080");
-    Serial.println("OTA升级地址: http://" + WiFi.localIP().toString() + ":8080/update");
+    Serial.println("OTAæå¡å¨å·²å¯å¨ï¼ç«¯å£: 8080");
+    Serial.println("OTAåçº§å°å: http://" + WiFi.localIP().toString() + ":8080/update");
 }
 
 void handleOTA() {
@@ -661,9 +661,9 @@ void handleOTA() {
     }
 }
 
-// OTA升级页面
+// OTAåçº§é¡µé¢
 void handleOTAWebPage() {
-    String html = "<!DOCTYPE html><html><head><title>智能电烤箱OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+    String html = "<!DOCTYPE html><html><head><title>æºè½çµç¤ç®±OTAåçº§</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
     html += "<style>";
     html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
     html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }";
@@ -686,12 +686,12 @@ void handleOTAWebPage() {
     html += "<script>";
     html += "function checkUpdate() {";
     html += "  fetch('/checkupdate').then(response => response.json()).then(data => {";
-    html += "    document.getElementById('updateStatus').innerHTML = '<div class=\"status status-success\">当前版本: ' + data.current_version + '</div>';";
+    html += "    document.getElementById('updateStatus').innerHTML = '<div class=\"status status-success\">å½åçæ¬: ' + data.current_version + '</div>';";
     html += "    if (data.update_available) {";
-    html += "      document.getElementById('updateStatus').innerHTML += '<div class=\"status status-warning\">有新版本可用: ' + data.latest_version + '</div>';";
+    html += "      document.getElementById('updateStatus').innerHTML += '<div class=\"status status-warning\">ææ°çæ¬å¯ç¨: ' + data.latest_version + '</div>';";
     html += "    }";
     html += "  }).catch(error => {";
-    html += "    document.getElementById('updateStatus').innerHTML = '<div class=\"status status-error\">检查更新失败</div>';";
+    html += "    document.getElementById('updateStatus').innerHTML = '<div class=\"status status-error\">æ£æ¥æ´æ°å¤±è´¥</div>';";
     html += "  });";
     html += "}";
     html += "function startOTA() {";
@@ -702,24 +702,24 @@ void handleOTAWebPage() {
     html += "</head><body>";
     html += "<div class=\"container\">";
     html += "<div class=\"header\">";
-    html += "<h1>智能电烤箱OTA升级</h1>";
-    html += "<p>固件空中升级系统</p>";
+    html += "<h1>æºè½çµç¤ç®±OTAåçº§</h1>";
+    html += "<p>åºä»¶ç©ºä¸­åçº§ç³»ç»</p>";
     html += "</div>";
     html += "<div class=\"content\">";
     html += "<div class=\"info-card\">";
-    html += "<p><strong>设备ID:</strong> " + DEVICE_ID + "</p>";
-    html += "<p><strong>IP地址:</strong> " + WiFi.localIP().toString() + "</p>";
-    html += "<p><strong>OTA端口:</strong> 8080</p>";
+    html += "<p><strong>è®¾å¤ID:</strong> " + DEVICE_ID + "</p>";
+    html += "<p><strong>IPå°å:</strong> " + WiFi.localIP().toString() + "</p>";
+    html += "<p><strong>OTAç«¯å£:</strong> 8080</p>";
     html += "</div>";
     html += "<div id=\"updateStatus\"></div>";
     html += "<div class=\"ota-section\">";
-    html += "<h3>OTA升级操作</h3>";
-    html += "<p>点击下方按钮打开OTA升级页面，上传新的固件文件进行升级。</p>";
-    html += "<button class=\"btn btn-success\" onclick=\"startOTA()\">打开OTA升级页面</button>";
-    html += "<button class=\"btn\" onclick=\"checkUpdate()\">检查更新</button>";
+    html += "<h3>OTAåçº§æä½</h3>";
+    html += "<p>ç¹å»ä¸æ¹æé®æå¼OTAåçº§é¡µé¢ï¼ä¸ä¼ æ°çåºä»¶æä»¶è¿è¡åçº§ã</p>";
+    html += "<button class=\"btn btn-success\" onclick=\"startOTA()\">æå¼OTAåçº§é¡µé¢</button>";
+    html += "<button class=\"btn\" onclick=\"checkUpdate()\">æ£æ¥æ´æ°</button>";
     html += "</div>";
     html += "<div style=\"text-align: center; margin-top: 20px;\">";
-    html += "<a href=\"/\" style=\"color: #2196F3; text-decoration: none;\">返回主页面</a>";
+    html += "<a href=\"/\" style=\"color: #2196F3; text-decoration: none;\">è¿åä¸»é¡µé¢</a>";
     html += "</div>";
     html += "</div>";
     html += "</div>";
@@ -728,21 +728,21 @@ void handleOTAWebPage() {
     webServer.send(200, "text/html", html);
 }
 
-// 检查更新API
+// æ£æ¥æ´æ°API
 void handleCheckUpdate() {
     String json = "{\"current_version\":\"" + FIRMWARE_VERSION + "\",\"latest_version\":\"0.6.0\",\"update_available\":false}";
     
-    // 这里可以添加检查新版本的逻辑
-    // 例如从服务器获取最新版本信息
+    // è¿éå¯ä»¥æ·»å æ£æ¥æ°çæ¬çé»è¾
+    // ä¾å¦ä»æå¡å¨è·åææ°çæ¬ä¿¡æ¯
     
     webServer.send(200, "application/json", json);
 }
 
 // =========================================
-// Web服务器处理
+// Webæå¡å¨å¤ç
 // =========================================
 void setupWebServer() {
-    // 配置静态文件服务（仅在非强制门户模式下使用）
+    // éç½®éææä»¶æå¡ï¼ä»å¨éå¼ºå¶é¨æ·æ¨¡å¼ä¸ä½¿ç¨ï¼
     if (!isCaptivePortalMode) {
         webServer.serveStatic("/login.html", SPIFFS, "/login.html");
         webServer.serveStatic("/index.html", SPIFFS, "/index.html");
@@ -751,7 +751,7 @@ void setupWebServer() {
         webServer.serveStatic("/images/", SPIFFS, "/images/");
     }
     
-    // 动态路由
+    // å¨æè·¯ç±
     webServer.on("/", HTTP_GET, handleRoot);
     webServer.on("/scanwifi", HTTP_GET, handleScanWiFi);
     webServer.on("/status", HTTP_GET, handleStatus);
@@ -764,7 +764,7 @@ void setupWebServer() {
     webServer.on("/diagnostic", HTTP_GET, handleDiagnostic);
     webServer.on("/reset_calibration", HTTP_POST, handleResetCalibration);
     
-    // 新添加的API端点
+    // æ°æ·»å çAPIç«¯ç¹
     webServer.on("/temperature_history", HTTP_GET, handleTemperatureHistory);
     webServer.on("/scheduler", HTTP_GET, handleScheduler);
     webServer.on("/device_info", HTTP_GET, handleDeviceInfo);
@@ -776,7 +776,7 @@ void setupWebServer() {
 }
 
 void handleScanWiFi() {
-    // 扫描WiFi网络
+    // æ«æWiFiç½ç»
     int numNetworks = WiFi.scanNetworks();
     
     String json = "{\"networks\":[";
@@ -793,14 +793,14 @@ void handleScanWiFi() {
     
     webServer.send(200, "application/json", json);
     
-    // 清理扫描结果
+    // æ¸çæ«æç»æ
     WiFi.scanDelete();
 }
 
 void handleRoot() {
     if (isCaptivePortalMode) {
-        // 强制门户模式下显示WiFi配置页面
-        String html = "<!DOCTYPE html><html><head><title>智能电烤箱配置</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+        // å¼ºå¶é¨æ·æ¨¡å¼ä¸æ¾ç¤ºWiFiéç½®é¡µé¢
+        String html = "<!DOCTYPE html><html><head><title>æºè½çµç¤ç®±éç½®</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
         html += "<style>";
         html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
         html += "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }";
@@ -830,11 +830,11 @@ void handleRoot() {
         html += "  var wifiList = document.getElementById('ssid');";
         html += "  var scanBtn = document.getElementById('scanBtn');";
         html += "  scanBtn.disabled = true;";
-        html += "  scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>扫描中...';";
-        html += "  wifiList.innerHTML = '<option value=\"\">扫描中...</option>';";
+        html += "  scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>æ«æä¸­...';";
+        html += "  wifiList.innerHTML = '<option value=\"\">æ«æä¸­...</option>';";
         html += "  fetch('/scanwifi').then(response => response.json()).then(data => {";
         html += "    wifiList.innerHTML = '';";
-        html += "    wifiList.innerHTML = '<option value=\"\">请选择WiFi网络</option>';";
+        html += "    wifiList.innerHTML = '<option value=\"\">è¯·éæ©WiFiç½ç»</option>';";
         html += "    if (data.networks && data.networks.length > 0) {";
         html += "      data.networks.forEach(network => {";
         html += "        var option = document.createElement('option');";
@@ -842,40 +842,40 @@ void handleRoot() {
         html += "        option.textContent = network.ssid + ' (' + network.rssi + ' dBm)';";
         html += "        wifiList.appendChild(option);";
         html += "      });";
-        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-connected\"></span>扫描完成 (' + data.networks.length + '个网络)';";
+        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-connected\"></span>æ«æå®æ (' + data.networks.length + 'ä¸ªç½ç»)';";
         html += "    } else {";
-        html += "      wifiList.innerHTML = '<option value=\"\">未找到WiFi网络</option>';";
-        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>重新扫描';";
+        html += "      wifiList.innerHTML = '<option value=\"\">æªæ¾å°WiFiç½ç»</option>';";
+        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>éæ°æ«æ';";
         html += "    }";
         html += "    scanBtn.disabled = false;";
         html += "  }).catch(error => {";
-        html += "    wifiList.innerHTML = '<option value=\"\">扫描失败</option>';";
+        html += "    wifiList.innerHTML = '<option value=\"\">æ«æå¤±è´¥</option>';";
         html += "    scanBtn.disabled = false;";
-        html += "    scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>重新扫描';";
+        html += "    scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>éæ°æ«æ';";
         html += "  });";
         html += "}";
         html += "window.onload = scanWiFi;";
         html += "function confirmFactoryReset() {";
-        html += "  if (confirm('⚠️ 危险操作警告！\\n\\n恢复出厂设置将清除所有WiFi配置和温度校准参数。\\n设备将重启并进入配网模式，需要重新配置WiFi网络。\\n\\n确定要执行恢复出厂设置吗？')) {";
+        html += "  if (confirm('â ï¸ å±é©æä½è­¦åï¼\\n\\næ¢å¤åºåè®¾ç½®å°æ¸é¤ææWiFiéç½®åæ¸©åº¦æ ¡ååæ°ã\\nè®¾å¤å°éå¯å¹¶è¿å¥éç½æ¨¡å¼ï¼éè¦éæ°éç½®WiFiç½ç»ã\\n\\nç¡®å®è¦æ§è¡æ¢å¤åºåè®¾ç½®åï¼')) {";
         html += "    var resetBtn = document.querySelector('[onclick=\\\"confirmFactoryReset()\\\"]');";
         html += "    resetBtn.disabled = true;";
-        html += "    resetBtn.innerHTML = '恢复出厂设置中...';";
+        html += "    resetBtn.innerHTML = 'æ¢å¤åºåè®¾ç½®ä¸­...';";
         html += "    resetBtn.style.opacity = '0.7';";
         html += "    ";
         html += "    fetch('/factoryreset', { method: 'POST' })";
         html += "      .then(response => {";
         html += "        if (response.ok) {";
-        html += "          resetBtn.innerHTML = '恢复成功，设备重启中...';";
+        html += "          resetBtn.innerHTML = 'æ¢å¤æåï¼è®¾å¤éå¯ä¸­...';";
         html += "          resetBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';";
         html += "        } else {";
-        html += "          throw new Error('恢复失败');";
+        html += "          throw new Error('æ¢å¤å¤±è´¥');";
         html += "        }";
         html += "      })";
         html += "      .catch(error => {";
         html += "        resetBtn.disabled = false;";
-        html += "        resetBtn.innerHTML = '恢复出厂设置';";
+        html += "        resetBtn.innerHTML = 'æ¢å¤åºåè®¾ç½®';";
         html += "        resetBtn.style.opacity = '1';";
-        html += "        alert('恢复出厂设置失败，请重试：' + error.message);";
+        html += "        alert('æ¢å¤åºåè®¾ç½®å¤±è´¥ï¼è¯·éè¯ï¼' + error.message);";
         html += "      });";
         html += "  }";
         html += "}";
@@ -883,28 +883,28 @@ void handleRoot() {
         html += "</head><body>";
         html += "<div class=\"container\">";
         html += "<div class=\"header\">";
-        html += "<h1>智能电烤箱配置</h1>";
-        html += "<p>WiFi网络配置页面</p>";
+        html += "<h1>æºè½çµç¤ç®±éç½®</h1>";
+        html += "<p>WiFiç½ç»éç½®é¡µé¢</p>";
         html += "</div>";
         html += "<div class=\"device-info\">";
-        html += "<p><strong>设备ID:</strong> " + DEVICE_ID + "</p>";
-        html += "<p><strong>固件版本:</strong> " + FIRMWARE_VERSION + "</p>";
+        html += "<p><strong>è®¾å¤ID:</strong> " + DEVICE_ID + "</p>";
+        html += "<p><strong>åºä»¶çæ¬:</strong> " + FIRMWARE_VERSION + "</p>";
         html += "</div>";
-        html += "<div class=\"temperature-display\">当前温度: " + String(currentTemp) + "°C</div>";
+        html += "<div class=\"temperature-display\">å½åæ¸©åº¦: " + String(currentTemp) + "Â°C</div>";
         html += "<div class=\"form-container\">";
         html += "<form method=\"POST\" action=\"/savewifi\">";
         html += "<div class=\"scan-section\">";
-        html += "<button type=\"button\" id=\"scanBtn\" class=\"btn btn-secondary\" onclick=\"scanWiFi()\"><span class=\"status-indicator status-disconnected\"></span>扫描WiFi网络</button>";
+        html += "<button type=\"button\" id=\"scanBtn\" class=\"btn btn-secondary\" onclick=\"scanWiFi()\"><span class=\"status-indicator status-disconnected\"></span>æ«æWiFiç½ç»</button>";
         html += "</div>";
         html += "<div class=\"form-group\">";
-        html += "<label for=\"ssid\">WiFi网络</label>";
-        html += "<select id=\"ssid\" name=\"ssid\" class=\"form-control\" required><option value=\"\">请先扫描WiFi网络</option></select>";
+        html += "<label for=\"ssid\">WiFiç½ç»</label>";
+        html += "<select id=\"ssid\" name=\"ssid\" class=\"form-control\" required><option value=\"\">è¯·åæ«æWiFiç½ç»</option></select>";
         html += "</div>";
         html += "<div class=\"form-group\">";
-        html += "<label for=\"password\">WiFi密码</label>";
-        html += "<input type=\"password\" id=\"password\" name=\"password\" class=\"form-control\" placeholder=\"请输入WiFi密码\" required>";
+        html += "<label for=\"password\">WiFiå¯ç </label>";
+        html += "<input type=\"password\" id=\"password\" name=\"password\" class=\"form-control\" placeholder=\"è¯·è¾å¥WiFiå¯ç \" required>";
         html += "</div>";
-        html += "<button type=\"submit\" class=\"btn\" style=\"width: 100%;\">保存配置</button>";
+        html += "<button type=\"submit\" class=\"btn\" style=\"width: 100%;\">ä¿å­éç½®</button>";
         html += "</form>";
         
 
@@ -912,47 +912,47 @@ void handleRoot() {
         html += "</div>";
         html += "</div>";
         
-        // 温度控制JavaScript
+        // æ¸©åº¦æ§å¶JavaScript
         html += "<script>";
         html += "let currentTargetTemp = " + String(targetTemp) + ";";
         html += "let currentHeatingState = " + String(heatingEnabled ? "true" : "false") + ";";
         
-        html += "// 更新温度显示";
+        html += "// æ´æ°æ¸©åº¦æ¾ç¤º";
         html += "function updateTemperatureDisplay() {";
         html += "  fetch('/status')";
         html += "    .then(response => response.json())";
         html += "    .then(data => {";
-        html += "      document.getElementById('current-temp').textContent = data.temperature.toFixed(1) + '°C';";
-        html += "      document.getElementById('target-temp').textContent = data.target_temperature.toFixed(1) + '°C';";
+        html += "      document.getElementById('current-temp').textContent = data.temperature.toFixed(1) + 'Â°C';";
+        html += "      document.getElementById('target-temp').textContent = data.target_temperature.toFixed(1) + 'Â°C';";
         html += "      currentTargetTemp = data.target_temperature;";
         html += "      currentHeatingState = data.heating_enabled;";
         html += "      ";
-        html += "      // 更新加热按钮状态";
+        html += "      // æ´æ°å ç­æé®ç¶æ";
         html += "      const heatingBtn = document.getElementById('heating-btn');";
         html += "      const heatingText = document.getElementById('heating-text');";
         html += "      if (data.heating_enabled) {";
         html += "        heatingBtn.classList.add('active');";
-        html += "        heatingText.textContent = '停止加热';";
+        html += "        heatingText.textContent = 'åæ­¢å ç­';";
         html += "      } else {";
         html += "        heatingBtn.classList.remove('active');";
-        html += "        heatingText.textContent = '开始加热';";
+        html += "        heatingText.textContent = 'å¼å§å ç­';";
         html += "      }";
         html += "    })";
-        html += "    .catch(error => console.error('获取温度状态失败:', error));";
+        html += "    .catch(error => console.error('è·åæ¸©åº¦ç¶æå¤±è´¥:', error));";
         html += "}";
         
-        html += "// 改变目标温度";
+        html += "// æ¹åç®æ æ¸©åº¦";
         html += "function changeTemp(delta) {";
         html += "  const newTemp = Math.max(0, Math.min(300, currentTargetTemp + delta));";
         html += "  setTargetTemp(newTemp);";
         html += "}";
         
-        html += "// 设置预设温度";
+        html += "// è®¾ç½®é¢è®¾æ¸©åº¦";
         html += "function setPresetTemp(temp) {";
         html += "  setTargetTemp(temp);";
         html += "}";
         
-        html += "// 设置自定义温度";
+        html += "// è®¾ç½®èªå®ä¹æ¸©åº¦";
         html += "function setCustomTemp() {";
         html += "  const input = document.getElementById('temp-input');";
         html += "  const temp = parseInt(input.value);";
@@ -960,11 +960,11 @@ void handleRoot() {
         html += "    setTargetTemp(temp);";
         html += "    input.value = '';";
         html += "  } else {";
-        html += "    alert('请输入0-300°C之间的有效温度值');";
+        html += "    alert('è¯·è¾å¥0-300Â°Cä¹é´çæææ¸©åº¦å¼');";
         html += "  }";
         html += "}";
         
-        html += "// 设置目标温度";
+        html += "// è®¾ç½®ç®æ æ¸©åº¦";
         html += "function setTargetTemp(temp) {";
         html += "  const formData = new FormData();";
         html += "  formData.append('target_temp', temp);";
@@ -976,19 +976,19 @@ void handleRoot() {
         html += "    .then(response => {";
         html += "      if (response.ok) {";
         html += "        currentTargetTemp = temp;";
-        html += "        document.getElementById('target-temp').textContent = temp.toFixed(1) + '°C';";
-        html += "        console.log('目标温度已设置为: ' + temp + '°C');";
+        html += "        document.getElementById('target-temp').textContent = temp.toFixed(1) + 'Â°C';";
+        html += "        console.log('ç®æ æ¸©åº¦å·²è®¾ç½®ä¸º: ' + temp + 'Â°C');";
         html += "      } else {";
-        html += "        throw new Error('设置温度失败');";
+        html += "        throw new Error('è®¾ç½®æ¸©åº¦å¤±è´¥');";
         html += "      }";
         html += "    })";
         html += "    .catch(error => {";
-        html += "      console.error('设置温度失败:', error);";
-        html += "      alert('设置温度失败，请检查设备连接');";
+        html += "      console.error('è®¾ç½®æ¸©åº¦å¤±è´¥:', error);";
+        html += "      alert('è®¾ç½®æ¸©åº¦å¤±è´¥ï¼è¯·æ£æ¥è®¾å¤è¿æ¥');";
         html += "    });";
         html += "}";
         
-        html += "// 切换加热状态";
+        html += "// åæ¢å ç­ç¶æ";
         html += "function toggleHeating() {";
         html += "  const newHeatingState = !currentHeatingState;";
         html += "  const formData = new FormData();";
@@ -1005,30 +1005,30 @@ void handleRoot() {
         html += "        const heatingText = document.getElementById('heating-text');";
         html += "        if (newHeatingState) {";
         html += "          heatingBtn.classList.add('active');";
-        html += "          heatingText.textContent = '停止加热';";
+        html += "          heatingText.textContent = 'åæ­¢å ç­';";
         html += "        } else {";
         html += "          heatingBtn.classList.remove('active');";
-        html += "          heatingText.textContent = '开始加热';";
+        html += "          heatingText.textContent = 'å¼å§å ç­';";
         html += "        }";
-        html += "        console.log('加热状态已切换为: ' + (newHeatingState ? '开启' : '关闭'));";
+        html += "        console.log('å ç­ç¶æå·²åæ¢ä¸º: ' + (newHeatingState ? 'å¼å¯' : 'å³é­'));";
         html += "      } else {";
-        html += "        throw new Error('切换加热状态失败');";
+        html += "        throw new Error('åæ¢å ç­ç¶æå¤±è´¥');";
         html += "      }";
         html += "    })";
         html += "    .catch(error => {";
-        html += "      console.error('切换加热状态失败:', error);";
-        html += "      alert('切换加热状态失败，请检查设备连接');";
+        html += "      console.error('åæ¢å ç­ç¶æå¤±è´¥:', error);";
+        html += "      alert('åæ¢å ç­ç¶æå¤±è´¥ï¼è¯·æ£æ¥è®¾å¤è¿æ¥');";
         html += "    });";
         html += "}";
         
-        html += "// 实时更新温度显示";
+        html += "// å®æ¶æ´æ°æ¸©åº¦æ¾ç¤º";
         html += "setInterval(updateTemperatureDisplay, 2000);";
         
-        html += "// 页面加载时初始化";
+        html += "// é¡µé¢å è½½æ¶åå§å";
         html += "document.addEventListener('DOMContentLoaded', function() {";
         html += "  updateTemperatureDisplay();";
         html += "  ";
-        html += "  // 输入框回车事件";
+        html += "  // è¾å¥æ¡åè½¦äºä»¶";
         html += "  document.getElementById('temp-input').addEventListener('keypress', function(e) {";
         html += "    if (e.key === 'Enter') {";
         html += "      setCustomTemp();";
@@ -1041,20 +1041,20 @@ void handleRoot() {
         
         webServer.send(200, "text/html", html);
     } else {
-        // 正常模式下重定向到登录页面
+        // æ­£å¸¸æ¨¡å¼ä¸éå®åå°ç»å½é¡µé¢
         webServer.sendHeader("Location", "/login.html", true);
         webServer.send(302, "text/plain", "Redirecting to login page");
     }
 }
 
-// 处理所有未定义的路由，实现自动跳转
+// å¤çæææªå®ä¹çè·¯ç±ï¼å®ç°èªå¨è·³è½¬
 void handleNotFound() {
     if (isCaptivePortalMode) {
-        // 在强制门户模式下，将所有未定义的路由重定向到首页
+        // å¨å¼ºå¶é¨æ·æ¨¡å¼ä¸ï¼å°æææªå®ä¹çè·¯ç±éå®åå°é¦é¡µ
         webServer.sendHeader("Location", "/", true);
         webServer.send(302, "text/plain", "Redirect to configuration page");
     } else {
-        // 在正常模式下，直接返回404错误
+        // å¨æ­£å¸¸æ¨¡å¼ä¸ï¼ç´æ¥è¿å404éè¯¯
         webServer.send(404, "text/plain", "Not found: " + webServer.uri());
     }
 }
@@ -1078,10 +1078,10 @@ void handleSaveWiFi() {
         html += "</style>";
         html += "</head><body>";
         html += "<div class=\"success-container\">";
-        html += "<div class=\"success-icon\">✓</div>";
-        html += "<h1 class=\"success-title\">配置已保存</h1>";
-        html += "<p class=\"success-message\">WiFi配置已成功保存，设备将重启并尝试连接WiFi网络。</p>";
-        html += "<p class=\"countdown\">5秒后自动跳转回配置页面...</p>";
+        html += "<div class=\"success-icon\">â</div>";
+        html += "<h1 class=\"success-title\">éç½®å·²ä¿å­</h1>";
+        html += "<p class=\"success-message\">WiFiéç½®å·²æåä¿å­ï¼è®¾å¤å°éå¯å¹¶å°è¯è¿æ¥WiFiç½ç»ã</p>";
+        html += "<p class=\"countdown\">5ç§åèªå¨è·³è½¬åéç½®é¡µé¢...</p>";
         html += "</div>";
         html += "</body></html>";
         
@@ -1093,25 +1093,25 @@ void handleSaveWiFi() {
 }
 
 void handleFactoryReset() {
-    // 清空EEPROM中的配置
+    // æ¸ç©ºEEPROMä¸­çéç½®
     EEPROM.begin(512);
     
-    // 清空整个EEPROM区域
+    // æ¸ç©ºæ´ä¸ªEEPROMåºå
     for (int i = 0; i < 512; i++) {
         EEPROM.write(i, 0);
     }
     EEPROM.commit();
     EEPROM.end();
     
-    // 清空内存中的配置变量
+    // æ¸ç©ºåå­ä¸­çéç½®åé
     wifiSSID = "";
     wifiPassword = "";
     temperatureOffset = 0.0;
     temperatureScale = 1.0;
     
-    Serial.println("恢复出厂设置完成，所有配置已清除");
+    Serial.println("æ¢å¤åºåè®¾ç½®å®æï¼ææéç½®å·²æ¸é¤");
     
-    // 返回成功页面
+    // è¿åæåé¡µé¢
     String html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"refresh\" content=\"5;url=/\">";
     html += "<style>";
     html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
@@ -1124,11 +1124,11 @@ void handleFactoryReset() {
     html += "</style>";
     html += "</head><body>";
     html += "<div class=\"reset-container\">";
-    html += "<div class=\"reset-icon\">⚠️</div>";
-    html += "<h1 class=\"reset-title\">恢复出厂设置</h1>";
-    html += "<p class=\"reset-message\">设备已恢复出厂设置，所有WiFi配置和温度校准参数已被清除。</p>";
-    html += "<p class=\"reset-message\">设备将重启并进入配网模式，请重新配置WiFi网络。</p>";
-    html += "<p class=\"countdown\">5秒后设备将重启...</p>";
+    html += "<div class=\"reset-icon\">â ï¸</div>";
+    html += "<h1 class=\"reset-title\">æ¢å¤åºåè®¾ç½®</h1>";
+    html += "<p class=\"reset-message\">è®¾å¤å·²æ¢å¤åºåè®¾ç½®ï¼ææWiFiéç½®åæ¸©åº¦æ ¡ååæ°å·²è¢«æ¸é¤ã</p>";
+    html += "<p class=\"reset-message\">è®¾å¤å°éå¯å¹¶è¿å¥éç½æ¨¡å¼ï¼è¯·éæ°éç½®WiFiç½ç»ã</p>";
+    html += "<p class=\"countdown\">5ç§åè®¾å¤å°éå¯...</p>";
     html += "</div>";
     html += "</body></html>";
     
@@ -1139,9 +1139,9 @@ void handleFactoryReset() {
 }
 
 void handleRestart() {
-    Serial.println("接收到重启设备请求");
+    Serial.println("æ¥æ¶å°éå¯è®¾å¤è¯·æ±");
     
-    // 返回重启确认页面
+    // è¿åéå¯ç¡®è®¤é¡µé¢
     String html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"refresh\" content=\"5;url=/\">";
     html += "<style>";
     html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
@@ -1154,11 +1154,11 @@ void handleRestart() {
     html += "</style>";
     html += "</head><body>";
     html += "<div class=\"restart-container\">";
-    html += "<div class=\"restart-icon\">🔄</div>";
-    html += "<h1 class=\"restart-title\">设备重启中</h1>";
-    html += "<p class=\"restart-message\">设备正在重启，重启过程大约需要30秒。</p>";
-    html += "<p class=\"restart-message\">重启完成后，设备将自动重新连接WiFi网络。</p>";
-    html += "<p class=\"countdown\">5秒后设备将重启...</p>";
+    html += "<div class=\"restart-icon\">ð</div>";
+    html += "<h1 class=\"restart-title\">è®¾å¤éå¯ä¸­</h1>";
+    html += "<p class=\"restart-message\">è®¾å¤æ­£å¨éå¯ï¼éå¯è¿ç¨å¤§çº¦éè¦30ç§ã</p>";
+    html += "<p class=\"restart-message\">éå¯å®æåï¼è®¾å¤å°èªå¨éæ°è¿æ¥WiFiç½ç»ã</p>";
+    html += "<p class=\"countdown\">5ç§åè®¾å¤å°éå¯...</p>";
     html += "</div>";
     html += "</body></html>";
     
@@ -1181,35 +1181,35 @@ void handleStatus() {
 }
 
 void handleDiagnostic() {
-    // 读取原始MAX6675数据
+    // è¯»ååå§MAX6675æ°æ®
     uint16_t rawData = readMAX6675RawData();
     bool errorFlag = (rawData & 0x04) != 0;
     uint16_t tempBits = rawData >> 3;
     float rawTemperature = tempBits * 0.25;
     
-    // 确定传感器状态
-    String sensorStatus = "正常";
-    String diagnosticAdvice = "传感器工作正常";
+    // ç¡®å®ä¼ æå¨ç¶æ
+    String sensorStatus = "æ­£å¸¸";
+    String diagnosticAdvice = "ä¼ æå¨å·¥ä½æ­£å¸¸";
     
     if (errorFlag) {
-        sensorStatus = "错误";
-        diagnosticAdvice = "检测到热电偶开路或传感器故障";
+        sensorStatus = "éè¯¯";
+        diagnosticAdvice = "æ£æµå°ç­çµå¶å¼è·¯æä¼ æå¨æé";
     } else if (rawData == 0x0000 || rawData == 0xFFFF) {
-        sensorStatus = "警告";
-        diagnosticAdvice = "传感器数据异常，检查硬件连接";
+        sensorStatus = "è­¦å";
+        diagnosticAdvice = "ä¼ æå¨æ°æ®å¼å¸¸ï¼æ£æ¥ç¡¬ä»¶è¿æ¥";
     } else if (rawTemperature < -20 || rawTemperature > 1024) {
-        sensorStatus = "警告";
-        diagnosticAdvice = "温度读数超出正常范围";
+        sensorStatus = "è­¦å";
+        diagnosticAdvice = "æ¸©åº¦è¯»æ°è¶åºæ­£å¸¸èå´";
     }
     
-    // 构建诊断JSON响应
+    // æå»ºè¯æ­JSONååº
     String json = "{";
     json += "\"sensor_status\":\"" + sensorStatus + "\",";
     json += "\"raw_data\":\"0x" + String(rawData, HEX) + "\",";
     json += "\"error_flag\":" + String(errorFlag ? "true" : "false") + ",";
     json += "\"temp_bits\":" + String(tempBits) + ",";
     json += "\"raw_temperature\":" + String(rawTemperature) + ",";
-    json += "\"calibration_params\":\"偏移:" + String(temperatureOffset) + " 缩放:" + String(temperatureScale) + "\",";
+    json += "\"calibration_params\":\"åç§»:" + String(temperatureOffset) + " ç¼©æ¾:" + String(temperatureScale) + "\",";
     json += "\"diagnostic_advice\":\"" + diagnosticAdvice + "\",";
     json += "\"hardware_failure_count\":" + String(hardwareFailureCount) + ",";
     json += "\"hardware_initialized\":" + String(hardwareInitialized ? "true" : "false") + ",";
@@ -1224,7 +1224,7 @@ void handleResetCalibration() {
     temperatureOffset = 0.0;
     temperatureScale = 1.0;
     
-    String json = "{\"message\":\"温度校准参数已重置\",";
+    String json = "{\"message\":\"æ¸©åº¦æ ¡ååæ°å·²éç½®\",";
     json += "\"offset\":" + String(temperatureOffset) + ",";
     json += "\"scale\":" + String(temperatureScale) + "}";
     
@@ -1232,7 +1232,7 @@ void handleResetCalibration() {
 }
 
 void handleControl() {
-    bool wasHeating = heatingEnabled;  // 保存之前的加热状态
+    bool wasHeating = heatingEnabled;  // ä¿å­ä¹åçå ç­ç¶æ
     
     if (webServer.hasArg("target_temp")) {
         targetTemp = webServer.arg("target_temp").toFloat();
@@ -1241,34 +1241,34 @@ void handleControl() {
         heatingEnabled = webServer.arg("heating") == "true";
     }
     
-    // 检测加热状态变化并触发蜂鸣器提示
+    // æ£æµå ç­ç¶æååå¹¶è§¦åèé¸£å¨æç¤º
     if (!wasHeating && heatingEnabled) {
-        // 从关闭到开启：开始烘焙
+        // ä»å³é­å°å¼å¯ï¼å¼å§çç
         beepBakingStart();
-        Serial.println("烘焙开始 - 目标温度: " + String(targetTemp) + "°C");
+        Serial.println("ççå¼å§ - ç®æ æ¸©åº¦: " + String(targetTemp) + "Â°C");
     } else if (wasHeating && !heatingEnabled) {
-        // 从开启到关闭：烘焙完成
+        // ä»å¼å¯å°å³é­ï¼ççå®æ
         beepBakingComplete();
-        Serial.println("烘焙完成 - 最终温度: " + String(currentTemp) + "°C");
+        Serial.println("ççå®æ - æç»æ¸©åº¦: " + String(currentTemp) + "Â°C");
         
-        // 触发烘焙结束状态：快闪10秒
+        // è§¦åççç»æç¶æï¼å¿«éª10ç§
         bakingCompleteState = true;
         bakingCompleteStartTime = millis();
-        Serial.println("触发烘焙结束快闪状态，持续10秒");
+        Serial.println("è§¦åççç»æå¿«éªç¶æï¼æç»­10ç§");
     }
     
     webServer.send(200, "text/plain", "OK");
 }
 
 // =========================================
-// 新增API端点处理函数
+// æ°å¢APIç«¯ç¹å¤çå½æ°
 // =========================================
 
-// 温度历史记录端点
+// æ¸©åº¦åå²è®°å½ç«¯ç¹
 void handleTemperatureHistory() {
     String json = "{\"temperature_history\":[";
     
-    // 模拟温度历史数据（实际应用中可以从EEPROM或文件系统读取）
+    // æ¨¡ææ¸©åº¦åå²æ°æ®ï¼å®éåºç¨ä¸­å¯ä»¥ä»EEPROMææä»¶ç³»ç»è¯»åï¼
     for (int i = 0; i < 10; i++) {
         if (i > 0) json += ",";
         json += "{\"timestamp\":" + String(millis() - i * 60000) + ",";
@@ -1279,25 +1279,25 @@ void handleTemperatureHistory() {
     webServer.send(200, "application/json", json);
 }
 
-// 定时任务管理端点
+// å®æ¶ä»»å¡ç®¡çç«¯ç¹
 void handleTimerTasks() {
     if (webServer.method() == HTTP_GET) {
-        // 获取定时任务列表
+        // è·åå®æ¶ä»»å¡åè¡¨
         String json = "{\"timers\":[";
         json += "{\"id\":1,\"enabled\":false,\"target_temp\":180,\"duration\":3600}";
         json += "]}";
         webServer.send(200, "application/json", json);
     } else if (webServer.method() == HTTP_POST) {
-        // 创建或更新定时任务
+        // åå»ºææ´æ°å®æ¶ä»»å¡
         if (webServer.hasArg("action") && webServer.arg("action") == "create") {
-            webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"定时任务创建成功\"}");
+            webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"å®æ¶ä»»å¡åå»ºæå\"}");
         } else {
-            webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"定时任务更新成功\"}");
+            webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"å®æ¶ä»»å¡æ´æ°æå\"}");
         }
     }
 }
 
-// 设备信息端点
+// è®¾å¤ä¿¡æ¯ç«¯ç¹
 void handleDeviceInfo() {
     String json = "{";
     json += "\"device_id\":\"" + DEVICE_ID + "\",";
@@ -1315,7 +1315,7 @@ void handleDeviceInfo() {
     webServer.send(200, "application/json", json);
 }
 
-// 安全监控端点
+// å®å¨çæ§ç«¯ç¹
 void handleSafetyMonitor() {
     String json = "{";
     json += "\"temperature_alerts\":[";
@@ -1324,18 +1324,18 @@ void handleSafetyMonitor() {
     json += "\"safety_status\":\"normal\",";
     json += "\"last_check\":" + String(millis()) + ",";
     json += "\"recommendations\":[";
-    json += "\"保持设备周围通风良好\",";
-    json += "\"定期检查温度传感器\",";
-    json += "\"避免长时间高温运行\"";
+    json += "\"ä¿æè®¾å¤å¨å´éé£è¯å¥½\",";
+    json += "\"å®ææ£æ¥æ¸©åº¦ä¼ æå¨\",";
+    json += "\"é¿åé¿æ¶é´é«æ¸©è¿è¡\"";
     json += "]}";
     
     webServer.send(200, "application/json", json);
 }
 
-// 能耗统计端点
+// è½èç»è®¡ç«¯ç¹
 void handleEnergyStats() {
     String json = "{";
-    json += "\"total_energy_used\":" + String(millis() / 3600000.0 * 1500) + ","; // 模拟能耗数据
+    json += "\"total_energy_used\":" + String(millis() / 3600000.0 * 1500) + ","; // æ¨¡æè½èæ°æ®
     json += "\"current_power\":" + String(heatingEnabled ? "1500" : "0") + ",";
     json += "\"today_energy\":" + String(millis() / 86400000.0 * 1500) + ",";
     json += "\"energy_unit\":\"Wh\",";
@@ -1347,26 +1347,26 @@ void handleEnergyStats() {
 }
 
 // =========================================
-// 温度控制功能
+// æ¸©åº¦æ§å¶åè½
 // =========================================
 
-// 温度读取定时器
+// æ¸©åº¦è¯»åå®æ¶å¨
 unsigned long lastTemperatureRead = 0;
-const unsigned long TEMPERATURE_READ_INTERVAL = 200; // 每200ms读取一次温度（优化：提高温度响应速度）
+const unsigned long TEMPERATURE_READ_INTERVAL = 200; // æ¯200msè¯»åä¸æ¬¡æ¸©åº¦ï¼ä¼åï¼æé«æ¸©åº¦ååºéåº¦ï¼
 
 void readTemperature() {
     unsigned long currentTime = millis();
     
-    // 定时读取温度，避免频繁读取影响性能
+    // å®æ¶è¯»åæ¸©åº¦ï¼é¿åé¢ç¹è¯»åå½±åæ§è½
     if (currentTime - lastTemperatureRead >= TEMPERATURE_READ_INTERVAL) {
         currentTemp = readTemperatureWithMonitoring();
         if (currentTemp < 0) {
-            Serial.println("温度传感器读取错误");
+            Serial.println("æ¸©åº¦ä¼ æå¨è¯»åéè¯¯");
         } else {
-            // 只在温度变化较大时才打印日志，减少串口输出
+            // åªå¨æ¸©åº¦ååè¾å¤§æ¶ææå°æ¥å¿ï¼åå°ä¸²å£è¾åº
             static float lastPrintedTemp = -999;
             if (fabs(currentTemp - lastPrintedTemp) >= 0.5) {
-                Serial.println("当前温度: " + String(currentTemp) + "°C");
+                Serial.println("å½åæ¸©åº¦: " + String(currentTemp) + "Â°C");
                 lastPrintedTemp = currentTemp;
             }
         }
@@ -1383,56 +1383,56 @@ void controlHeater() {
 }
 
 // =========================================
-// LED状态指示
+// LEDç¶ææç¤º
 // =========================================
 void updateLED() {
     unsigned long currentTime = millis();
     
-    // 烘焙结束状态处理
+    // ççç»æç¶æå¤ç
     if (bakingCompleteState) {
         if (currentTime - bakingCompleteStartTime > BAKING_COMPLETE_DURATION) {
-            // 烘焙结束快闪时间到，切换到待机状态
+            // ççç»æå¿«éªæ¶é´å°ï¼åæ¢å°å¾æºç¶æ
             bakingCompleteState = false;
-            Serial.println("烘焙结束快闪完成，切换到待机状态");
+            Serial.println("ççç»æå¿«éªå®æï¼åæ¢å°å¾æºç¶æ");
         }
     }
     
     if (currentTime - lastLedUpdate > LED_BLINK_INTERVAL) {
         if (bakingCompleteState) {
-            // 烘焙结束状态：快速闪烁（500ms间隔）
+            // ççç»æç¶æï¼å¿«ééªçï¼500msé´éï¼
             ledState = !ledState;
             digitalWrite(LED_PIN, ledState ? HIGH : LOW);
             if (ledState) {
-                Serial.println("LED状态: 烘焙结束 - 快闪 (亮)");
+                Serial.println("LEDç¶æ: ççç»æ - å¿«éª (äº®)");
             } else {
-                Serial.println("LED状态: 烘焙结束 - 快闪 (灭)");
+                Serial.println("LEDç¶æ: ççç»æ - å¿«éª (ç­)");
             }
         } else if (isCaptivePortalMode) {
-            // 配网前状态：快速闪烁（500ms间隔）
+            // éç½åç¶æï¼å¿«ééªçï¼500msé´éï¼
             ledState = !ledState;
             digitalWrite(LED_PIN, ledState ? HIGH : LOW);
             if (ledState) {
-                Serial.println("LED状态: 配网前 - 快闪 (亮)");
+                Serial.println("LEDç¶æ: éç½å - å¿«éª (äº®)");
             } else {
-                Serial.println("LED状态: 配网前 - 快闪 (灭)");
+                Serial.println("LEDç¶æ: éç½å - å¿«éª (ç­)");
             }
         } else if (heatingEnabled) {
-            // 加热中状态：常亮
+            // å ç­ä¸­ç¶æï¼å¸¸äº®
             digitalWrite(LED_PIN, HIGH);
-            Serial.println("LED状态: 加热中 - 常亮");
+            Serial.println("LEDç¶æ: å ç­ä¸­ - å¸¸äº®");
         } else {
-            // 待机状态：慢速闪烁（1000ms间隔）
+            // å¾æºç¶æï¼æ¢ééªçï¼1000msé´éï¼
             if (currentTime - lastLedUpdate > 1000) {
                 ledState = !ledState;
                 digitalWrite(LED_PIN, ledState ? HIGH : LOW);
                 if (ledState) {
-                    Serial.println("LED状态: 待机 - 慢闪 (亮)");
+                    Serial.println("LEDç¶æ: å¾æº - æ¢éª (äº®)");
                 } else {
-                    Serial.println("LED状态: 待机 - 慢闪 (灭)");
+                    Serial.println("LEDç¶æ: å¾æº - æ¢éª (ç­)");
                 }
                 lastLedUpdate = currentTime;
             }
-            return; // 待机状态使用自定义间隔，不更新lastLedUpdate
+            return; // å¾æºç¶æä½¿ç¨èªå®ä¹é´éï¼ä¸æ´æ°lastLedUpdate
         }
         
         lastLedUpdate = currentTime;
@@ -1440,7 +1440,7 @@ void updateLED() {
 }
 
 // =========================================
-// 蜂鸣器控制
+// èé¸£å¨æ§å¶
 // =========================================
 void beep(int duration = 100) {
     digitalWrite(BUZZER_PIN, HIGH);
@@ -1448,37 +1448,37 @@ void beep(int duration = 100) {
     digitalWrite(BUZZER_PIN, LOW);
 }
 
-// 蜂鸣器状态提示函数
+// èé¸£å¨ç¶ææç¤ºå½æ°
 void beepConfigSaved() {
-    // 设置保存成功提示：短-短-短
+    // è®¾ç½®ä¿å­æåæç¤ºï¼ç­-ç­-ç­
     beep(100);
     delay(100);
     beep(100);
     delay(100);
     beep(100);
-    Serial.println("蜂鸣器提示：配置已保存");
+    Serial.println("èé¸£å¨æç¤ºï¼éç½®å·²ä¿å­");
 }
 
 void beepBakingStart() {
-    // 开始烘焙提示：长-短
+    // å¼å§ççæç¤ºï¼é¿-ç­
     beep(300);
     delay(200);
     beep(100);
-    Serial.println("蜂鸣器提示：烘焙开始");
+    Serial.println("èé¸£å¨æç¤ºï¼ççå¼å§");
 }
 
 void beepBakingComplete() {
-    // 烘焙完成提示：长-长-长
+    // ççå®ææç¤ºï¼é¿-é¿-é¿
     beep(500);
     delay(200);
     beep(500);
     delay(200);
     beep(500);
-    Serial.println("蜂鸣器提示：烘焙完成");
+    Serial.println("èé¸£å¨æç¤ºï¼ççå®æ");
 }
 
 void beepTemperatureChange() {
-    // 温度切换提示：短-短-短-短
+    // æ¸©åº¦åæ¢æç¤ºï¼ç­-ç­-ç­-ç­
     beep(80);
     delay(80);
     beep(80);
@@ -1486,48 +1486,48 @@ void beepTemperatureChange() {
     beep(80);
     delay(80);
     beep(80);
-    Serial.println("蜂鸣器提示：温度切换");
+    Serial.println("èé¸£å¨æç¤ºï¼æ¸©åº¦åæ¢");
 }
 
 // =========================================
-// 初始化函数
+// åå§åå½æ°
 // =========================================
 void setup() {
     Serial.begin(115200);
     Serial.println("");
     Serial.println("=========================================");
-    Serial.println("智能电烤箱控制器 v" + FIRMWARE_VERSION);
-    Serial.println("MAX6675手动SPI实现 - 温度传感器正常工作");
+    Serial.println("æºè½çµç¤ç®±æ§å¶å¨ v" + FIRMWARE_VERSION);
+    Serial.println("MAX6675æå¨SPIå®ç° - æ¸©åº¦ä¼ æå¨æ­£å¸¸å·¥ä½");
     Serial.println("=========================================");
     
-    // 初始化引脚
+    // åå§åå¼è
     pinMode(HEATER_PIN, OUTPUT);
     pinMode(BUZZER_PIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
     
-    // 初始化MAX6675引脚
+    // åå§åMAX6675å¼è
     pinMode(THERMO_CLK, OUTPUT);
     pinMode(THERMO_CS, OUTPUT);
     pinMode(THERMO_DO, INPUT);
     
-    // 设置MAX6675初始状态
-    digitalWrite(THERMO_CS, HIGH);  // CS引脚高电平（禁用）
-    digitalWrite(THERMO_CLK, LOW);  // CLK引脚低电平
+    // è®¾ç½®MAX6675åå§ç¶æ
+    digitalWrite(THERMO_CS, HIGH);  // CSå¼èé«çµå¹³ï¼ç¦ç¨ï¼
+    digitalWrite(THERMO_CLK, LOW);  // CLKå¼èä½çµå¹³
     
     digitalWrite(HEATER_PIN, LOW);
     digitalWrite(BUZZER_PIN, LOW);
     digitalWrite(LED_PIN, LOW);
     
-    // 蜂鸣器提示启动
+    // èé¸£å¨æç¤ºå¯å¨
     beep(200);
     delay(100);
     beep(200);
     
-    // 硬件初始化验证
+    // ç¡¬ä»¶åå§åéªè¯
     if (!verifyHardwareInitialization()) {
-        Serial.println("⚠️ 硬件初始化验证失败，尝试硬件复位...");
+        Serial.println("â ï¸ ç¡¬ä»¶åå§åéªè¯å¤±è´¥ï¼å°è¯ç¡¬ä»¶å¤ä½...");
         
-        // 强制硬件复位
+        // å¼ºå¶ç¡¬ä»¶å¤ä½
         for (int i = 0; i < 3; i++) {
             digitalWrite(THERMO_CS, HIGH);
             digitalWrite(THERMO_CLK, LOW);
@@ -1538,57 +1538,57 @@ void setup() {
             delay(100);
         }
         
-        // 重新验证
+        // éæ°éªè¯
         if (verifyHardwareInitialization()) {
-            Serial.println("✅ 硬件复位成功");
+            Serial.println("â ç¡¬ä»¶å¤ä½æå");
         } else {
-            Serial.println("❌ 硬件复位失败，请检查硬件连接");
+            Serial.println("â ç¡¬ä»¶å¤ä½å¤±è´¥ï¼è¯·æ£æ¥ç¡¬ä»¶è¿æ¥");
         }
     }
     
-    // 加载配置
+    // å è½½éç½®
     if (loadConfig()) {
-        Serial.println("配置加载成功");
+        Serial.println("éç½®å è½½æå");
     } else {
-        Serial.println("未找到有效配置");
+        Serial.println("æªæ¾å°ææéç½®");
     }
     
-    // 启动网络
+    // å¯å¨ç½ç»
     if (shouldStartCaptivePortal()) {
         startCaptivePortal();
     } else {
         connectToWiFi();
     }
     
-    // 启动TCP服务器用于APP连接
+    // å¯å¨TCPæå¡å¨ç¨äºAPPè¿æ¥
     tcpServer.begin();
-    Serial.println("TCP服务器已启动，监听端口: " + String(DEFAULT_PORT));
+    Serial.println("TCPæå¡å¨å·²å¯å¨ï¼çå¬ç«¯å£: " + String(DEFAULT_PORT));
     
-    // 初始化SPIFFS文件系统
+    // åå§åSPIFFSæä»¶ç³»ç»
     if (SPIFFS.begin()) {
-        Serial.println("SPIFFS文件系统初始化成功");
+        Serial.println("SPIFFSæä»¶ç³»ç»åå§åæå");
         
-        // 检查是否存在必要的文件
+        // æ£æ¥æ¯å¦å­å¨å¿è¦çæä»¶
         if (SPIFFS.exists("/login.html")) {
-            Serial.println("找到登录页面文件: /login.html");
+            Serial.println("æ¾å°ç»å½é¡µé¢æä»¶: /login.html");
         } else {
-            Serial.println("警告: 未找到登录页面文件 /login.html");
+            Serial.println("è­¦å: æªæ¾å°ç»å½é¡µé¢æä»¶ /login.html");
         }
         
         if (SPIFFS.exists("/index.html")) {
-            Serial.println("找到主页文件: /index.html");
+            Serial.println("æ¾å°ä¸»é¡µæä»¶: /index.html");
         } else {
-            Serial.println("警告: 未找到主页文件 /index.html");
+            Serial.println("è­¦å: æªæ¾å°ä¸»é¡µæä»¶ /index.html");
         }
     } else {
-        Serial.println("错误: SPIFFS文件系统初始化失败");
+        Serial.println("éè¯¯: SPIFFSæä»¶ç³»ç»åå§åå¤±è´¥");
     }
     
-    Serial.println("初始化完成");
+    Serial.println("åå§åå®æ");
 }
 
 // =========================================
-// 串口命令处理
+// ä¸²å£å½ä»¤å¤ç
 // =========================================
 void handleSerialCommands() {
     if (Serial.available() > 0) {
@@ -1596,34 +1596,34 @@ void handleSerialCommands() {
         command.trim();
         
         if (command.length() > 0) {
-            Serial.println("收到命令: " + command);
+            Serial.println("æ¶å°å½ä»¤: " + command);
             
             if (command == "LED_ON") {
                 digitalWrite(LED_PIN, HIGH);
-                Serial.println("LED已打开");
+                Serial.println("LEDå·²æå¼");
             } else if (command == "LED_OFF") {
                 digitalWrite(LED_PIN, LOW);
-                Serial.println("LED已关闭");
+                Serial.println("LEDå·²å³é­");
             } else if (command == "LED_BLINK") {
-                // 临时闪烁LED
+                // ä¸´æ¶éªçLED
                 for (int i = 0; i < 5; i++) {
                     digitalWrite(LED_PIN, HIGH);
                     delay(200);
                     digitalWrite(LED_PIN, LOW);
                     delay(200);
                 }
-                Serial.println("LED闪烁完成");
+                Serial.println("LEDéªçå®æ");
             } else if (command == "BEEP") {
                 beep(100);
-                Serial.println("蜂鸣器已响");
+                Serial.println("èé¸£å¨å·²å");
             } else if (command == "BEEP_LONG") {
                 beep(500);
-                Serial.println("蜂鸣器长响");
+                Serial.println("èé¸£å¨é¿å");
             } else if (command == "BEEP_SHORT") {
                 beep(50);
-                Serial.println("蜂鸣器短响");
+                Serial.println("èé¸£å¨ç­å");
             } else if (command == "GET_STATUS") {
-                // 返回APP期望的格式：TEMP:25.50,TARGET:180.00,HEAT:0,MODE:1,UPTIME:123
+                // è¿åAPPææçæ ¼å¼ï¼TEMP:25.50,TARGET:180.00,HEAT:0,MODE:1,UPTIME:123
                 String statusResponse = "TEMP:" + String(currentTemp) + 
                                       ",TARGET:" + String(targetTemp) + 
                                       ",HEAT:" + String(heatingEnabled ? "1" : "0") + 
@@ -1631,9 +1631,9 @@ void handleSerialCommands() {
                                       ",UPTIME:" + String(millis() / 1000);
                 Serial.println(statusResponse);
             } else if (command == "GET_TEMP") {
-                Serial.println("当前温度: " + String(currentTemp) + "°C");
+                Serial.println("å½åæ¸©åº¦: " + String(currentTemp) + "Â°C");
             } else if (command.startsWith("CALIBRATE_TEMP")) {
-                // 温度校准命令格式: CALIBRATE_TEMP 实际温度
+                // æ¸©åº¦æ ¡åå½ä»¤æ ¼å¼: CALIBRATE_TEMP å®éæ¸©åº¦
                 int spaceIndex = command.indexOf(' ');
                 if (spaceIndex > 0) {
                     String actualTempStr = command.substring(spaceIndex + 1);
@@ -1642,61 +1642,61 @@ void handleSerialCommands() {
                     
                     if (actualTemp > 0) {
                         calibrateTemperature(actualTemp, measuredTemp);
-                        Serial.println("温度校准已应用，请重新读取温度验证");
+                        Serial.println("æ¸©åº¦æ ¡åå·²åºç¨ï¼è¯·éæ°è¯»åæ¸©åº¦éªè¯");
                     } else {
-                        Serial.println("错误: 实际温度值无效");
+                        Serial.println("éè¯¯: å®éæ¸©åº¦å¼æ æ");
                     }
                 } else {
-                    Serial.println("温度校准命令格式: CALIBRATE_TEMP 实际温度");
-                    Serial.println("例如: CALIBRATE_TEMP 16.0");
+                    Serial.println("æ¸©åº¦æ ¡åå½ä»¤æ ¼å¼: CALIBRATE_TEMP å®éæ¸©åº¦");
+                    Serial.println("ä¾å¦: CALIBRATE_TEMP 16.0");
                 }
             } else if (command == "RESET_CALIBRATION") {
                 temperatureOffset = 0.0;
                 temperatureScale = 1.0;
-                Serial.println("温度校准已重置");
+                Serial.println("æ¸©åº¦æ ¡åå·²éç½®");
             } else if (command == "GET_RAW_TEMP") {
-                // 获取原始温度数据（未校准）
+                // è·ååå§æ¸©åº¦æ°æ®ï¼æªæ ¡åï¼
                 uint16_t rawData = readMAX6675RawData();
                 if (!(rawData & 0x04)) {
                     uint16_t tempBits = rawData >> 3;
                     float rawTemp = tempBits * 0.25;
-                    Serial.println("原始温度数据:");
-                    Serial.print("原始值: 0x"); Serial.println(rawData, HEX);
-                    Serial.print("温度位: "); Serial.println(tempBits);
-                    Serial.print("未校准温度: "); Serial.print(rawTemp); Serial.println("°C");
-                    Serial.print("校准后温度: "); Serial.print(currentTemp); Serial.println("°C");
+                    Serial.println("åå§æ¸©åº¦æ°æ®:");
+                    Serial.print("åå§å¼: 0x"); Serial.println(rawData, HEX);
+                    Serial.print("æ¸©åº¦ä½: "); Serial.println(tempBits);
+                    Serial.print("æªæ ¡åæ¸©åº¦: "); Serial.print(rawTemp); Serial.println("Â°C");
+                    Serial.print("æ ¡ååæ¸©åº¦: "); Serial.print(currentTemp); Serial.println("Â°C");
                 } else {
-                    Serial.println("错误: 温度传感器读取错误");
+                    Serial.println("éè¯¯: æ¸©åº¦ä¼ æå¨è¯»åéè¯¯");
                 }
             } else if (command == "GET_PERFORMANCE") {
-                // 获取性能信息
-                Serial.println("📊 设备性能信息:");
-                Serial.print("温度读取平均时间: "); Serial.print(temperatureReadAvgTime); Serial.println("ms");
-                Serial.print("温度读取总次数: "); Serial.println(temperatureReadCount);
+                // è·åæ§è½ä¿¡æ¯
+                Serial.println("ð è®¾å¤æ§è½ä¿¡æ¯:");
+                Serial.print("æ¸©åº¦è¯»åå¹³åæ¶é´: "); Serial.print(temperatureReadAvgTime); Serial.println("ms");
+                Serial.print("æ¸©åº¦è¯»åæ»æ¬¡æ°: "); Serial.println(temperatureReadCount);
                 
-                // 获取内存信息
+                // è·ååå­ä¿¡æ¯
                 uint32_t freeHeap = ESP.getFreeHeap();
                 uint32_t maxFreeBlock = ESP.getMaxFreeBlockSize();
                 uint32_t heapFragmentation = ESP.getHeapFragmentation();
                 
-                Serial.print("空闲内存: "); Serial.print(freeHeap); Serial.println(" bytes");
-                Serial.print("最大空闲块: "); Serial.print(maxFreeBlock); Serial.println(" bytes");
-                Serial.print("内存碎片率: "); Serial.print(heapFragmentation); Serial.println("%");
+                Serial.print("ç©ºé²åå­: "); Serial.print(freeHeap); Serial.println(" bytes");
+                Serial.print("æå¤§ç©ºé²å: "); Serial.print(maxFreeBlock); Serial.println(" bytes");
+                Serial.print("åå­ç¢çç: "); Serial.print(heapFragmentation); Serial.println("%");
                 
-                // 输出当前状态
-                Serial.print("Web服务器处理间隔: "); Serial.print(WEB_SERVER_HANDLE_INTERVAL); Serial.println("ms");
-                Serial.print("温度读取间隔: "); Serial.print(TEMPERATURE_READ_INTERVAL); Serial.println("ms");
+                // è¾åºå½åç¶æ
+                Serial.print("Webæå¡å¨å¤çé´é: "); Serial.print(WEB_SERVER_HANDLE_INTERVAL); Serial.println("ms");
+                Serial.print("æ¸©åº¦è¯»åé´é: "); Serial.print(TEMPERATURE_READ_INTERVAL); Serial.println("ms");
             } else if (command == "RESET_PERFORMANCE") {
-                // 重置性能计数器
+                // éç½®æ§è½è®¡æ°å¨
                 temperatureReadCount = 0;
                 temperatureReadAvgTime = 0;
-                Serial.println("✅ 性能计数器已重置");
+                Serial.println("â æ§è½è®¡æ°å¨å·²éç½®");
             } else {
-                Serial.println("未知命令，可用命令:");
+                Serial.println("æªç¥å½ä»¤ï¼å¯ç¨å½ä»¤:");
                 Serial.println("LED_ON, LED_OFF, LED_BLINK");
                 Serial.println("BEEP, BEEP_LONG, BEEP_SHORT");
                 Serial.println("GET_STATUS, GET_TEMP, GET_RAW_TEMP");
-                Serial.println("CALIBRATE_TEMP 实际温度");
+                Serial.println("CALIBRATE_TEMP å®éæ¸©åº¦");
                 Serial.println("RESET_CALIBRATION");
                 Serial.println("GET_PERFORMANCE, RESET_PERFORMANCE");
             }
@@ -1705,37 +1705,37 @@ void handleSerialCommands() {
 }
 
 // =========================================
-// TCP服务器处理函数
+// TCPæå¡å¨å¤çå½æ°
 // =========================================
 
 void handleTCPConnection() {
-    // 检查是否有新的客户端连接
+    // æ£æ¥æ¯å¦ææ°çå®¢æ·ç«¯è¿æ¥
     if (tcpServer.hasClient()) {
-        // 如果已经有客户端连接，断开旧的连接
+        // å¦æå·²ç»æå®¢æ·ç«¯è¿æ¥ï¼æ­å¼æ§çè¿æ¥
         if (tcpClient && tcpClient.connected()) {
             tcpClient.stop();
-            Serial.println("TCP客户端已断开");
+            Serial.println("TCPå®¢æ·ç«¯å·²æ­å¼");
         }
         
-        // 接受新的客户端连接
+        // æ¥åæ°çå®¢æ·ç«¯è¿æ¥
         tcpClient = tcpServer.available();
         if (tcpClient) {
-            Serial.println("TCP客户端已连接: " + tcpClient.remoteIP().toString());
+            Serial.println("TCPå®¢æ·ç«¯å·²è¿æ¥: " + tcpClient.remoteIP().toString());
             
-            // 发送欢迎消息
+            // åéæ¬¢è¿æ¶æ¯
             tcpClient.println("SmartOven Controller v" + FIRMWARE_VERSION);
-            tcpClient.println("连接成功，请输入命令");
+            tcpClient.println("è¿æ¥æåï¼è¯·è¾å¥å½ä»¤");
         }
     }
     
-    // 处理已连接的客户端数据
+    // å¤çå·²è¿æ¥çå®¢æ·ç«¯æ°æ®
     if (tcpClient && tcpClient.connected()) {
         if (tcpClient.available()) {
             String command = tcpClient.readStringUntil('\n');
             command.trim();
             
             if (command.length() > 0) {
-                Serial.println("TCP收到命令: " + command);
+                Serial.println("TCPæ¶å°å½ä»¤: " + command);
                 handleTCPCommand(command);
             }
         }
@@ -1744,18 +1744,18 @@ void handleTCPConnection() {
 
 void handleTCPCommand(String command) {
     if (command == "GET_STATUS") {
-        // 返回设备状态信息
+        // è¿åè®¾å¤ç¶æä¿¡æ¯
         String statusResponse = "TEMP:" + String(currentTemp) + 
                               ",TARGET:" + String(targetTemp) + 
                               ",HEAT:" + String(heatingEnabled ? "1" : "0") + 
                               ",MODE:" + String(ovenMode ? "1" : "0") + 
                               ",UPTIME:" + String(millis() / 1000);
         tcpClient.println(statusResponse);
-        Serial.println("TCP发送状态: " + statusResponse);
+        Serial.println("TCPåéç¶æ: " + statusResponse);
     } else if (command == "GET_TEMP") {
-        tcpClient.println("当前温度: " + String(currentTemp) + "°C");
+        tcpClient.println("å½åæ¸©åº¦: " + String(currentTemp) + "Â°C");
     } else if (command.startsWith("SET_TEMP")) {
-        // 设置目标温度格式: SET_TEMP 180.0
+        // è®¾ç½®ç®æ æ¸©åº¦æ ¼å¼: SET_TEMP 180.0
         int spaceIndex = command.indexOf(' ');
         if (spaceIndex > 0) {
             String tempStr = command.substring(spaceIndex + 1);
@@ -1763,153 +1763,153 @@ void handleTCPCommand(String command) {
             
             if (newTemp >= 0 && newTemp <= 300) {
                 targetTemp = newTemp;
-                tcpClient.println("目标温度已设置为: " + String(targetTemp) + "°C");
-                Serial.println("TCP设置目标温度: " + String(targetTemp) + "°C");
+                tcpClient.println("ç®æ æ¸©åº¦å·²è®¾ç½®ä¸º: " + String(targetTemp) + "Â°C");
+                Serial.println("TCPè®¾ç½®ç®æ æ¸©åº¦: " + String(targetTemp) + "Â°C");
             } else {
-                tcpClient.println("错误: 温度范围应为0-300°C");
+                tcpClient.println("éè¯¯: æ¸©åº¦èå´åºä¸º0-300Â°C");
             }
         }
     } else if (command == "HEAT_ON") {
         heatingEnabled = true;
-        tcpClient.println("加热已开启");
-        Serial.println("TCP开启加热");
+        tcpClient.println("å ç­å·²å¼å¯");
+        Serial.println("TCPå¼å¯å ç­");
     } else if (command == "HEAT_OFF") {
         heatingEnabled = false;
-        tcpClient.println("加热已关闭");
-        Serial.println("TCP关闭加热");
+        tcpClient.println("å ç­å·²å³é­");
+        Serial.println("TCPå³é­å ç­");
     } else if (command == "OVEN_MODE") {
         ovenMode = true;
-        tcpClient.println("已切换到烤箱模式");
-        Serial.println("TCP切换到烤箱模式");
+        tcpClient.println("å·²åæ¢å°ç¤ç®±æ¨¡å¼");
+        Serial.println("TCPåæ¢å°ç¤ç®±æ¨¡å¼");
     } else if (command == "TOASTER_MODE") {
         ovenMode = false;
-        tcpClient.println("已切换到烤面包机模式");
-        Serial.println("TCP切换到烤面包机模式");
+        tcpClient.println("å·²åæ¢å°ç¤é¢åæºæ¨¡å¼");
+        Serial.println("TCPåæ¢å°ç¤é¢åæºæ¨¡å¼");
     } else if (command == "PING") {
         tcpClient.println("PONG");
     } else {
-        tcpClient.println("未知命令，可用命令:");
-        tcpClient.println("GET_STATUS, GET_TEMP, SET_TEMP 温度值");
+        tcpClient.println("æªç¥å½ä»¤ï¼å¯ç¨å½ä»¤:");
+        tcpClient.println("GET_STATUS, GET_TEMP, SET_TEMP æ¸©åº¦å¼");
         tcpClient.println("HEAT_ON, HEAT_OFF, OVEN_MODE, TOASTER_MODE, PING");
     }
 }
 
 // =========================================
-// 性能监控和内存管理
+// æ§è½çæ§ååå­ç®¡ç
 // =========================================
 
-// 内存监控定时器
+// åå­çæ§å®æ¶å¨
 unsigned long lastMemoryCheck = 0;
-const unsigned long MEMORY_CHECK_INTERVAL = 5000; // 每5秒检查一次内存
+const unsigned long MEMORY_CHECK_INTERVAL = 5000; // æ¯5ç§æ£æ¥ä¸æ¬¡åå­
 
-// 温度读取性能监控
+// æ¸©åº¦è¯»åæ§è½çæ§
 unsigned long lastTemperatureReadTime = 0;
 
 // =========================================
-// 主循环
+// ä¸»å¾ªç¯
 // =========================================
 
-// 温度切换检测变量
+// æ¸©åº¦åæ¢æ£æµåé
 float lastTargetTemp = targetTemp;
 unsigned long lastTempChangeTime = 0;
-const unsigned long TEMP_CHANGE_DEBOUNCE = 2000; // 2秒防抖
+const unsigned long TEMP_CHANGE_DEBOUNCE = 2000; // 2ç§é²æ
 
-// Web服务器处理定时器
+// Webæå¡å¨å¤çå®æ¶å¨
 unsigned long lastWebServerHandle = 0;
 
 void loop() {
     unsigned long currentTime = millis();
     
-    // 处理强制门户（提高响应频率）
+    // å¤çå¼ºå¶é¨æ·ï¼æé«ååºé¢çï¼
     if (isCaptivePortalMode) {
-        // 强制门户模式下需要更频繁地处理DNS和Web请求
+        // å¼ºå¶é¨æ·æ¨¡å¼ä¸éè¦æ´é¢ç¹å°å¤çDNSåWebè¯·æ±
         dnsServer.processNextRequest();
         webServer.handleClient();
         checkCaptivePortalTimeout();
     } else {
-        // 正常模式下可以适当降低处理频率
+        // æ­£å¸¸æ¨¡å¼ä¸å¯ä»¥éå½éä½å¤çé¢ç
         if (currentTime - lastWebServerHandle >= WEB_SERVER_HANDLE_INTERVAL) {
             webServer.handleClient();
             lastWebServerHandle = currentTime;
         }
     }
     
-    // 处理OTA升级（低频）
+    // å¤çOTAåçº§ï¼ä½é¢ï¼
     handleOTA();
     
-    // 处理设备发现（低频）
+    // å¤çè®¾å¤åç°ï¼ä½é¢ï¼
     handleDiscovery();
     
-    // 处理TCP连接（高频）
+    // å¤çTCPè¿æ¥ï¼é«é¢ï¼
     handleTCPConnection();
     
-    // 处理串口命令（高频）
+    // å¤çä¸²å£å½ä»¤ï¼é«é¢ï¼
     handleSerialCommands();
     
-    // 温度控制（定时读取）
+    // æ¸©åº¦æ§å¶ï¼å®æ¶è¯»åï¼
     readTemperature();
     controlHeater();
     
-    // LED状态更新（定时）
+    // LEDç¶ææ´æ°ï¼å®æ¶ï¼
     updateLED();
     
-    // 温度切换检测
+    // æ¸©åº¦åæ¢æ£æµ
     if (targetTemp != lastTargetTemp) {
-        // 防抖处理：只有在温度变化后2秒内没有再次变化才触发提示
+        // é²æå¤çï¼åªæå¨æ¸©åº¦ååå2ç§åæ²¡æåæ¬¡ååæè§¦åæç¤º
         if (currentTime - lastTempChangeTime > TEMP_CHANGE_DEBOUNCE) {
-            Serial.println("检测到温度切换: " + String(lastTargetTemp) + "°C -> " + String(targetTemp) + "°C");
+            Serial.println("æ£æµå°æ¸©åº¦åæ¢: " + String(lastTargetTemp) + "Â°C -> " + String(targetTemp) + "Â°C");
             beepTemperatureChange();
             lastTargetTemp = targetTemp;
         }
         lastTempChangeTime = currentTime;
     }
     
-        // 内存监控（每5秒检查一次）
+        // åå­çæ§ï¼æ¯5ç§æ£æ¥ä¸æ¬¡ï¼
     if (currentTime - lastMemoryCheck >= MEMORY_CHECK_INTERVAL) {
         checkMemoryUsage();
         lastMemoryCheck = currentTime;
     }
     
-    // 使用非阻塞延迟，提高响应速度
+    // ä½¿ç¨éé»å¡å»¶è¿ï¼æé«ååºéåº¦
     delay(1);
 }
 
 // =========================================
-// 性能监控函数
+// æ§è½çæ§å½æ°
 // =========================================
 
 void checkMemoryUsage() {
-    // 检查ESP8266内存使用情况
+    // æ£æ¥ESP8266åå­ä½¿ç¨æåµ
     uint32_t freeHeap = ESP.getFreeHeap();
     uint32_t maxFreeBlock = ESP.getMaxFreeBlockSize();
     uint32_t heapFragmentation = ESP.getHeapFragmentation();
     
-    // 只在内存使用率较高时输出警告
-    if (freeHeap < 20000) { // 少于20KB空闲内存
-        Serial.println("⚠️ 内存警告: 空闲内存较低 - " + String(freeHeap) + " bytes");
-        Serial.println("最大空闲块: " + String(maxFreeBlock) + " bytes");
-        Serial.println("内存碎片率: " + String(heapFragmentation) + "%");
+    // åªå¨åå­ä½¿ç¨çè¾é«æ¶è¾åºè­¦å
+    if (freeHeap < 20000) { // å°äº20KBç©ºé²åå­
+        Serial.println("â ï¸ åå­è­¦å: ç©ºé²åå­è¾ä½ - " + String(freeHeap) + " bytes");
+        Serial.println("æå¤§ç©ºé²å: " + String(maxFreeBlock) + " bytes");
+        Serial.println("åå­ç¢çç: " + String(heapFragmentation) + "%");
     }
     
-    // 输出温度读取性能统计
+    // è¾åºæ¸©åº¦è¯»åæ§è½ç»è®¡
     if (temperatureReadCount > 0) {
-        Serial.println("📊 温度读取性能: 平均时间 " + String(temperatureReadAvgTime) + "ms, 总次数 " + String(temperatureReadCount));
-        // 重置计数器
+        Serial.println("ð æ¸©åº¦è¯»åæ§è½: å¹³åæ¶é´ " + String(temperatureReadAvgTime) + "ms, æ»æ¬¡æ° " + String(temperatureReadCount));
+        // éç½®è®¡æ°å¨
         temperatureReadCount = 0;
         temperatureReadAvgTime = 0;
     }
 }
 
-// 增强的温度读取函数，包含性能监控
+// å¢å¼ºçæ¸©åº¦è¯»åå½æ°ï¼åå«æ§è½çæ§
 float readTemperatureWithMonitoring() {
     unsigned long startTime = micros();
     
     float temp = readTemperatureManual();
     
     unsigned long endTime = micros();
-    unsigned long readTime = (endTime - startTime) / 1000; // 转换为毫秒
+    unsigned long readTime = (endTime - startTime) / 1000; // è½¬æ¢ä¸ºæ¯«ç§
     
-    // 更新性能统计（仅在成功读取时）
+    // æ´æ°æ§è½ç»è®¡ï¼ä»å¨æåè¯»åæ¶ï¼
     if (temp >= 0) {
         temperatureReadAvgTime = (temperatureReadAvgTime * temperatureReadCount + readTime) / (temperatureReadCount + 1);
         temperatureReadCount++;

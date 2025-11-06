@@ -1,0 +1,161 @@
+{
+  "test_summary": {
+    "total_tests": 15,
+    "successful": 0,
+    "failed": 15,
+    "success_rate": 0.0,
+    "test_time": "2025-11-06T17:59:27.706403"
+  },
+  "results": [
+    {
+      "endpoint": "/status",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10011.15,
+      "success": false,
+      "description": "获取设备状态",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /status (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x00000196073A6A50>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:57:07.537422"
+    },
+    {
+      "endpoint": "/control",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10017.3,
+      "success": false,
+      "description": "控制加热器",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /control (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001960736F250>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:57:17.554754"
+    },
+    {
+      "endpoint": "/control",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10009.08,
+      "success": false,
+      "description": "关闭加热器",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /control (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001960736FB10>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:57:27.563867"
+    },
+    {
+      "endpoint": "/scanwifi",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10012.49,
+      "success": false,
+      "description": "扫描WiFi网络",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /scanwifi (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001960737F5C0>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:57:37.576386"
+    },
+    {
+      "endpoint": "/savewifi",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10014.56,
+      "success": false,
+      "description": "保存WiFi配置",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /savewifi (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x000001960737ED70>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:57:47.590973"
+    },
+    {
+      "endpoint": "/wificonfig",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10005.84,
+      "success": false,
+      "description": "配置WiFi",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /wificonfig (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607420DD0>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:57:57.596848"
+    },
+    {
+      "endpoint": "/restart",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10015.47,
+      "success": false,
+      "description": "重启设备",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /restart (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607410C00>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:58:07.612353"
+    },
+    {
+      "endpoint": "/factoryreset",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10016.11,
+      "success": false,
+      "description": "恢复出厂设置",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /factoryreset (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607411D00>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:58:17.628491"
+    },
+    {
+      "endpoint": "/ota",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10004.07,
+      "success": false,
+      "description": "OTA更新检查",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /ota (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607411F20>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:58:27.632591"
+    },
+    {
+      "endpoint": "/update",
+      "method": "POST",
+      "status_code": "ERROR",
+      "response_time_ms": 10003.52,
+      "success": false,
+      "description": "固件更新",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /update (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607412140>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:58:37.636154"
+    },
+    {
+      "endpoint": "/temperature_history",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10010.18,
+      "success": false,
+      "description": "温度历史记录",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /temperature_history (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607412360>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:58:47.646934"
+    },
+    {
+      "endpoint": "/scheduler",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10013.0,
+      "success": false,
+      "description": "定时任务管理",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /scheduler (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607412580>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:58:57.659970"
+    },
+    {
+      "endpoint": "/device_info",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10006.35,
+      "success": false,
+      "description": "设备详细信息",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /device_info (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x00000196074127A0>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:59:07.666354"
+    },
+    {
+      "endpoint": "/security_monitor",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10014.18,
+      "success": false,
+      "description": "安全监控",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /security_monitor (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x00000196074129C0>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:59:17.680570"
+    },
+    {
+      "endpoint": "/energy_stats",
+      "method": "GET",
+      "status_code": "ERROR",
+      "response_time_ms": 10008.48,
+      "success": false,
+      "description": "能耗统计",
+      "error": "HTTPConnectionPool(host='192.168.4.1', port=80): Max retries exceeded with url: /energy_stats (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x0000019607412BE0>, 'Connection to 192.168.4.1 timed out. (connect timeout=10)'))",
+      "timestamp": "2025-11-06T17:59:27.689083"
+    }
+  ]
+}

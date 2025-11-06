@@ -2,71 +2,71 @@
 chcp 65001 >nul
 
 echo ================================================
-echo 🎯 SmartOvenApp智能编译解决方案
+echo ð¯ SmartOvenAppæºè½ç¼è¯è§£å³æ¹æ¡
 echo ================================================
 echo.
 
-REM 检查Gradle 6.9.4
+REM æ£æ¥Gradle 6.9.4
 if not exist "..\gradle-6.9.4\bin\gradle.bat" (
-    echo ❌ 错误：未找到Gradle 6.9.4
-echo   请确保gradle-6.9.4文件夹位于项目根目录下
+    echo â éè¯¯ï¼æªæ¾å°Gradle 6.9.4
+echo   è¯·ç¡®ä¿gradle-6.9.4æä»¶å¤¹ä½äºé¡¹ç®æ ¹ç®å½ä¸
 echo.
     pause
     exit /b 1
 )
 
-echo ✅ 找到Gradle 6.9.4（官方兼容版本）
+echo â æ¾å°Gradle 6.9.4ï¼å®æ¹å¼å®¹çæ¬ï¼
 echo.
 
-REM 显示版本信息
-echo 📋 Gradle版本信息：
+REM æ¾ç¤ºçæ¬ä¿¡æ¯
+echo ð Gradleçæ¬ä¿¡æ¯ï¼
 "..\gradle-6.9.4\bin\gradle.bat" --version
 echo.
 
-REM 尝试正常编译
-echo 🔄 尝试正常编译（需要网络连接）...
-echo   如果失败，可能是网络或代理问题
+REM å°è¯æ­£å¸¸ç¼è¯
+echo ð å°è¯æ­£å¸¸ç¼è¯ï¼éè¦ç½ç»è¿æ¥ï¼...
+echo   å¦æå¤±è´¥ï¼å¯è½æ¯ç½ç»æä»£çé®é¢
 echo.
 
 "..\gradle-6.9.4\bin\gradle.bat" clean build
 
 if %ERRORLEVEL% EQU 0 (
     echo.
-    echo ✅ 编译成功！
+    echo â ç¼è¯æåï¼
 echo.
-echo 📱 APK文件位置：
+echo ð± APKæä»¶ä½ç½®ï¼
 echo    app\build\outputs\apk\debug\app-debug.apk
 echo.
     goto SUCCESS
 ) else (
     echo.
-    echo ❌ 编译失败，错误代码：%ERRORLEVEL%
+    echo â ç¼è¯å¤±è´¥ï¼éè¯¯ä»£ç ï¼%ERRORLEVEL%
 echo.
 )
 
-REM 如果编译失败，提供解决方案
-echo 🔧 编译失败解决方案：
+REM å¦æç¼è¯å¤±è´¥ï¼æä¾è§£å³æ¹æ¡
+echo ð§ ç¼è¯å¤±è´¥è§£å³æ¹æ¡ï¼
 echo.
-echo 方案1：检查网络连接和代理设置
-echo   - 确保您的网络可以访问Google和Maven仓库
-echo   - 如果使用代理，请配置代理设置
+echo æ¹æ¡1ï¼æ£æ¥ç½ç»è¿æ¥åä»£çè®¾ç½®
+echo   - ç¡®ä¿æ¨çç½ç»å¯ä»¥è®¿é®GoogleåMavenä»åº
+echo   - å¦æä½¿ç¨ä»£çï¼è¯·éç½®ä»£çè®¾ç½®
 echo.
-echo 方案2：使用Android Studio（推荐）
-echo   - 打开Android Studio
-echo   - File -> Open -> 选择SmartOvenApp文件夹
+echo æ¹æ¡2ï¼ä½¿ç¨Android Studioï¼æ¨èï¼
+echo   - æå¼Android Studio
+echo   - File -> Open -> éæ©SmartOvenAppæä»¶å¤¹
 echo   - Build -> Make Project
-echo   - APK位置：app\build\outputs\apk\debug\app-debug.apk
+echo   - APKä½ç½®ï¼app\build\outputs\apk\debug\app-debug.apk
 echo.
-echo 方案3：手动配置代理
-echo   - 运行 setup_proxy.bat 查看代理设置指南
-echo   - 或运行 android_studio_proxy_guide.bat
+echo æ¹æ¡3ï¼æå¨éç½®ä»£ç
+echo   - è¿è¡ setup_proxy.bat æ¥çä»£çè®¾ç½®æå
+echo   - æè¿è¡ android_studio_proxy_guide.bat
 echo.
 
 :SUCCESS
 echo.
-echo 💡 提示：
-echo   - 这是最稳定的官方兼容组合：Gradle 6.9.4 + AGP 4.2.2
-echo   - 如果命令行编译失败，强烈推荐使用Android Studio
+echo ð¡ æç¤ºï¼
+echo   - è¿æ¯æç¨³å®çå®æ¹å¼å®¹ç»åï¼Gradle 6.9.4 + AGP 4.2.2
+echo   - å¦æå½ä»¤è¡ç¼è¯å¤±è´¥ï¼å¼ºçæ¨èä½¿ç¨Android Studio
 echo.
 
 pause

@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>智能电烤箱 - 管理员页面</title>
+    <title>æºè½çµç¤ç®± - ç®¡çåé¡µé¢</title>
     <script>
-        // 页面加载时检查登录状态
+        // é¡µé¢å è½½æ¶æ£æ¥ç»å½ç¶æ
         window.addEventListener('load', function() {
             const isLoggedIn = sessionStorage.getItem('isLoggedIn');
             if (!isLoggedIn) {
-                // 未登录，跳转到登录页面
+                // æªç»å½ï¼è·³è½¬å°ç»å½é¡µé¢
                 window.location.href = 'login.html';
             }
         });
         
-        // 登出功能
+        // ç»åºåè½
         function logout() {
             sessionStorage.removeItem('isLoggedIn');
             window.location.href = 'login.html';
         }
         
-        // 修改密码功能
+        // ä¿®æ¹å¯ç åè½
         function changePassword() {
-            const newPassword = prompt('请输入新密码（至少8位）:');
+            const newPassword = prompt('è¯·è¾å¥æ°å¯ç ï¼è³å°8ä½ï¼:');
             if (newPassword && newPassword.length >= 8) {
                 localStorage.setItem('adminPassword', newPassword);
-                alert('密码修改成功！');
+                alert('å¯ç ä¿®æ¹æåï¼');
             } else if (newPassword) {
-                alert('密码长度至少需要8位！');
+                alert('å¯ç é¿åº¦è³å°éè¦8ä½ï¼');
             }
         }
     </script>
@@ -269,119 +269,119 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>智能电烤箱</h1>
-            <p>管理员控制面板</p>
+            <h1>æºè½çµç¤ç®±</h1>
+            <p>ç®¡çåæ§å¶é¢æ¿</p>
             <div class="admin-controls">
-                <button class="logout-btn" onclick="logout()">登出</button>
-                <button class="change-password-btn" onclick="changePassword()">修改密码</button>
+                <button class="logout-btn" onclick="logout()">ç»åº</button>
+                <button class="change-password-btn" onclick="changePassword()">ä¿®æ¹å¯ç </button>
             </div>
         </div>
 
-        <!-- 设备状态 -->
+        <!-- è®¾å¤ç¶æ -->
         <div class="status-card">
             <div class="status-grid">
                 <div class="status-item">
-                    <div class="status-label">当前温度</div>
+                    <div class="status-label">å½åæ¸©åº¦</div>
                     <div class="status-value temperature">--</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">目标温度</div>
+                    <div class="status-label">ç®æ æ¸©åº¦</div>
                     <div class="status-value">--</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">加热状态</div>
+                    <div class="status-label">å ç­ç¶æ</div>
                     <div class="status-value">--</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">WiFi状态</div>
+                    <div class="status-label">WiFiç¶æ</div>
                     <div class="status-value connected">--</div>
                 </div>
             </div>
         </div>
 
-        <!-- 温度控制 -->
+        <!-- æ¸©åº¦æ§å¶ -->
         <div class="control-section">
-            <h3 style="text-align: center; margin-bottom: 20px; font-size: 20px;">温度控制</h3>
+            <h3 style="text-align: center; margin-bottom: 20px; font-size: 20px;">æ¸©åº¦æ§å¶</h3>
             
-            <!-- 温度调整按钮 -->
+            <!-- æ¸©åº¦è°æ´æé® -->
             <div class="temp-controls" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-                <button class="temp-btn" onclick="changeTemp(-5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-5°</button>
-                <button class="temp-btn" onclick="changeTemp(-1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-1°</button>
-                <button class="temp-btn" onclick="changeTemp(1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+1°</button>
-                <button class="temp-btn" onclick="changeTemp(5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+5°</button>
+                <button class="temp-btn" onclick="changeTemp(-5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-5Â°</button>
+                <button class="temp-btn" onclick="changeTemp(-1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-1Â°</button>
+                <button class="temp-btn" onclick="changeTemp(1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+1Â°</button>
+                <button class="temp-btn" onclick="changeTemp(5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+5Â°</button>
             </div>
             
-            <!-- 直接设置温度 -->
+            <!-- ç´æ¥è®¾ç½®æ¸©åº¦ -->
             <div class="temp-input-group" style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: 500;">直接设置温度 (°C)</label>
+                <label style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: 500;">ç´æ¥è®¾ç½®æ¸©åº¦ (Â°C)</label>
                 <div style="display: flex; gap: 10px;">
-                    <input type="number" id="temp-input" style="flex: 1; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 16px;" placeholder="输入目标温度" min="0" max="300" step="1">
-                    <button onclick="setCustomTemp()" style="padding: 15px 20px; border: none; border-radius: 10px; background: #10b981; color: white; font-size: 16px; cursor: pointer;">设置</button>
+                    <input type="number" id="temp-input" style="flex: 1; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 16px;" placeholder="è¾å¥ç®æ æ¸©åº¦" min="0" max="300" step="1">
+                    <button onclick="setCustomTemp()" style="padding: 15px 20px; border: none; border-radius: 10px; background: #10b981; color: white; font-size: 16px; cursor: pointer;">è®¾ç½®</button>
                 </div>
             </div>
             
-            <!-- 预设温度 -->
+            <!-- é¢è®¾æ¸©åº¦ -->
             <div class="temp-presets" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
-                <button onclick="setPresetTemp(50)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">50°C</button>
-                <button onclick="setPresetTemp(100)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">100°C</button>
-                <button onclick="setPresetTemp(150)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">150°C</button>
-                <button onclick="setPresetTemp(180)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">180°C</button>
-                <button onclick="setPresetTemp(200)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">200°C</button>
-                <button onclick="setPresetTemp(250)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">250°C</button>
+                <button onclick="setPresetTemp(50)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">50Â°C</button>
+                <button onclick="setPresetTemp(100)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">100Â°C</button>
+                <button onclick="setPresetTemp(150)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">150Â°C</button>
+                <button onclick="setPresetTemp(180)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">180Â°C</button>
+                <button onclick="setPresetTemp(200)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">200Â°C</button>
+                <button onclick="setPresetTemp(250)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">250Â°C</button>
             </div>
             
-            <!-- 基础控制 -->
+            <!-- åºç¡æ§å¶ -->
             <div class="quick-controls">
                 <button class="control-btn primary" onclick="toggleHeating()">
-                    <span>🔥</span>
-                    <span>启动加热</span>
+                    <span>ð¥</span>
+                    <span>å¯å¨å ç­</span>
                 </button>
                 <button class="control-btn secondary" onclick="refreshData()">
-                    <span>🔄</span>
-                    <span>刷新</span>
+                    <span>ð</span>
+                    <span>å·æ°</span>
                 </button>
             </div>
         </div>
 
-        <!-- 管理员功能 -->
+        <!-- ç®¡çååè½ -->
         <div class="admin-section">
-            <div class="admin-title">系统管理</div>
+            <div class="admin-title">ç³»ç»ç®¡ç</div>
             <div class="admin-buttons">
                 <button class="admin-btn wifi" onclick="window.location.href='wifi_config.html'">
-                    <span>📶</span>
-                    <span>WiFi配置</span>
+                    <span>ð¶</span>
+                    <span>WiFiéç½®</span>
                 </button>
                 <button class="admin-btn restart" onclick="restartDevice()">
-                    <span>🔄</span>
-                    <span>重启设备</span>
+                    <span>ð</span>
+                    <span>éå¯è®¾å¤</span>
                 </button>
                 <button class="admin-btn reset" onclick="factoryReset()">
-                    <span>⚠️</span>
-                    <span>恢复出厂设置</span>
+                    <span>â ï¸</span>
+                    <span>æ¢å¤åºåè®¾ç½®</span>
                 </button>
             </div>
         </div>
 
-        <!-- API端点信息 -->
+        <!-- APIç«¯ç¹ä¿¡æ¯ -->
         <div class="api-section">
-            <div class="api-title">API端点</div>
+            <div class="api-title">APIç«¯ç¹</div>
             <div class="api-endpoints">
-                <div class="api-endpoint">GET /status - 获取设备状态</div>
-                <div class="api-endpoint">POST /control - 控制加热器</div>
-                <div class="api-endpoint">POST /wificonfig - 配置WiFi</div>
-                <div class="api-endpoint">POST /restart - 重启设备</div>
-                <div class="api-endpoint">POST /factoryreset - 恢复出厂设置</div>
+                <div class="api-endpoint">GET /status - è·åè®¾å¤ç¶æ</div>
+                <div class="api-endpoint">POST /control - æ§å¶å ç­å¨</div>
+                <div class="api-endpoint">POST /wificonfig - éç½®WiFi</div>
+                <div class="api-endpoint">POST /restart - éå¯è®¾å¤</div>
+                <div class="api-endpoint">POST /factoryreset - æ¢å¤åºåè®¾ç½®</div>
             </div>
         </div>
 
         <div class="footer">
-            <p>智能电烤箱控制器 v0.6.0</p>
-            <p>© 2025 智能电烤箱项目</p>
+            <p>æºè½çµç¤ç®±æ§å¶å¨ v0.6.0</p>
+            <p>Â© 2025 æºè½çµç¤ç®±é¡¹ç®</p>
         </div>
     </div>
 
     <script>
-        // 设备状态变量
+        // è®¾å¤ç¶æåé
         let deviceStatus = {
             currentTemp: 0,
             targetTemp: 180,
@@ -393,16 +393,16 @@
             firmwareVersion: ''
         };
 
-        // 页面加载完成后初始化
+        // é¡µé¢å è½½å®æååå§å
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('智能电烤箱管理员页面已加载');
+            console.log('æºè½çµç¤ç®±ç®¡çåé¡µé¢å·²å è½½');
             refreshData();
             
-            // 每5秒自动刷新数据
+            // æ¯5ç§èªå¨å·æ°æ°æ®
             setInterval(refreshData, 5000);
         });
 
-        // 刷新设备数据
+        // å·æ°è®¾å¤æ°æ®
         async function refreshData() {
             try {
                 const response = await fetch('/status');
@@ -410,16 +410,16 @@
                     const data = await response.json();
                     updateStatusDisplay(data);
                 } else {
-                    console.error('获取设备状态失败');
+                    console.error('è·åè®¾å¤ç¶æå¤±è´¥');
                     showDemoData();
                 }
             } catch (error) {
-                console.error('网络连接失败:', error);
+                console.error('ç½ç»è¿æ¥å¤±è´¥:', error);
                 showDemoData();
             }
         }
 
-        // 更新状态显示
+        // æ´æ°ç¶ææ¾ç¤º
         function updateStatusDisplay(data) {
             deviceStatus = {
                 currentTemp: data.temperature || 0,
@@ -432,29 +432,29 @@
                 firmwareVersion: data.firmware_version || ''
             };
 
-            // 安全地更新温度显示
+            // å®å¨å°æ´æ°æ¸©åº¦æ¾ç¤º
             const statusItems = document.querySelectorAll('.status-item');
             if (statusItems.length >= 4) {
                 statusItems[0].querySelector('.status-value').textContent = 
-                    deviceStatus.currentTemp.toFixed(1) + '°C';
+                    deviceStatus.currentTemp.toFixed(1) + 'Â°C';
                 statusItems[1].querySelector('.status-value').textContent = 
-                    deviceStatus.targetTemp.toFixed(1) + '°C';
+                    deviceStatus.targetTemp.toFixed(1) + 'Â°C';
                 
-                // 更新加热状态
-                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
+                // æ´æ°å ç­ç¶æ
+                const heatingStatus = deviceStatus.heatingEnabled ? 'å ç­ä¸­' : 'å·²åæ­¢';
                 statusItems[2].querySelector('.status-value').textContent = heatingStatus;
                 statusItems[2].querySelector('.status-value').style.color = 
                     deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
                 
-                // 更新WiFi状态
-                const wifiStatus = deviceStatus.wifiConnected ? '已连接' : '未连接';
+                // æ´æ°WiFiç¶æ
+                const wifiStatus = deviceStatus.wifiConnected ? 'å·²è¿æ¥' : 'æªè¿æ¥';
                 statusItems[3].querySelector('.status-value').textContent = wifiStatus;
                 statusItems[3].querySelector('.status-value').style.color = 
                     deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
             }
         }
 
-        // 显示演示数据（网络连接失败时）
+        // æ¾ç¤ºæ¼ç¤ºæ°æ®ï¼ç½ç»è¿æ¥å¤±è´¥æ¶ï¼
         function showDemoData() {
             const demoData = {
                 temperature: 25.5,
@@ -469,13 +469,13 @@
             
             const connectionStatus = document.getElementById('connection-status');
             if (connectionStatus) {
-                connectionStatus.textContent = '演示模式';
+                connectionStatus.textContent = 'æ¼ç¤ºæ¨¡å¼';
                 connectionStatus.style.color = '#f59e0b';
             }
             updateStatusDisplay(demoData);
         }
 
-        // 切换加热状态
+        // åæ¢å ç­ç¶æ
         async function toggleHeating() {
             try {
                 const response = await fetch('/control', {
@@ -491,26 +491,26 @@
                 if (response.ok) {
                     refreshData();
                 } else {
-                    alert('控制命令发送失败');
+                    alert('æ§å¶å½ä»¤åéå¤±è´¥');
                 }
             } catch (error) {
-                console.error('控制设备失败:', error);
-                alert('网络连接失败');
+                console.error('æ§å¶è®¾å¤å¤±è´¥:', error);
+                alert('ç½ç»è¿æ¥å¤±è´¥');
             }
         }
 
-        // 温度调整函数
+        // æ¸©åº¦è°æ´å½æ°
         function changeTemp(delta) {
             const newTemp = Math.max(0, Math.min(300, deviceStatus.targetTemp + delta));
             setTargetTemp(newTemp);
         }
 
-        // 设置预设温度
+        // è®¾ç½®é¢è®¾æ¸©åº¦
         function setPresetTemp(temp) {
             setTargetTemp(temp);
         }
 
-        // 设置自定义温度
+        // è®¾ç½®èªå®ä¹æ¸©åº¦
         function setCustomTemp() {
             const input = document.getElementById('temp-input');
             const temp = parseInt(input.value);
@@ -518,11 +518,11 @@
                 setTargetTemp(temp);
                 input.value = '';
             } else {
-                alert('请输入0-300°C之间的有效温度值');
+                alert('è¯·è¾å¥0-300Â°Cä¹é´çæææ¸©åº¦å¼');
             }
         }
 
-        // 设置目标温度
+        // è®¾ç½®ç®æ æ¸©åº¦
         async function setTargetTemp(temp) {
             try {
                 const response = await fetch('/control', {
@@ -539,50 +539,50 @@
                     deviceStatus.targetTemp = temp;
                     refreshData();
                 } else {
-                    alert('温度设置失败');
+                    alert('æ¸©åº¦è®¾ç½®å¤±è´¥');
                 }
             } catch (error) {
-                console.error('设置温度失败:', error);
-                alert('网络连接失败');
+                console.error('è®¾ç½®æ¸©åº¦å¤±è´¥:', error);
+                alert('ç½ç»è¿æ¥å¤±è´¥');
             }
         }
 
-        // 重启设备
+        // éå¯è®¾å¤
         async function restartDevice() {
-            if (confirm('确定要重启设备吗？设备将在5秒后重启。')) {
+            if (confirm('ç¡®å®è¦éå¯è®¾å¤åï¼è®¾å¤å°å¨5ç§åéå¯ã')) {
                 try {
                     const response = await fetch('/restart', {
                         method: 'POST'
                     });
                     
                     if (response.ok) {
-                        alert('设备重启命令已发送，请等待约30秒后重新连接');
+                        alert('è®¾å¤éå¯å½ä»¤å·²åéï¼è¯·ç­å¾çº¦30ç§åéæ°è¿æ¥');
                     } else {
-                        alert('重启命令发送失败');
+                        alert('éå¯å½ä»¤åéå¤±è´¥');
                     }
                 } catch (error) {
-                    console.error('重启设备失败:', error);
-                    alert('网络连接失败');
+                    console.error('éå¯è®¾å¤å¤±è´¥:', error);
+                    alert('ç½ç»è¿æ¥å¤±è´¥');
                 }
             }
         }
 
-        // 恢复出厂设置
+        // æ¢å¤åºåè®¾ç½®
         async function factoryReset() {
-            if (confirm('确定要恢复出厂设置吗？所有配置将被清除，设备将重启。')) {
+            if (confirm('ç¡®å®è¦æ¢å¤åºåè®¾ç½®åï¼ææéç½®å°è¢«æ¸é¤ï¼è®¾å¤å°éå¯ã')) {
                 try {
                     const response = await fetch('/factoryreset', {
                         method: 'POST'
                     });
                     
                     if (response.ok) {
-                        alert('恢复出厂设置命令已发送，设备将重启并进入配网模式');
+                        alert('æ¢å¤åºåè®¾ç½®å½ä»¤å·²åéï¼è®¾å¤å°éå¯å¹¶è¿å¥éç½æ¨¡å¼');
                     } else {
-                        alert('恢复出厂设置命令发送失败');
+                        alert('æ¢å¤åºåè®¾ç½®å½ä»¤åéå¤±è´¥');
                     }
                 } catch (error) {
-                    console.error('恢复出厂设置失败:', error);
-                    alert('网络连接失败');
+                    console.error('æ¢å¤åºåè®¾ç½®å¤±è´¥:', error);
+                    alert('ç½ç»è¿æ¥å¤±è´¥');
                 }
             }
         }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-设备发现协议调试脚本
-用于诊断设备发现协议的问题
+è®¾å¤åç°åè®®è°è¯èæ¬
+ç¨äºè¯æ­è®¾å¤åç°åè®®çé®é¢
 """
 
 import socket
@@ -9,31 +9,31 @@ import time
 import sys
 
 def debug_device_discovery():
-    """调试设备发现协议"""
-    print("=== 设备发现协议调试 ===")
+    """è°è¯è®¾å¤åç°åè®®"""
+    print("=== è®¾å¤åç°åè®®è°è¯ ===")
     
-    # 创建UDP socket（绑定到任意端口，让系统分配随机端口）
+    # åå»ºUDP socketï¼ç»å®å°ä»»æç«¯å£ï¼è®©ç³»ç»åééæºç«¯å£ï¼
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     sock.settimeout(5)
-    sock.bind(('', 0))  # 绑定到任意可用端口
+    sock.bind(('', 0))  # ç»å®å°ä»»æå¯ç¨ç«¯å£
     
-    # 测试1: 直接发送到设备IP
-    print("\n=== 测试1: 直接发送到设备IP ===")
+    # æµè¯1: ç´æ¥åéå°è®¾å¤IP
+    print("\n=== æµè¯1: ç´æ¥åéå°è®¾å¤IP ===")
     device_ip = "192.168.16.104"
     discovery_port = 8888
     
     discovery_message = "DISCOVER_SMARTOVEN"
     
-    print(f"发送发现请求到 {device_ip}:{discovery_port}")
-    print(f"消息内容: {discovery_message}")
+    print(f"åéåç°è¯·æ±å° {device_ip}:{discovery_port}")
+    print(f"æ¶æ¯åå®¹: {discovery_message}")
     
     try:
         sock.sendto(discovery_message.encode(), (device_ip, discovery_port))
-        print("✅ 直接发送成功")
+        print("â ç´æ¥åéæå")
         
-        # 监听响应
-        print("等待设备响应...")
+        # çå¬ååº
+        print("ç­å¾è®¾å¤ååº...")
         start_time = time.time()
         
         while time.time() - start_time < 10:
@@ -41,36 +41,36 @@ def debug_device_discovery():
                 data, addr = sock.recvfrom(1024)
                 response = data.decode('utf-8')
                 
-                print(f"✅ 收到设备响应")
-                print(f"来源IP: {addr[0]}")
-                print(f"来源端口: {addr[1]}")
-                print(f"响应内容: {response}")
+                print(f"â æ¶å°è®¾å¤ååº")
+                print(f"æ¥æºIP: {addr[0]}")
+                print(f"æ¥æºç«¯å£: {addr[1]}")
+                print(f"ååºåå®¹: {response}")
                 
                 return True
                 
             except socket.timeout:
-                print("❌ 直接发送测试超时，未收到响应")
+                print("â ç´æ¥åéæµè¯è¶æ¶ï¼æªæ¶å°ååº")
                 break
             except Exception as e:
-                print(f"❌ 接收错误: {e}")
+                print(f"â æ¥æ¶éè¯¯: {e}")
                 break
                 
     except Exception as e:
-        print(f"❌ 直接发送失败: {e}")
+        print(f"â ç´æ¥åéå¤±è´¥: {e}")
     
-    # 测试2: 广播发送
-    print("\n=== 测试2: 广播发送 ===")
+    # æµè¯2: å¹¿æ­åé
+    print("\n=== æµè¯2: å¹¿æ­åé ===")
     broadcast_address = "255.255.255.255"
     
-    print(f"发送发现请求到 {broadcast_address}:{discovery_port}")
-    print(f"消息内容: {discovery_message}")
+    print(f"åéåç°è¯·æ±å° {broadcast_address}:{discovery_port}")
+    print(f"æ¶æ¯åå®¹: {discovery_message}")
     
     try:
         sock.sendto(discovery_message.encode(), (broadcast_address, discovery_port))
-        print("✅ 广播发送成功")
+        print("â å¹¿æ­åéæå")
         
-        # 监听响应
-        print("等待设备响应...")
+        # çå¬ååº
+        print("ç­å¾è®¾å¤ååº...")
         start_time = time.time()
         
         while time.time() - start_time < 10:
@@ -78,61 +78,61 @@ def debug_device_discovery():
                 data, addr = sock.recvfrom(1024)
                 response = data.decode('utf-8')
                 
-                print(f"✅ 收到设备响应")
-                print(f"来源IP: {addr[0]}")
-                print(f"来源端口: {addr[1]}")
-                print(f"响应内容: {response}")
+                print(f"â æ¶å°è®¾å¤ååº")
+                print(f"æ¥æºIP: {addr[0]}")
+                print(f"æ¥æºç«¯å£: {addr[1]}")
+                print(f"ååºåå®¹: {response}")
                 
                 return True
                 
             except socket.timeout:
-                print("❌ 广播发送测试超时，未收到响应")
+                print("â å¹¿æ­åéæµè¯è¶æ¶ï¼æªæ¶å°ååº")
                 break
             except Exception as e:
-                print(f"❌ 接收错误: {e}")
+                print(f"â æ¥æ¶éè¯¯: {e}")
                 break
                 
     except Exception as e:
-        print(f"❌ 广播发送失败: {e}")
+        print(f"â å¹¿æ­åéå¤±è´¥: {e}")
     
-    # 测试3: 检查UDP端口状态
-    print("\n=== 测试3: UDP端口状态检查 ===")
+    # æµè¯3: æ£æ¥UDPç«¯å£ç¶æ
+    print("\n=== æµè¯3: UDPç«¯å£ç¶ææ£æ¥ ===")
     
-    # 检查设备UDP端口是否开放
+    # æ£æ¥è®¾å¤UDPç«¯å£æ¯å¦å¼æ¾
     test_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     test_sock.settimeout(3)
     
     try:
         test_sock.connect((device_ip, discovery_port))
-        print("✅ UDP端口8888已开放")
+        print("â UDPç«¯å£8888å·²å¼æ¾")
     except:
-        print("❌ UDP端口8888未开放")
+        print("â UDPç«¯å£8888æªå¼æ¾")
     
     test_sock.close()
     
-    # 测试4: 网络连通性检查
-    print("\n=== 测试4: 网络连通性检查 ===")
+    # æµè¯4: ç½ç»è¿éæ§æ£æ¥
+    print("\n=== æµè¯4: ç½ç»è¿éæ§æ£æ¥ ===")
     
-    # 检查设备是否可达
+    # æ£æ¥è®¾å¤æ¯å¦å¯è¾¾
     try:
-        # 使用ping命令检查连通性
+        # ä½¿ç¨pingå½ä»¤æ£æ¥è¿éæ§
         import subprocess
         result = subprocess.run(['ping', '-n', '1', device_ip], 
                               capture_output=True, text=True, timeout=5)
         if result.returncode == 0:
-            print("✅ 设备网络可达")
+            print("â è®¾å¤ç½ç»å¯è¾¾")
         else:
-            print("❌ 设备网络不可达")
-            print(f"Ping输出: {result.stdout}")
+            print("â è®¾å¤ç½ç»ä¸å¯è¾¾")
+            print(f"Pingè¾åº: {result.stdout}")
     except Exception as e:
-        print(f"❌ 网络连通性检查失败: {e}")
+        print(f"â ç½ç»è¿éæ§æ£æ¥å¤±è´¥: {e}")
     
     sock.close()
     return False
 
 def test_tcp_connection():
-    """测试TCP连接"""
-    print("\n=== TCP连接测试 ===")
+    """æµè¯TCPè¿æ¥"""
+    print("\n=== TCPè¿æ¥æµè¯ ===")
     
     device_ip = "192.168.16.104"
     tcp_port = 8888
@@ -141,49 +141,49 @@ def test_tcp_connection():
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(5)
         
-        print(f"尝试连接到 {device_ip}:{tcp_port}")
+        print(f"å°è¯è¿æ¥å° {device_ip}:{tcp_port}")
         sock.connect((device_ip, tcp_port))
-        print("✅ TCP连接成功")
+        print("â TCPè¿æ¥æå")
         
-        # 发送测试命令
+        # åéæµè¯å½ä»¤
         command = "GET_STATUS\n"
         sock.send(command.encode())
-        print(f"发送命令: {command.strip()}")
+        print(f"åéå½ä»¤: {command.strip()}")
         
-        # 接收响应
+        # æ¥æ¶ååº
         response = sock.recv(1024).decode('utf-8')
-        print(f"设备响应: {response}")
+        print(f"è®¾å¤ååº: {response}")
         
         sock.close()
         return True
         
     except Exception as e:
-        print(f"❌ TCP连接失败: {e}")
+        print(f"â TCPè¿æ¥å¤±è´¥: {e}")
         return False
 
 if __name__ == "__main__":
-    print("智能电烤箱设备发现协议调试工具")
+    print("æºè½çµç¤ç®±è®¾å¤åç°åè®®è°è¯å·¥å·")
     print("=" * 50)
     
-    # 运行调试测试
+    # è¿è¡è°è¯æµè¯
     discovery_success = debug_device_discovery()
     tcp_success = test_tcp_connection()
     
-    print("\n=== 调试总结 ===")
-    print(f"设备发现协议: {'✅ 正常' if discovery_success else '❌ 异常'}")
-    print(f"TCP连接: {'✅ 正常' if tcp_success else '❌ 异常'}")
+    print("\n=== è°è¯æ»ç» ===")
+    print(f"è®¾å¤åç°åè®®: {'â æ­£å¸¸' if discovery_success else 'â å¼å¸¸'}")
+    print(f"TCPè¿æ¥: {'â æ­£å¸¸' if tcp_success else 'â å¼å¸¸'}")
     
     if not discovery_success and tcp_success:
-        print("\n🔍 问题分析:")
-        print("设备TCP连接正常，但设备发现协议失败")
-        print("可能的原因:")
-        print("1. 设备UDP端口监听问题")
-        print("2. 设备没有正确处理发现请求")
-        print("3. 网络防火墙或路由器设置阻止了UDP广播")
-        print("4. 设备固件中的设备发现功能未启用")
+        print("\nð é®é¢åæ:")
+        print("è®¾å¤TCPè¿æ¥æ­£å¸¸ï¼ä½è®¾å¤åç°åè®®å¤±è´¥")
+        print("å¯è½çåå :")
+        print("1. è®¾å¤UDPç«¯å£çå¬é®é¢")
+        print("2. è®¾å¤æ²¡ææ­£ç¡®å¤çåç°è¯·æ±")
+        print("3. ç½ç»é²ç«å¢æè·¯ç±å¨è®¾ç½®é»æ­¢äºUDPå¹¿æ­")
+        print("4. è®¾å¤åºä»¶ä¸­çè®¾å¤åç°åè½æªå¯ç¨")
     elif discovery_success and tcp_success:
-        print("\n✅ 所有测试通过，设备发现协议工作正常")
+        print("\nâ æææµè¯éè¿ï¼è®¾å¤åç°åè®®å·¥ä½æ­£å¸¸")
     else:
-        print("\n❌ 设备连接存在严重问题")
+        print("\nâ è®¾å¤è¿æ¥å­å¨ä¸¥éé®é¢")
 
-    print("\n调试完成")
+    print("\nè°è¯å®æ")

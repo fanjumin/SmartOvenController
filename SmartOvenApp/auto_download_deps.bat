@@ -2,27 +2,27 @@
 chcp 65001 >nul
 
 echo ================================================
-echo 🤖 智能依赖下载和编译脚本
+echo ð¤ æºè½ä¾èµä¸è½½åç¼è¯èæ¬
 echo ================================================
 echo.
 
-echo 📊 检测网络连接状态...
+echo ð æ£æµç½ç»è¿æ¥ç¶æ...
 ping -n 3 www.google.com >nul 2>&1
 if %errorlevel% equ 0 (
-    echo ✅ 可以访问Google，网络连接正常
+    echo â å¯ä»¥è®¿é®Googleï¼ç½ç»è¿æ¥æ­£å¸¸
     goto :direct_download
 ) else (
-    echo ❌ 无法访问Google，可能需要代理
+    echo â æ æ³è®¿é®Googleï¼å¯è½éè¦ä»£ç
     goto :proxy_check
 )
 
 :direct_download
 echo.
-echo 🌐 尝试直接下载依赖包...
-echo 使用官方仓库配置...
+echo ð å°è¯ç´æ¥ä¸è½½ä¾èµå...
+echo ä½¿ç¨å®æ¹ä»åºéç½®...
 
-:: 恢复使用官方仓库配置
-echo // 使用官方仓库配置 > settings.gradle.temp
+:: æ¢å¤ä½¿ç¨å®æ¹ä»åºéç½®
+echo // ä½¿ç¨å®æ¹ä»åºéç½® > settings.gradle.temp
 echo pluginManagement { >> settings.gradle.temp
 echo     repositories { >> settings.gradle.temp
 echo         gradlePluginPortal() >> settings.gradle.temp
@@ -46,70 +46,70 @@ copy settings.gradle.temp settings.gradle >nul
 del settings.gradle.temp >nul
 
 echo.
-echo 🚀 开始编译项目...
+echo ð å¼å§ç¼è¯é¡¹ç®...
 ..\gradle-6.9.4\bin\gradle.bat clean build
 if %errorlevel% equ 0 (
-    echo ✅ 编译成功！
+    echo â ç¼è¯æåï¼
     goto :success
 ) else (
-    echo ❌ 编译失败，尝试其他方案...
+    echo â ç¼è¯å¤±è´¥ï¼å°è¯å¶ä»æ¹æ¡...
     goto :proxy_check
 )
 
 :proxy_check
 echo.
-echo 🔍 检查当前代理设置...
+echo ð æ£æ¥å½åä»£çè®¾ç½®...
 netsh winhttp show proxy
 echo.
-echo 📋 代理配置选项：
-echo 1. 使用Android Studio（推荐）
-echo 2. 配置系统代理
-echo 3. 使用离线包
+echo ð ä»£çéç½®éé¡¹ï¼
+echo 1. ä½¿ç¨Android Studioï¼æ¨èï¼
+echo 2. éç½®ç³»ç»ä»£ç
+echo 3. ä½¿ç¨ç¦»çº¿å
 echo.
-set /p choice="请选择方案 (1/2/3): "
+set /p choice="è¯·éæ©æ¹æ¡ (1/2/3): "
 
 if "%choice%"=="1" goto :android_studio
 if "%choice%"=="2" goto :setup_proxy  
 if "%choice%"=="3" goto :offline_mode
 
-echo ❌ 无效选择，默认使用Android Studio方案
+echo â æ æéæ©ï¼é»è®¤ä½¿ç¨Android Studioæ¹æ¡
 goto :android_studio
 
 :android_studio
 echo.
-echo 💡 Android Studio方案：
-echo 1. 打开Android Studio
-echo 2. File -> Open -> 选择SmartOvenApp文件夹
+echo ð¡ Android Studioæ¹æ¡ï¼
+echo 1. æå¼Android Studio
+echo 2. File -> Open -> éæ©SmartOvenAppæä»¶å¤¹
 echo 3. Build -> Make Project
-echo 4. Android Studio会自动处理网络和依赖问题
+echo 4. Android Studioä¼èªå¨å¤çç½ç»åä¾èµé®é¢
 echo.
-echo ✅ 这是最推荐的解决方案！
+echo â è¿æ¯ææ¨èçè§£å³æ¹æ¡ï¼
 goto :end
 
 :setup_proxy
 echo.
-echo 🔧 代理配置方案：
-echo 请运行 setup_proxy.bat 查看详细配置指南
-echo 或联系网络管理员获取代理服务器信息
+echo ð§ ä»£çéç½®æ¹æ¡ï¼
+echo è¯·è¿è¡ setup_proxy.bat æ¥çè¯¦ç»éç½®æå
+echo æèç³»ç½ç»ç®¡çåè·åä»£çæå¡å¨ä¿¡æ¯
 start setup_proxy.bat
 goto :end
 
 :offline_mode
 echo.
-echo 📦 离线模式：
-echo 需要手动下载依赖包到本地缓存
+echo ð¦ ç¦»çº¿æ¨¡å¼ï¼
+echo éè¦æå¨ä¸è½½ä¾èµåå°æ¬å°ç¼å­
 start google_maven_download_guide.bat
 goto :end
 
 :success
 echo.
-echo 🎉 恭喜！项目编译成功！
-echo 📱 APK文件位置：app\build\outputs\apk\
+echo ð æ­åï¼é¡¹ç®ç¼è¯æåï¼
+echo ð± APKæä»¶ä½ç½®ï¼app\build\outputs\apk\
 echo.
 
 :end
 echo.
 echo ================================================
-echo 脚本执行完成
+echo èæ¬æ§è¡å®æ
 echo ================================================
 pause

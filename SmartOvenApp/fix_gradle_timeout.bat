@@ -2,40 +2,40 @@
 chcp 65001 >nul
 
 echo ================================================
-echo 🔧 修复Gradle下载超时问题
+echo ð§ ä¿®å¤Gradleä¸è½½è¶æ¶é®é¢
 echo ================================================
 echo.
 
-echo 📊 当前问题：Gradle 7.6.4下载超时
-echo ❌ 错误信息：java.net.SocketTimeoutException: Connect timed out
+echo ð å½åé®é¢ï¼Gradle 7.6.4ä¸è½½è¶æ¶
+echo â éè¯¯ä¿¡æ¯ï¼java.net.SocketTimeoutException: Connect timed out
 echo.
 
-echo 💡 解决方案：使用本地已下载的Gradle 6.9.4
+echo ð¡ è§£å³æ¹æ¡ï¼ä½¿ç¨æ¬å°å·²ä¸è½½çGradle 6.9.4
 echo.
 
-echo 🚀 开始修复...
+echo ð å¼å§ä¿®å¤...
 echo.
 
-:: 方法1：直接使用本地Gradle 6.9.4编译
-echo 方法1：直接使用本地Gradle 6.9.4编译
-echo 执行命令：..\gradle-6.9.4\bin\gradle.bat clean build
+:: æ¹æ³1ï¼ç´æ¥ä½¿ç¨æ¬å°Gradle 6.9.4ç¼è¯
+echo æ¹æ³1ï¼ç´æ¥ä½¿ç¨æ¬å°Gradle 6.9.4ç¼è¯
+echo æ§è¡å½ä»¤ï¼..\gradle-6.9.4\bin\gradle.bat clean build
 echo.
 
 ..\gradle-6.9.4\bin\gradle.bat clean build
 if %errorlevel% equ 0 goto :success
 
 echo.
-echo ❌ 方法1失败，尝试方法2...
+echo â æ¹æ³1å¤±è´¥ï¼å°è¯æ¹æ³2...
 echo.
 
-:: 方法2：修改Gradle Wrapper配置
-echo 方法2：修改Gradle Wrapper配置使用本地Gradle
+:: æ¹æ³2ï¼ä¿®æ¹Gradle Wrapperéç½®
+echo æ¹æ³2ï¼ä¿®æ¹Gradle Wrapperéç½®ä½¿ç¨æ¬å°Gradle
 echo.
 
-:: 创建修复后的gradle-wrapper.properties
+:: åå»ºä¿®å¤åçgradle-wrapper.properties
 echo distributionBase=GRADLE_USER_HOME > gradle\wrapper\gradle-wrapper.properties.fixed
 echo distributionPath=wrapper/dists >> gradle\wrapper\gradle-wrapper.properties.fixed
-echo # 使用本地Gradle 6.9.4，避免下载超时 >> gradle\wrapper\gradle-wrapper.properties.fixed
+echo # ä½¿ç¨æ¬å°Gradle 6.9.4ï¼é¿åä¸è½½è¶æ¶ >> gradle\wrapper\gradle-wrapper.properties.fixed
 echo distributionUrl=gradle-6.9.4 >> gradle\wrapper\gradle-wrapper.properties.fixed
 echo zipStoreBase=GRADLE_USER_HOME >> gradle\wrapper\gradle-wrapper.properties.fixed
 echo zipStorePath=wrapper/dists >> gradle\wrapper\gradle-wrapper.properties.fixed
@@ -43,43 +43,43 @@ echo zipStorePath=wrapper/dists >> gradle\wrapper\gradle-wrapper.properties.fixe
 copy gradle\wrapper\gradle-wrapper.properties.fixed gradle\wrapper\gradle-wrapper.properties >nul
 del gradle\wrapper\gradle-wrapper.properties.fixed >nul
 
-echo ✅ Gradle Wrapper配置已更新
+echo â Gradle Wrapperéç½®å·²æ´æ°
 echo.
 
-echo 🚀 使用修复后的配置重新编译...
+echo ð ä½¿ç¨ä¿®å¤åçéç½®éæ°ç¼è¯...
 echo.
 
 gradlew.bat clean build
 if %errorlevel% equ 0 goto :success
 
 echo.
-echo ❌ 方法2失败，使用最终方案...
+echo â æ¹æ³2å¤±è´¥ï¼ä½¿ç¨æç»æ¹æ¡...
 echo.
 
-:: 最终方案：使用Android Studio
-echo 最终方案：使用Android Studio
+:: æç»æ¹æ¡ï¼ä½¿ç¨Android Studio
+echo æç»æ¹æ¡ï¼ä½¿ç¨Android Studio
 echo.
-echo 💡 Android Studio会自动处理Gradle下载问题
+echo ð¡ Android Studioä¼èªå¨å¤çGradleä¸è½½é®é¢
 echo.
-echo 📋 操作步骤：
-echo 1. 打开Android Studio
-echo 2. File -> Open -> 选择SmartOvenApp文件夹
+echo ð æä½æ­¥éª¤ï¼
+echo 1. æå¼Android Studio
+echo 2. File -> Open -> éæ©SmartOvenAppæä»¶å¤¹
 echo 3. Build -> Make Project
-echo 4. Android Studio会自动下载正确的Gradle版本
+echo 4. Android Studioä¼èªå¨ä¸è½½æ­£ç¡®çGradleçæ¬
 echo.
 
-echo ✅ 这是最可靠的解决方案！
+echo â è¿æ¯æå¯é çè§£å³æ¹æ¡ï¼
 goto :end
 
 :success
 echo.
-echo 🎉 恭喜！编译成功！
-echo 📱 APK文件位置：app\build\outputs\apk\
+echo ð æ­åï¼ç¼è¯æåï¼
+echo ð± APKæä»¶ä½ç½®ï¼app\build\outputs\apk\
 echo.
 
 :end
 echo.
 echo ================================================
-echo 修复完成
+echo ä¿®å¤å®æ
 echo ================================================
 pause

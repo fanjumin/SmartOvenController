@@ -87,7 +87,7 @@ goto :android_studio
 :success
 echo.
 echo ================================================
-echo COMPILATION SUCCESSFUL! 🎉
+echo COMPILATION SUCCESSFUL! ðŸŽ‰
 echo ================================================
 echo.
 echo APK files should be available at:

@@ -21,15 +21,15 @@
 </div>
 
 
-## 🐘 **Gradle Build Tool** 
+## 馃悩 **Gradle Build Tool** 
 
-**[Gradle](https://gradle.org/)** is a highly scalable build automation tool designed to handle everything from large, multi-project enterprise builds to quick development tasks across various languages. Gradle’s modular, performance-oriented architecture seamlessly integrates with development environments, making it a go-to solution for building, testing, and deploying applications on **Java**, **Kotlin**, **Scala**, **Android**, **Groovy**, **C++**, and **Swift**.
+**[Gradle](https://gradle.org/)** is a highly scalable build automation tool designed to handle everything from large, multi-project enterprise builds to quick development tasks across various languages. Gradle鈥檚 modular, performance-oriented architecture seamlessly integrates with development environments, making it a go-to solution for building, testing, and deploying applications on **Java**, **Kotlin**, **Scala**, **Android**, **Groovy**, **C++**, and **Swift**.
 
 > For a comprehensive overview, please visit the [official Gradle project homepage](https://gradle.org).
 
 ---
 
-### 🚀 **Getting Started**
+### 馃殌 **Getting Started**
 
 Starting with Gradle is easy with these essential resources. Follow these to install Gradle, set up initial projects, and explore supported platforms:
 
@@ -46,11 +46,11 @@ Starting with Gradle is easy with these essential resources. Follow these to ins
   - [Swift Apps](https://docs.gradle.org/current/samples/sample_building_swift_applications.html)
   - [Swift Libraries](https://docs.gradle.org/current/samples/sample_building_swift_libraries.html)
 
-> 📘 Explore Gradle’s full array of resources through the [Gradle Documentation](https://docs.gradle.org/).
+> 馃摌 Explore Gradle鈥檚 full array of resources through the [Gradle Documentation](https://docs.gradle.org/).
 
 ---
 
-### 🛠 **Seamless IDE & CI Integration**
+### 馃洜 **Seamless IDE & CI Integration**
 
 Gradle is built to work smoothly with a variety of Integrated Development Environments (IDEs) and Continuous Integration (CI) systems, providing extensive support for a streamlined workflow:
 
@@ -59,7 +59,7 @@ Gradle is built to work smoothly with a variety of Integrated Development Enviro
 
 ---
 
-### 🎓 **Learning Resources for Gradle**
+### 馃帗 **Learning Resources for Gradle**
 
 Kickstart your Gradle knowledge with courses, guides, and community support tailored to various experience levels:
 
@@ -68,7 +68,7 @@ Kickstart your Gradle knowledge with courses, guides, and community support tail
 
 ---
 
-### 💬 **Community Support & Resources**
+### 馃挰 **Community Support & Resources**
 
 The Gradle community offers a range of forums, documentation, and direct help to guide you through every step of your Gradle journey:
 
@@ -81,14 +81,14 @@ The Gradle community offers a range of forums, documentation, and direct help to
 
 ---
 
-### 🌱 **Contributing to Gradle**
+### 馃尡 **Contributing to Gradle**
 
 - **Contribution Guide**: [Contribute](https://github.com/gradle/gradle/blob/master/CONTRIBUTING.md) to Gradle by submitting patches or pull requests for code or documentation improvements.
 - **Code of Conduct**: Gradle enforces a [Code of Conduct](https://gradle.org/conduct/) to ensure a welcoming and supportive community for all contributors.
 
 ---
 
-### 🔗 **Additional Resources**
+### 馃敆 **Additional Resources**
 
 To make the most out of Gradle, take advantage of these additional resources:
 
@@ -96,7 +96,7 @@ To make the most out of Gradle, take advantage of these additional resources:
 - **[DPE University](https://dpeuniversity.gradle.com/app/catalog)** - Explore tutorials designed to get you started quickly.
 - **[Community Resources](https://gradle.org/resources/)** - Find more community-contributed materials to expand your knowledge.
 
-> 🌟 **Stay connected with the Gradle Community and access the latest news, training, and updates via [Slack](https://gradle.org/slack-invite), [Forum](https://discuss.gradle.org/), and our [Newsletter](https://newsletter.gradle.org)**.
+> 馃専 **Stay connected with the Gradle Community and access the latest news, training, and updates via [Slack](https://gradle.org/slack-invite), [Forum](https://discuss.gradle.org/), and our [Newsletter](https://newsletter.gradle.org)**.
 
 <br><br>
 <div align="center" style="margin-top: 20px;">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WiFiéç½® - æºè½çµç¤ç®±</title>
+    <title>WiFi閰嶇疆 - 鏅鸿兘鐢电儰绠?/title>
     <style>
         * {
             margin: 0;
@@ -317,65 +317,65 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">â</button>
-            <h1>WiFiéç½®</h1>
+            <button class="back-btn" onclick="goBack()">鈫?/button>
+            <h1>WiFi閰嶇疆</h1>
         </div>
 
         <div class="status-card">
             <div class="status-item">
-                <span class="status-label">è¿æ¥ç¶æ</span>
+                <span class="status-label">杩炴帴鐘舵€?/span>
                 <span class="status-value" id="connection-status">--</span>
             </div>
             <div class="status-item">
-                <span class="status-label">ç½ç»åç§°</span>
+                <span class="status-label">缃戠粶鍚嶇О</span>
                 <span class="status-value" id="wifi-ssid">--</span>
             </div>
             <div class="status-item">
-                <span class="status-label">IPå°å</span>
+                <span class="status-label">IP鍦板潃</span>
                 <span class="status-value" id="ip-address">--</span>
             </div>
             <div class="status-item">
-                <span class="status-label">ä¿¡å·å¼ºåº¦</span>
+                <span class="status-label">淇″彿寮哄害</span>
                 <span class="status-value" id="signal-strength">--</span>
             </div>
         </div>
 
         <div class="wifi-form">
             <div class="form-group">
-                <label class="form-label">WiFiåç§° (SSID)</label>
+                <label class="form-label">WiFi鍚嶇О (SSID)</label>
                 <input type="text" class="form-input" id="ssid-input" 
-                       placeholder="è¾å¥WiFiåç§°" autocomplete="off">
+                       placeholder="杈撳叆WiFi鍚嶇О" autocomplete="off">
             </div>
             
             <div class="form-group password-toggle">
-                <label class="form-label">WiFiå¯ç </label>
+                <label class="form-label">WiFi瀵嗙爜</label>
                 <input type="password" class="form-input" id="password-input" 
-                       placeholder="è¾å¥WiFiå¯ç " autocomplete="new-password">
-                <button class="toggle-btn" onclick="togglePassword()">æ¾ç¤º</button>
+                       placeholder="杈撳叆WiFi瀵嗙爜" autocomplete="new-password">
+                <button class="toggle-btn" onclick="togglePassword()">鏄剧ず</button>
             </div>
 
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="connectToWiFi()">
-                    è¿æ¥WiFi
+                    杩炴帴WiFi
                 </button>
                 <button class="btn btn-secondary" onclick="disconnectWiFi()">
-                    æ­å¼è¿æ¥
+                    鏂紑杩炴帴
                 </button>
             </div>
         </div>
 
         <div class="wifi-list">
             <div class="wifi-list-header">
-                <div class="wifi-list-title">å¯ç¨ç½ç»</div>
+                <div class="wifi-list-title">鍙敤缃戠粶</div>
                 <button class="refresh-btn" onclick="scanWiFi()">
-                    ð æ«æ
+                    馃攧 鎵弿
                 </button>
             </div>
             
             <div id="wifi-list-container">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>æ­£å¨æ«æå¯ç¨ç½ç»...</div>
+                    <div>姝ｅ湪鎵弿鍙敤缃戠粶...</div>
                 </div>
             </div>
         </div>
@@ -386,39 +386,39 @@
     <script>
         let isPasswordVisible = false;
 
-        // è¿åé¦é¡µ
+        // 杩斿洖棣栭〉
         function goBack() {
             window.location.href = 'mobile_home.html';
         }
 
-        // åæ¢å¯ç æ¾ç¤º
+        // 鍒囨崲瀵嗙爜鏄剧ず
         function togglePassword() {
             const passwordInput = document.getElementById('password-input');
             const toggleBtn = document.querySelector('.toggle-btn');
             
             if (isPasswordVisible) {
                 passwordInput.type = 'password';
-                toggleBtn.textContent = 'æ¾ç¤º';
+                toggleBtn.textContent = '鏄剧ず';
             } else {
                 passwordInput.type = 'text';
-                toggleBtn.textContent = 'éè';
+                toggleBtn.textContent = '闅愯棌';
             }
             
             isPasswordVisible = !isPasswordVisible;
         }
 
-        // è¿æ¥WiFi
+        // 杩炴帴WiFi
         async function connectToWiFi() {
             const ssid = document.getElementById('ssid-input').value.trim();
             const password = document.getElementById('password-input').value;
             
             if (!ssid) {
-                showToast('è¯·è¾å¥WiFiåç§°');
+                showToast('璇疯緭鍏iFi鍚嶇О');
                 return;
             }
 
             try {
-                showToast('æ­£å¨è¿æ¥...');
+                showToast('姝ｅ湪杩炴帴...');
                 
                 const response = await fetch('/wificonfig', {
                     method: 'POST',
@@ -429,23 +429,21 @@
                 });
 
                 if (response.ok) {
-                    showToast('è¿æ¥è¯·æ±å·²åéï¼è®¾å¤å°å°è¯è¿æ¥');
-                    // æ¸ç©ºè¾å¥æ¡
-                    document.getElementById('ssid-input').value = '';
+                    showToast('杩炴帴璇锋眰宸插彂閫侊紝璁惧灏嗗皾璇曡繛鎺?);
+                    // 娓呯┖杈撳叆妗?                    document.getElementById('ssid-input').value = '';
                     document.getElementById('password-input').value = '';
                     
-                    // ç­å¾ä¸æ®µæ¶é´åæ´æ°ç¶æ
-                    setTimeout(updateConnectionStatus, 3000);
+                    // 绛夊緟涓€娈垫椂闂村悗鏇存柊鐘舵€?                    setTimeout(updateConnectionStatus, 3000);
                 } else {
-                    showToast('è¿æ¥è¯·æ±å¤±è´¥');
+                    showToast('杩炴帴璇锋眰澶辫触');
                 }
             } catch (error) {
-                console.error('è¿æ¥WiFiå¤±è´¥:', error);
-                showToast('ç½ç»è¿æ¥å¤±è´¥');
+                console.error('杩炴帴WiFi澶辫触:', error);
+                showToast('缃戠粶杩炴帴澶辫触');
             }
         }
 
-        // æ­å¼WiFiè¿æ¥
+        // 鏂紑WiFi杩炴帴
         async function disconnectWiFi() {
             try {
                 const response = await fetch('/wificonfig', {
@@ -457,24 +455,24 @@
                 });
 
                 if (response.ok) {
-                    showToast('å·²æ­å¼WiFiè¿æ¥');
+                    showToast('宸叉柇寮€WiFi杩炴帴');
                     updateConnectionStatus();
                 } else {
-                    showToast('æ­å¼è¿æ¥å¤±è´¥');
+                    showToast('鏂紑杩炴帴澶辫触');
                 }
             } catch (error) {
-                console.error('æ­å¼WiFiè¿æ¥å¤±è´¥:', error);
-                showToast('ç½ç»è¿æ¥å¤±è´¥');
+                console.error('鏂紑WiFi杩炴帴澶辫触:', error);
+                showToast('缃戠粶杩炴帴澶辫触');
             }
         }
 
-        // æ«æWiFiç½ç»
+        // 鎵弿WiFi缃戠粶
         async function scanWiFi() {
             const container = document.getElementById('wifi-list-container');
             container.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>æ­£å¨æ«æå¯ç¨ç½ç»...</div>
+                    <div>姝ｅ湪鎵弿鍙敤缃戠粶...</div>
                 </div>
             `;
 
@@ -484,34 +482,34 @@
                     const networks = await response.json();
                     displayWiFiNetworks(networks);
                 } else {
-                    container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">æ«æå¤±è´¥ï¼è¯·éè¯</div>';
+                    container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">鎵弿澶辫触锛岃閲嶈瘯</div>';
                 }
             } catch (error) {
-                console.error('æ«æWiFiå¤±è´¥:', error);
-                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">ç½ç»è¿æ¥å¤±è´¥</div>';
+                console.error('鎵弿WiFi澶辫触:', error);
+                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">缃戠粶杩炴帴澶辫触</div>';
             }
         }
 
-        // æ¾ç¤ºWiFiç½ç»åè¡¨
+        // 鏄剧ずWiFi缃戠粶鍒楄〃
         function displayWiFiNetworks(networks) {
             const container = document.getElementById('wifi-list-container');
             
             if (!networks || networks.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">æªåç°å¯ç¨ç½ç»</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">鏈彂鐜板彲鐢ㄧ綉缁?/div>';
                 return;
             }
 
             let html = '';
             networks.forEach(network => {
                 const signalBars = getSignalBars(network.rssi);
-                const encryption = network.encryption > 0 ? 'ð' : 'ð';
+                const encryption = network.encryption > 0 ? '馃敀' : '馃敁';
                 
                 html += `
                     <div class="wifi-item" onclick="selectNetwork('${network.ssid}')">
                         <div class="wifi-info">
                             <div class="wifi-name">${network.ssid}</div>
                             <div class="wifi-details">
-                                ${encryption} ä¿¡å·å¼ºåº¦: ${network.rssi} dBm
+                                ${encryption} 淇″彿寮哄害: ${network.rssi} dBm
                             </div>
                         </div>
                         <div class="wifi-signal">
@@ -524,15 +522,14 @@
             container.innerHTML = html;
         }
 
-        // éæ©ç½ç»
+        // 閫夋嫨缃戠粶
         function selectNetwork(ssid) {
             document.getElementById('ssid-input').value = ssid;
             document.getElementById('password-input').focus();
-            showToast(`å·²éæ©ç½ç»: ${ssid}`);
+            showToast(`宸查€夋嫨缃戠粶: ${ssid}`);
         }
 
-        // è·åä¿¡å·å¼ºåº¦æ¡
-        function getSignalBars(rssi) {
+        // 鑾峰彇淇″彿寮哄害鏉?        function getSignalBars(rssi) {
             let bars = 0;
             if (rssi > -50) bars = 4;
             else if (rssi > -60) bars = 3;
@@ -546,8 +543,7 @@
             return html;
         }
 
-        // æ´æ°è¿æ¥ç¶æ
-        async function updateConnectionStatus() {
+        // 鏇存柊杩炴帴鐘舵€?        async function updateConnectionStatus() {
             try {
                 const response = await fetch('/status');
                 if (response.ok) {
@@ -559,13 +555,13 @@
                     const signalElement = document.getElementById('signal-strength');
                     
                     if (data.wifiConnected) {
-                        statusElement.textContent = 'å·²è¿æ¥';
+                        statusElement.textContent = '宸茶繛鎺?;
                         statusElement.className = 'status-value connected';
                         ssidElement.textContent = data.wifiSSID || '--';
                         ipElement.textContent = data.ipAddress || '--';
                         signalElement.textContent = (data.rssi || '--') + ' dBm';
                     } else {
-                        statusElement.textContent = 'æªè¿æ¥';
+                        statusElement.textContent = '鏈繛鎺?;
                         statusElement.className = 'status-value disconnected';
                         ssidElement.textContent = '--';
                         ipElement.textContent = '--';
@@ -573,11 +569,11 @@
                     }
                 }
             } catch (error) {
-                console.error('è·åè¿æ¥ç¶æå¤±è´¥:', error);
+                console.error('鑾峰彇杩炴帴鐘舵€佸け璐?', error);
             }
         }
 
-        // æ¾ç¤ºæç¤ºä¿¡æ¯
+        // 鏄剧ず鎻愮ず淇℃伅
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -588,16 +584,14 @@
             }, 2000);
         }
 
-        // é¡µé¢å è½½æ¶åå§å
+        // 椤甸潰鍔犺浇鏃跺垵濮嬪寲
         document.addEventListener('DOMContentLoaded', function() {
-            // ç«å³æ´æ°ä¸æ¬¡ç¶æ
-            updateConnectionStatus();
+            // 绔嬪嵆鏇存柊涓€娆＄姸鎬?            updateConnectionStatus();
             
-            // æ«æWiFiç½ç»
+            // 鎵弿WiFi缃戠粶
             scanWiFi();
             
-            // æ¯10ç§æ´æ°ä¸æ¬¡ç¶æ
-            setInterval(updateConnectionStatus, 10000);
+            // 姣?0绉掓洿鏂颁竴娆＄姸鎬?            setInterval(updateConnectionStatus, 10000);
         });
     </script>
 </body>

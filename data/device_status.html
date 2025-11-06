@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>è®¾å¤ç¶æ - æºè½çµç¤ç®±</title>
+    <title>设备状态 - 智能电烤箱</title>
     <style>
         * {
             margin: 0;
@@ -320,32 +320,32 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">â</button>
-            <h1>è®¾å¤ç¶æ</h1>
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1>设备状态</h1>
             <button class="refresh-btn" onclick="refreshStatus()">
-                ð å·æ°
+                🔄 刷新
             </button>
         </div>
 
-        <!-- æ¸©åº¦ç¶æå¡ç -->
+        <!-- 温度状态卡片 -->
         <div class="status-card">
-            <div class="card-title">ð¡ï¸ æ¸©åº¦çæ§</div>
+            <div class="card-title">🌡️ 温度监控</div>
             
             <div class="status-grid">
                 <div class="status-item">
-                    <div class="status-label">å½åæ¸©åº¦</div>
-                    <div class="status-value temperature" id="current-temp">--Â°C</div>
+                    <div class="status-label">当前温度</div>
+                    <div class="status-value temperature" id="current-temp">--°C</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">ç®æ æ¸©åº¦</div>
-                    <div class="status-value temperature" id="target-temp">--Â°C</div>
+                    <div class="status-label">目标温度</div>
+                    <div class="status-value temperature" id="target-temp">--°C</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">æ¸©åº¦å·®</div>
-                    <div class="status-value" id="temp-diff">--Â°C</div>
+                    <div class="status-label">温度差</div>
+                    <div class="status-value" id="temp-diff">--°C</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">å ç­ç¶æ</div>
+                    <div class="status-label">加热状态</div>
                     <div class="status-value heating" id="heating-status">--</div>
                 </div>
             </div>
@@ -354,72 +354,72 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="temp-progress" style="width: 0%"></div>
                 </div>
-                <div class="progress-text" id="temp-progress-text">æ¸©åº¦è¿åº¦: 0%</div>
+                <div class="progress-text" id="temp-progress-text">温度进度: 0%</div>
             </div>
         </div>
 
-        <!-- ç½ç»ç¶æå¡ç -->
+        <!-- 网络状态卡片 -->
         <div class="status-card">
-            <div class="card-title">ð¶ ç½ç»ç¶æ</div>
+            <div class="card-title">📶 网络状态</div>
             
             <div class="status-list">
                 <div class="list-item">
-                    <span class="list-label">è¿æ¥ç¶æ</span>
+                    <span class="list-label">连接状态</span>
                     <span class="list-value" id="connection-status">
                         <span class="indicator" id="connection-indicator"></span>
                         --
                     </span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">WiFiåç§°</span>
+                    <span class="list-label">WiFi名称</span>
                     <span class="list-value" id="wifi-ssid">--</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">IPå°å</span>
+                    <span class="list-label">IP地址</span>
                     <span class="list-value" id="ip-address">--</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">ä¿¡å·å¼ºåº¦</span>
+                    <span class="list-label">信号强度</span>
                     <span class="list-value" id="signal-strength">-- dBm</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">è®¾å¤ID</span>
+                    <span class="list-label">设备ID</span>
                     <span class="list-value" id="device-id">--</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">åºä»¶çæ¬</span>
+                    <span class="list-label">固件版本</span>
                     <span class="list-value" id="firmware-version">--</span>
                 </div>
             </div>
         </div>
 
-        <!-- ç³»ç»ä¿¡æ¯å¡ç -->
+        <!-- 绯荤粺淇℃伅鍗＄墖 -->
         <div class="status-card">
-            <div class="card-title">âï¸ ç³»ç»ä¿¡æ¯</div>
+            <div class="card-title">鈿欙笍 绯荤粺淇℃伅</div>
             
             <div class="status-list">
                 <div class="list-item">
-                    <span class="list-label">è¿è¡æ¶é´</span>
+                    <span class="list-label">运行时间</span>
                     <span class="list-value" id="uptime">--</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">åå­ä½¿ç¨</span>
+                    <span class="list-label">内存使用</span>
                     <span class="list-value" id="memory-usage">--</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">æåæ´æ°</span>
+                    <span class="list-label">最后更新</span>
                     <span class="list-value" id="last-update">--</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">è®¾å¤ç±»å</span>
-                    <span class="list-value" id="device-type">æºè½çµç¤ç®±æ§å¶å¨</span>
+                    <span class="list-label">设备类型</span>
+                    <span class="list-value" id="device-type">智能电烤箱控制器</span>
                 </div>
             </div>
         </div>
 
-        <!-- æ¸©åº¦è¶å¿å¾ -->
+        <!-- 温度趋势图 -->
         <div class="status-card">
-            <div class="card-title">ð æ¸©åº¦è¶å¿</div>
+            <div class="card-title">📈 温度趋势</div>
             
             <div class="chart-container">
                 <svg class="chart" viewBox="0 0 300 120" preserveAspectRatio="none">
@@ -434,19 +434,19 @@
                 </svg>
             </div>
             
-            <div class="timestamp" id="chart-timestamp">æ°æ®æ´æ°æ¶é´: --</div>
+            <div class="timestamp" id="chart-timestamp">鏁版嵁鏇存柊鏃堕棿: --</div>
         </div>
 
         <div class="action-buttons">
             <button class="btn btn-primary" onclick="exportData()">
-                å¯¼åºæ°æ®
+                导出数据
             </button>
             <button class="btn btn-secondary" onclick="resetStats()">
-                éç½®ç»è®¡
+                重置统计
             </button>
         </div>
 
-        <div class="timestamp" id="last-refresh">æåå·æ°: --</div>
+        <div class="timestamp" id="last-refresh">最后刷新: --</div>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -455,71 +455,64 @@
         let temperatureHistory = [];
         const maxHistoryPoints = 20;
 
-        // è¿åé¦é¡µ
+        // 杩斿洖棣栭〉
         function goBack() {
             window.location.href = 'mobile_home.html';
         }
 
-        // å·æ°ç¶æ
-        function refreshStatus() {
+        // 鍒锋柊鐘舵€?        function refreshStatus() {
             updateDeviceStatus();
-            showToast('ç¶æå·²å·æ°');
+            showToast('鐘舵€佸凡鍒锋柊');
         }
 
-        // æ´æ°è®¾å¤ç¶æ
-        async function updateDeviceStatus() {
+        // 鏇存柊璁惧鐘舵€?        async function updateDeviceStatus() {
             try {
                 const response = await fetch('/status');
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // æ´æ°æ¸©åº¦ä¿¡æ¯
-                    document.getElementById('current-temp').textContent = data.currentTemp + 'Â°C';
-                    document.getElementById('target-temp').textContent = data.targetTemp + 'Â°C';
+                    // 鏇存柊娓╁害淇℃伅
+                    document.getElementById('current-temp').textContent = data.currentTemp + '掳C';
+                    document.getElementById('target-temp').textContent = data.targetTemp + '掳C';
                     
                     const tempDiff = data.targetTemp - data.currentTemp;
                     document.getElementById('temp-diff').textContent = 
-                        (tempDiff > 0 ? '+' : '') + tempDiff + 'Â°C';
+                        (tempDiff > 0 ? '+' : '') + tempDiff + '掳C';
                     
-                    // æ´æ°å ç­ç¶æ
-                    const heatingStatus = document.getElementById('heating-status');
-                    heatingStatus.textContent = data.heatingEnabled ? 'å ç­ä¸­' : 'å³é­';
+                    // 鏇存柊鍔犵儹鐘舵€?                    const heatingStatus = document.getElementById('heating-status');
+                    heatingStatus.textContent = data.heatingEnabled ? '鍔犵儹涓? : '鍏抽棴';
                     heatingStatus.style.color = data.heatingEnabled ? '#f39c12' : '#95a5a6';
                     
-                    // æ´æ°æ¸©åº¦è¿åº¦æ¡
-                    const progress = data.targetTemp > 0 ? 
+                    // 鏇存柊娓╁害杩涘害鏉?                    const progress = data.targetTemp > 0 ? 
                         Math.min((data.currentTemp / data.targetTemp) * 100, 100) : 0;
                     document.getElementById('temp-progress').style.width = progress + '%';
                     document.getElementById('temp-progress-text').textContent = 
-                        'æ¸©åº¦è¿åº¦: ' + progress.toFixed(1) + '%';
+                        '娓╁害杩涘害: ' + progress.toFixed(1) + '%';
                     
-                    // æ´æ°ç½ç»ç¶æ
-                    updateConnectionStatus(data);
+                    // 鏇存柊缃戠粶鐘舵€?                    updateConnectionStatus(data);
                     
-                    // æ´æ°ç³»ç»ä¿¡æ¯
+                    // 鏇存柊绯荤粺淇℃伅
                     updateSystemInfo(data);
                     
-                    // æ´æ°æ¸©åº¦åå²
+                    // 鏇存柊娓╁害鍘嗗彶
                     updateTemperatureHistory(data.currentTemp);
                     
-                    // æ´æ°æåå·æ°æ¶é´
-                    document.getElementById('last-refresh').textContent = 
-                        'æåå·æ°: ' + new Date().toLocaleString();
+                    // 鏇存柊鏈€鍚庡埛鏂版椂闂?                    document.getElementById('last-refresh').textContent = 
+                        '鏈€鍚庡埛鏂? ' + new Date().toLocaleString();
                 }
             } catch (error) {
-                console.error('è·åè®¾å¤ç¶æå¤±è´¥:', error);
-                showToast('è·åç¶æå¤±è´¥');
+                console.error('鑾峰彇璁惧鐘舵€佸け璐?', error);
+                showToast('鑾峰彇鐘舵€佸け璐?);
             }
         }
 
-        // æ´æ°è¿æ¥ç¶æ
-        function updateConnectionStatus(data) {
+        // 鏇存柊杩炴帴鐘舵€?        function updateConnectionStatus(data) {
             const indicator = document.getElementById('connection-indicator');
             const statusElement = document.getElementById('connection-status');
             
             if (data.wifiConnected) {
                 indicator.className = 'indicator indicator-online';
-                statusElement.innerHTML = '<span class="indicator indicator-online"></span>å·²è¿æ¥';
+                statusElement.innerHTML = '<span class="indicator indicator-online"></span>宸茶繛鎺?;
                 
                 document.getElementById('wifi-ssid').textContent = data.wifiSSID || '--';
                 document.getElementById('ip-address').textContent = data.ipAddress || '--';
@@ -527,7 +520,7 @@
                     (data.rssi || '--') + ' dBm';
             } else {
                 indicator.className = 'indicator indicator-offline';
-                statusElement.innerHTML = '<span class="indicator indicator-offline"></span>æªè¿æ¥';
+                statusElement.innerHTML = '<span class="indicator indicator-offline"></span>鏈繛鎺?;
                 
                 document.getElementById('wifi-ssid').textContent = '--';
                 document.getElementById('ip-address').textContent = '--';
@@ -538,7 +531,7 @@
             document.getElementById('firmware-version').textContent = data.firmwareVersion || '--';
         }
 
-        // æ´æ°ç³»ç»ä¿¡æ¯
+        // 鏇存柊绯荤粺淇℃伅
         function updateSystemInfo(data) {
             document.getElementById('uptime').textContent = 
                 formatUptime(data.uptime || 0);
@@ -548,38 +541,37 @@
                 new Date().toLocaleString();
         }
 
-        // æ ¼å¼åè¿è¡æ¶é´
-        function formatUptime(seconds) {
+        // 鏍煎紡鍖栬繍琛屾椂闂?        function formatUptime(seconds) {
             const days = Math.floor(seconds / 86400);
             const hours = Math.floor((seconds % 86400) / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             
             if (days > 0) {
-                return `${days}å¤© ${hours}å°æ¶`;
+                return `${days}澶?${hours}灏忔椂`;
             } else if (hours > 0) {
-                return `${hours}å°æ¶ ${minutes}åé`;
+                return `${hours}灏忔椂 ${minutes}鍒嗛挓`;
             } else {
-                return `${minutes}åé`;
+                return `${minutes}鍒嗛挓`;
             }
         }
 
-        // æ´æ°æ¸©åº¦åå²
+        // 鏇存柊娓╁害鍘嗗彶
         function updateTemperatureHistory(currentTemp) {
             temperatureHistory.push({
                 temp: currentTemp,
                 time: new Date()
             });
             
-            // ä¿ææå¤20ä¸ªæ°æ®ç¹
+            // 淇濇寔鏈€澶?0涓暟鎹偣
             if (temperatureHistory.length > maxHistoryPoints) {
                 temperatureHistory.shift();
             }
             
-            // æ´æ°å¾è¡¨
+            // 鏇存柊鍥捐〃
             updateTemperatureChart();
         }
 
-        // æ´æ°æ¸©åº¦å¾è¡¨
+        // 鏇存柊娓╁害鍥捐〃
         function updateTemperatureChart() {
             if (temperatureHistory.length < 2) return;
             
@@ -587,9 +579,8 @@
             const chartHeight = 120;
             const maxTemp = Math.max(...temperatureHistory.map(d => d.temp));
             const minTemp = Math.min(...temperatureHistory.map(d => d.temp));
-            const tempRange = Math.max(maxTemp - minTemp, 10); // æå°èå´10åº¦
-            
-            // çææçº¿è·¯å¾
+            const tempRange = Math.max(maxTemp - minTemp, 10); // 鏈€灏忚寖鍥?0搴?            
+            // 鐢熸垚鎶樼嚎璺緞
             let linePath = '';
             let areaPath = '';
             
@@ -614,10 +605,10 @@
             document.getElementById('chart-area').setAttribute('d', areaPath);
             
             document.getElementById('chart-timestamp').textContent = 
-                'æ°æ®æ´æ°æ¶é´: ' + new Date().toLocaleTimeString();
+                '鏁版嵁鏇存柊鏃堕棿: ' + new Date().toLocaleTimeString();
         }
 
-        // å¯¼åºæ°æ®
+        // 瀵煎嚭鏁版嵁
         function exportData() {
             const data = {
                 timestamp: new Date().toISOString(),
@@ -639,17 +630,17 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showToast('æ°æ®å·²å¯¼åº');
+            showToast('鏁版嵁宸插鍑?);
         }
 
-        // éç½®ç»è®¡
+        // 閲嶇疆缁熻
         function resetStats() {
             temperatureHistory = [];
             updateTemperatureChart();
-            showToast('ç»è®¡å·²éç½®');
+            showToast('缁熻宸查噸缃?);
         }
 
-        // æ¾ç¤ºæç¤ºä¿¡æ¯
+        // 鏄剧ず鎻愮ず淇℃伅
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -660,13 +651,11 @@
             }, 2000);
         }
 
-        // é¡µé¢å è½½æ¶åå§å
+        // 椤甸潰鍔犺浇鏃跺垵濮嬪寲
         document.addEventListener('DOMContentLoaded', function() {
-            // ç«å³æ´æ°ä¸æ¬¡ç¶æ
-            updateDeviceStatus();
+            // 绔嬪嵆鏇存柊涓€娆＄姸鎬?            updateDeviceStatus();
             
-            // æ¯5ç§æ´æ°ä¸æ¬¡ç¶æ
-            setInterval(updateDeviceStatus, 5000);
+            // 姣?绉掓洿鏂颁竴娆＄姸鎬?            setInterval(updateDeviceStatus, 5000);
         });
     </script>
 </body>

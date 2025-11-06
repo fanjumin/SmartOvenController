@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绉诲姩绔〉闈㈡祴璇?/title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .temp-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .connected { color: green; }
+        .disconnected { color: red; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .primary { background: #007bff; color: white; }
+        .secondary { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>绉诲姩绔〉闈㈡祴璇?/h2>
+        
+        <div class="status-item">
+            <strong>褰撳墠娓╁害:</strong> 
+            <span id="currentTemp" class="temp-display">--</span>掳C
+        </div>
+        
+        <div class="status-item">
+            <strong>鐩爣娓╁害:</strong> 
+            <span id="targetTemp" class="temp-display">--</span>掳C
+        </div>
+        
+        <div class="status-item">
+            <strong>鍔犵儹鐘舵€?</strong> 
+            <span id="heatingStatus">--</span>
+        </div>
+        
+        <div class="status-item">
+            <strong>杩炴帴鐘舵€?</strong> 
+            <span id="connectionStatus">--</span>
+        </div>
+        
+        <div class="status-item">
+            <strong>璁惧ID:</strong> 
+            <span id="deviceId">--</span>
+        </div>
+        
+        <div class="status-item">
+            <strong>鍥轰欢鐗堟湰:</strong> 
+            <span id="firmwareVersion">--</span>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button class="primary" onclick="refreshData()">鍒锋柊鏁版嵁</button>
+            <button class="secondary" onclick="testDirectAPI()">娴嬭瘯鐩存帴API</button>
+        </div>
+        
+        <div id="log" style="margin-top: 20px; font-size: 12px; color: #666;"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML = message + '<br>' + logDiv.innerHTML;
+            console.log(message);
+        }
+
+        async function refreshData() {
+            log('寮€濮嬪埛鏂版暟鎹?..');
+            
+            try {
+                const response = await fetch('http://192.168.16.104/status', {
+                    method: 'GET',
+                    timeout: 5000
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log('鑾峰彇鏁版嵁鎴愬姛: ' + JSON.stringify(data));
+                
+                // 鏇存柊鐣岄潰
+                document.getElementById('currentTemp').textContent = data.temperature.toFixed(1);
+                document.getElementById('targetTemp').textContent = data.target_temperature.toFixed(1);
+                document.getElementById('heatingStatus').textContent = data.heating_enabled ? '鍔犵儹涓? : '宸插仠姝?;
+                document.getElementById('heatingStatus').className = data.heating_enabled ? 'connected' : 'disconnected';
+                document.getElementById('connectionStatus').textContent = '宸茶繛鎺?;
+                document.getElementById('connectionStatus').className = 'connected';
+                document.getElementById('deviceId').textContent = data.device_id;
+                document.getElementById('firmwareVersion').textContent = data.firmware_version;
+                
+                log('鐣岄潰鏇存柊瀹屾垚');
+                
+            } catch (error) {
+                log('鑾峰彇鏁版嵁澶辫触: ' + error.message);
+                document.getElementById('connectionStatus').textContent = '杩炴帴澶辫触';
+                document.getElementById('connectionStatus').className = 'disconnected';
+            }
+        }
+
+        async function testDirectAPI() {
+            log('娴嬭瘯鐩存帴API璋冪敤...');
+            
+            const urls = [
+                'http://192.168.16.104/status',
+                'http://192.168.16.104/',
+                'http://192.168.16.104/api/status'
+            ];
+            
+            for (const url of urls) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(url, { timeout: 5000 });
+                    const endTime = Date.now();
+                    const responseTime = endTime - startTime;
+                    
+                    log(`${url}: 鐘舵€佺爜 ${response.status}, 鍝嶅簲鏃堕棿 ${responseTime}ms`);
+                    
+                    if (response.status === 200) {
+                        const text = await response.text();
+                        log(`鍝嶅簲鍐呭: ${text.substring(0, 100)}...`);
+                    }
+                } catch (error) {
+                    log(`${url}: 閿欒 - ${error.message}`);
+                }
+            }
+        }
+
+        // 椤甸潰鍔犺浇鏃惰嚜鍔ㄥ埛鏂颁竴娆?        document.addEventListener('DOMContentLoaded', function() {
+            log('椤甸潰鍔犺浇瀹屾垚');
+            refreshData();
+        });
+
+        // 姣?0绉掕嚜鍔ㄥ埛鏂?        setInterval(refreshData, 30000);
+    </script>
+</body>
+</html>

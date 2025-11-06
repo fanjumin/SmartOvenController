@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>è®¾ç½®ä¸å¸®å© - æºè½çµç¤ç®±</title>
+    <title>璁剧疆涓庡府鍔?- 鏅鸿兘鐢电儰绠?/title>
     <style>
         * {
             margin: 0;
@@ -194,7 +194,7 @@
         }
 
         .select-wrapper:after {
-            content: "â¼";
+            content: "鈻?;
             position: absolute;
             right: 10px;
             top: 50%;
@@ -423,40 +423,40 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">â</button>
-            <h1>è®¾ç½®ä¸å¸®å©</h1>
+            <button class="back-btn" onclick="goBack()">鈫?/button>
+            <h1>璁剧疆涓庡府鍔?/h1>
         </div>
 
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('settings')">âï¸ è®¾ç½®</button>
-                <button class="tab-btn" onclick="switchTab('help')">â å¸®å©</button>
-                <button class="tab-btn" onclick="switchTab('about')">â¹ï¸ å³äº</button>
+                <button class="tab-btn active" onclick="switchTab('settings')">鈿欙笍 璁剧疆</button>
+                <button class="tab-btn" onclick="switchTab('help')">鉂?甯姪</button>
+                <button class="tab-btn" onclick="switchTab('about')">鈩癸笍 鍏充簬</button>
             </div>
 
-            <!-- è®¾ç½®æ ç­¾é¡µ -->
+            <!-- 璁剧疆鏍囩椤?-->
             <div id="settings" class="tab-content active">
                 <div class="section">
-                    <div class="section-title">ð¡ï¸ æ¸©åº¦è®¾ç½®</div>
+                    <div class="section-title">馃尅锔?娓╁害璁剧疆</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">æ¸©åº¦åä½</span>
+                            <span class="setting-label">娓╁害鍗曚綅</span>
                             <div class="select-wrapper">
                                 <select id="temp-unit">
-                                    <option value="celsius">ææ°åº¦ (Â°C)</option>
-                                    <option value="fahrenheit">åæ°åº¦ (Â°F)</option>
+                                    <option value="celsius">鎽勬皬搴?(掳C)</option>
+                                    <option value="fahrenheit">鍗庢皬搴?(掳F)</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">æ¸©åº¦ç²¾åº¦</span>
+                            <span class="setting-label">娓╁害绮惧害</span>
                             <div class="select-wrapper">
                                 <select id="temp-precision">
-                                    <option value="1">1Â°C</option>
-                                    <option value="5">5Â°C</option>
-                                    <option value="10">10Â°C</option>
+                                    <option value="1">1掳C</option>
+                                    <option value="5">5掳C</option>
+                                    <option value="10">10掳C</option>
                                 </select>
                             </div>
                         </div>
@@ -464,7 +464,7 @@
 
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">èªå¨ä¿å­æ¸©åº¦è®¾ç½®</span>
+                            <span class="setting-label">鑷姩淇濆瓨娓╁害璁剧疆</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="auto-save-temp">
                                 <span class="slider"></span>
@@ -472,7 +472,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">æ¸©åº¦æ¥è­¦æé</span>
+                            <span class="setting-label">娓╁害鎶ヨ鎻愰啋</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="temp-alert">
                                 <span class="slider"></span>
@@ -482,25 +482,25 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">ð± çé¢è®¾ç½®</div>
+                    <div class="section-title">馃摫 鐣岄潰璁剧疆</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">ä¸»é¢æ¨¡å¼</span>
+                            <span class="setting-label">涓婚妯″紡</span>
                             <div class="select-wrapper">
                                 <select id="theme-mode">
-                                    <option value="light">æµè²æ¨¡å¼</option>
-                                    <option value="dark">æ·±è²æ¨¡å¼</option>
-                                    <option value="auto">èªå¨åæ¢</option>
+                                    <option value="light">娴呰壊妯″紡</option>
+                                    <option value="dark">娣辫壊妯″紡</option>
+                                    <option value="auto">鑷姩鍒囨崲</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">è¯­è¨è®¾ç½®</span>
+                            <span class="setting-label">璇█璁剧疆</span>
                             <div class="select-wrapper">
                                 <select id="language">
-                                    <option value="zh-CN">ç®ä½ä¸­æ</option>
+                                    <option value="zh-CN">绠€浣撲腑鏂?/option>
                                     <option value="en-US">English</option>
                                 </select>
                             </div>
@@ -509,7 +509,7 @@
 
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">æ¯å¨åé¦</span>
+                            <span class="setting-label">鎸姩鍙嶉</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="vibration">
                                 <span class="slider"></span>
@@ -517,7 +517,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">å£°é³æç¤º</span>
+                            <span class="setting-label">澹伴煶鎻愮ず</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="sound">
                                 <span class="slider"></span>
@@ -527,29 +527,29 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">ð§ ç³»ç»è®¾ç½®</div>
+                    <div class="section-title">馃敡 绯荤粺璁剧疆</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">èªå¨å·æ°é´é</span>
+                            <span class="setting-label">鑷姩鍒锋柊闂撮殧</span>
                             <div class="select-wrapper">
                                 <select id="refresh-interval">
-                                    <option value="3">3ç§</option>
-                                    <option value="5">5ç§</option>
-                                    <option value="10">10ç§</option>
-                                    <option value="30">30ç§</option>
+                                    <option value="3">3绉?/option>
+                                    <option value="5">5绉?/option>
+                                    <option value="10">10绉?/option>
+                                    <option value="30">30绉?/option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">æ°æ®ä¿å­å¨æ</span>
+                            <span class="setting-label">鏁版嵁淇濆瓨鍛ㄦ湡</span>
                             <div class="select-wrapper">
                                 <select id="data-retention">
-                                    <option value="7">7å¤©</option>
-                                    <option value="30">30å¤©</option>
-                                    <option value="90">90å¤©</option>
-                                    <option value="365">1å¹´</option>
+                                    <option value="7">7澶?/option>
+                                    <option value="30">30澶?/option>
+                                    <option value="90">90澶?/option>
+                                    <option value="365">1骞?/option>
                                 </select>
                             </div>
                         </div>
@@ -559,210 +559,204 @@
 
                     <div class="setting-item">
                         <button class="btn btn-secondary" onclick="restartDevice()">
-                            éå¯è®¾å¤
+                            閲嶅惎璁惧
                         </button>
                         
                         <button class="btn btn-danger" onclick="showResetModal()">
-                            æ¢å¤åºåè®¾ç½®
+                            鎭㈠鍑哄巶璁剧疆
                         </button>
                     </div>
                 </div>
 
                 <button class="btn btn-primary" onclick="saveSettings()">
-                    ä¿å­è®¾ç½®
+                    淇濆瓨璁剧疆
                 </button>
             </div>
 
-            <!-- å¸®å©æ ç­¾é¡µ -->
+            <!-- 甯姪鏍囩椤?-->
             <div id="help" class="tab-content">
                 <div class="section">
-                    <div class="section-title">â å¸¸è§é®é¢</div>
+                    <div class="section-title">鉂?甯歌闂</div>
                     
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>å¦ä½è¿æ¥è®¾å¤ï¼</span>
-                            <span class="expand-icon">â¼</span>
+                            <span>濡備綍杩炴帴璁惧锛?/span>
+                            <span class="expand-icon">鈻?/span>
                         </div>
                         <div class="help-answer">
-                            1. ç¡®ä¿è®¾å¤å·²éçµå¹¶å¯å¨<br>
-                            2. å¨ææºWiFiè®¾ç½®ä¸­è¿æ¥å°è®¾å¤ç­ç¹<br>
-                            3. æå¼æµè§å¨è®¿é®è®¾å¤IPå°å<br>
-                            4. å¨WiFiéç½®é¡µé¢è®¾ç½®å®¶åº­WiFiè¿æ¥
+                            1. 纭繚璁惧宸查€氱數骞跺惎鍔?br>
+                            2. 鍦ㄦ墜鏈篧iFi璁剧疆涓繛鎺ュ埌璁惧鐑偣<br>
+                            3. 鎵撳紑娴忚鍣ㄨ闂澶嘔P鍦板潃<br>
+                            4. 鍦╓iFi閰嶇疆椤甸潰璁剧疆瀹跺涵WiFi杩炴帴
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>æ¸©åº¦æ§å¶ä¸åç¡®æä¹åï¼</span>
-                            <span class="expand-icon">â¼</span>
+                            <span>娓╁害鎺у埗涓嶅噯纭€庝箞鍔烇紵</span>
+                            <span class="expand-icon">鈻?/span>
                         </div>
                         <div class="help-answer">
-                            1. æ£æ¥æ¸©åº¦ä¼ æå¨è¿æ¥æ¯å¦æ­£å¸¸<br>
-                            2. ç¡®ä¿è®¾å¤æ¾ç½®å¨éé£è¯å¥½çä½ç½®<br>
-                            3. å°è¯æ ¡åæ¸©åº¦ä¼ æå¨<br>
-                            4. å¦æé®é¢æç»­ï¼è¯·èç³»ææ¯æ¯æ
+                            1. 妫€鏌ユ俯搴︿紶鎰熷櫒杩炴帴鏄惁姝ｅ父<br>
+                            2. 纭繚璁惧鏀剧疆鍦ㄩ€氶鑹ソ鐨勪綅缃?br>
+                            3. 灏濊瘯鏍″噯娓╁害浼犳劅鍣?br>
+                            4. 濡傛灉闂鎸佺画锛岃鑱旂郴鎶€鏈敮鎸?                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelp(this)">
+                            <span>璁惧鏃犳硶杩炴帴WiFi锛?/span>
+                            <span class="expand-icon">鈻?/span>
+                        </div>
+                        <div class="help-answer">
+                            1. 妫€鏌iFi瀵嗙爜鏄惁姝ｇ‘<br>
+                            2. 纭繚璺敱鍣ㄤ俊鍙峰己搴﹁冻澶?br>
+                            3. 灏濊瘯閲嶅惎璁惧鍜岃矾鐢卞櫒<br>
+                            4. 妫€鏌ヨ澶囨槸鍚︽敮鎸?.4GHz棰戞
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>è®¾å¤æ æ³è¿æ¥WiFiï¼</span>
-                            <span class="expand-icon">â¼</span>
+                            <span>濡備綍鏇存柊鍥轰欢锛?/span>
+                            <span class="expand-icon">鈻?/span>
                         </div>
                         <div class="help-answer">
-                            1. æ£æ¥WiFiå¯ç æ¯å¦æ­£ç¡®<br>
-                            2. ç¡®ä¿è·¯ç±å¨ä¿¡å·å¼ºåº¦è¶³å¤<br>
-                            3. å°è¯éå¯è®¾å¤åè·¯ç±å¨<br>
-                            4. æ£æ¥è®¾å¤æ¯å¦æ¯æ2.4GHzé¢æ®µ
-                        </div>
-                    </div>
-
-                    <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
-                            <span>å¦ä½æ´æ°åºä»¶ï¼</span>
-                            <span class="expand-icon">â¼</span>
-                        </div>
-                        <div class="help-answer">
-                            1. å¨è®¾ç½®é¡µé¢æ£æ¥å½ååºä»¶çæ¬<br>
-                            2. è®¿é®å®æ¹ç½ç«ä¸è½½ææ°åºä»¶<br>
-                            3. éè¿OTAæUSBæ¹å¼æ´æ°<br>
-                            4. æ´æ°è¿ç¨ä¸­è¯·å¿æ­çµ
-                        </div>
+                            1. 鍦ㄨ缃〉闈㈡鏌ュ綋鍓嶅浐浠剁増鏈?br>
+                            2. 璁块棶瀹樻柟缃戠珯涓嬭浇鏈€鏂板浐浠?br>
+                            3. 閫氳繃OTA鎴朥SB鏂瑰紡鏇存柊<br>
+                            4. 鏇存柊杩囩▼涓鍕挎柇鐢?                        </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">ð ä½¿ç¨æå</div>
+                    <div class="section-title">馃摉 浣跨敤鎸囧崡</div>
                     
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>åºæ¬æä½æµç¨</span>
-                            <span class="expand-icon">â¼</span>
+                            <span>鍩烘湰鎿嶄綔娴佺▼</span>
+                            <span class="expand-icon">鈻?/span>
                         </div>
                         <div class="help-answer">
-                            1. è¿æ¥è®¾å¤çµæºå¹¶å¯å¨<br>
-                            2. éè¿ææºè¿æ¥è®¾å¤WiFi<br>
-                            3. è®¾ç½®ç®æ æ¸©åº¦åæ¶é´<br>
-                            4. å¼å§å ç­å¹¶çæ§ç¶æ<br>
-                            5. å®æåå³é­è®¾å¤
-                        </div>
+                            1. 杩炴帴璁惧鐢垫簮骞跺惎鍔?br>
+                            2. 閫氳繃鎵嬫満杩炴帴璁惧WiFi<br>
+                            3. 璁剧疆鐩爣娓╁害鍜屾椂闂?br>
+                            4. 寮€濮嬪姞鐑苟鐩戞帶鐘舵€?br>
+                            5. 瀹屾垚鍚庡叧闂澶?                        </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>å®å¨æ³¨æäºé¡¹</span>
-                            <span class="expand-icon">â¼</span>
+                            <span>瀹夊叏娉ㄦ剰浜嬮」</span>
+                            <span class="expand-icon">鈻?/span>
                         </div>
                         <div class="help-answer">
-                            1. è¯·å¿å¨æ äººçç®¡æ¶é¿æ¶é´è¿è¡<br>
-                            2. ç¡®ä¿è®¾å¤å¨å´æ æçç©å<br>
-                            3. å®ææ£æ¥è®¾å¤çº¿è·¯å®å¨<br>
-                            4. å¿ç«¥ä½¿ç¨æ¶éæäººéªå<br>
-                            5. å¼å¸¸æåµç«å³æ­çµæ£æ¥
-                        </div>
+                            1. 璇峰嬁鍦ㄦ棤浜虹湅绠℃椂闀挎椂闂磋繍琛?br>
+                            2. 纭繚璁惧鍛ㄥ洿鏃犳槗鐕冪墿鍝?br>
+                            3. 瀹氭湡妫€鏌ヨ澶囩嚎璺畨鍏?br>
+                            4. 鍎跨浣跨敤鏃堕渶鎴愪汉闄悓<br>
+                            5. 寮傚父鎯呭喌绔嬪嵆鏂數妫€鏌?                        </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">ð ææ¯æ¯æ</div>
+                    <div class="section-title">馃摓 鎶€鏈敮鎸?/div>
                     
                     <div class="help-item">
                         <div class="setting-row">
-                            <span class="setting-label">å®¢æçµè¯</span>
+                            <span class="setting-label">瀹㈡湇鐢佃瘽</span>
                             <span class="setting-value">400-123-4567</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">ææ¯æ¯æé®ç®±</span>
+                            <span class="setting-label">鎶€鏈敮鎸侀偖绠?/span>
                             <span class="setting-value">support@smartoven.com</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">å®æ¹ç½ç«</span>
+                            <span class="setting-label">瀹樻柟缃戠珯</span>
                             <span class="setting-value">www.smartoven.com</span>
                         </div>
                     </div>
 
                     <button class="btn btn-primary" onclick="contactSupport()">
-                        èç³»ææ¯æ¯æ
-                    </button>
+                        鑱旂郴鎶€鏈敮鎸?                    </button>
                 </div>
             </div>
 
-            <!-- å³äºæ ç­¾é¡µ -->
+            <!-- 鍏充簬鏍囩椤?-->
             <div id="about" class="tab-content">
                 <div class="section">
-                    <div class="section-title">â¹ï¸ è®¾å¤ä¿¡æ¯</div>
+                    <div class="section-title">鈩癸笍 璁惧淇℃伅</div>
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">è®¾å¤åå·</div>
+                            <div class="info-label">璁惧鍨嬪彿</div>
                             <div class="info-value" id="device-model">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">åºä»¶çæ¬</div>
+                            <div class="info-label">鍥轰欢鐗堟湰</div>
                             <div class="info-value" id="firmware-version">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">ç¡¬ä»¶çæ¬</div>
+                            <div class="info-label">纭欢鐗堟湰</div>
                             <div class="info-value" id="hardware-version">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">åºåå·</div>
+                            <div class="info-label">搴忓垪鍙?/div>
                             <div class="info-value" id="serial-number">--</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">ð ç³»ç»ç¶æ</div>
+                    <div class="section-title">馃搳 绯荤粺鐘舵€?/div>
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">è¿è¡æ¶é´</div>
+                            <div class="info-label">杩愯鏃堕棿</div>
                             <div class="info-value" id="uptime">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">åå­ä½¿ç¨</div>
+                            <div class="info-label">鍐呭瓨浣跨敤</div>
                             <div class="info-value" id="memory-usage">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">æåå¯å¨</div>
+                            <div class="info-label">鏈€鍚庡惎鍔?/div>
                             <div class="info-value" id="last-boot">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">ç½ç»ç¶æ</div>
+                            <div class="info-label">缃戠粶鐘舵€?/div>
                             <div class="info-value" id="network-status">--</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">ð çæ¬ä¿¡æ¯</div>
+                    <div class="section-title">馃搫 鐗堟湰淇℃伅</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">åºç¨çæ¬</span>
+                            <span class="setting-label">搴旂敤鐗堟湰</span>
                             <span class="setting-value">v1.0.0</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">æå»ºæ¥æ</span>
+                            <span class="setting-label">鏋勫缓鏃ユ湡</span>
                             <span class="setting-value">2024-01-01</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">å¼åè</span>
+                            <span class="setting-label">寮€鍙戣€?/span>
                             <span class="setting-value">SmartOven Team</span>
                         </div>
                     </div>
 
                     <button class="btn btn-secondary" onclick="checkUpdate()">
-                        æ£æ¥æ´æ°
-                    </button>
+                        妫€鏌ユ洿鏂?                    </button>
                     
                     <button class="btn btn-primary" onclick="exportLogs()">
-                        å¯¼åºæ¥å¿
+                        瀵煎嚭鏃ュ織
                     </button>
                 </div>
             </div>
@@ -774,36 +768,32 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // è¿åé¦é¡µ
+        // 杩斿洖棣栭〉
         function goBack() {
             window.location.href = 'mobile_home.html';
         }
 
-        // åæ¢æ ç­¾é¡µ
-        function switchTab(tabName) {
-            // éèæææ ç­¾åå®¹
-            document.querySelectorAll('.tab-content').forEach(tab => {
+        // 鍒囨崲鏍囩椤?        function switchTab(tabName) {
+            // 闅愯棌鎵€鏈夋爣绛惧唴瀹?            document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // ç§»é¤æææ ç­¾æé®çæ¿æ´»ç¶æ
-            document.querySelectorAll('.tab-btn').forEach(btn => {
+            // 绉婚櫎鎵€鏈夋爣绛炬寜閽殑婵€娲荤姸鎬?            document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // æ¾ç¤ºéä¸­çæ ç­¾åå®¹
-            document.getElementById(tabName).classList.add('active');
+            // 鏄剧ず閫変腑鐨勬爣绛惧唴瀹?            document.getElementById(tabName).classList.add('active');
             
-            // æ¿æ´»å¯¹åºçæ ç­¾æé®
+            // 婵€娲诲搴旂殑鏍囩鎸夐挳
             document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
             
-            // å¦ææ¯å³äºé¡µé¢ï¼æ´æ°è®¾å¤ä¿¡æ¯
+            // 濡傛灉鏄叧浜庨〉闈紝鏇存柊璁惧淇℃伅
             if (tabName === 'about') {
                 updateDeviceInfo();
             }
         }
 
-        // åæ¢å¸®å©é¡¹å±å¼/æ¶èµ·
+        // 鍒囨崲甯姪椤瑰睍寮€/鏀惰捣
         function toggleHelp(element) {
             const answer = element.nextElementSibling;
             const icon = element.querySelector('.expand-icon');
@@ -812,7 +802,7 @@
                 answer.classList.remove('show');
                 icon.classList.remove('expanded');
             } else {
-                // å³é­å¶ä»å±å¼çå¸®å©é¡¹
+                // 鍏抽棴鍏朵粬灞曞紑鐨勫府鍔╅」
                 document.querySelectorAll('.help-answer.show').forEach(item => {
                     item.classList.remove('show');
                 });
@@ -825,7 +815,7 @@
             }
         }
 
-        // ä¿å­è®¾ç½®
+        // 淇濆瓨璁剧疆
         function saveSettings() {
             const settings = {
                 tempUnit: document.getElementById('temp-unit').value,
@@ -840,13 +830,12 @@
                 dataRetention: document.getElementById('data-retention').value
             };
             
-            // ä¿å­å°æ¬å°å­å¨
-            localStorage.setItem('ovenSettings', JSON.stringify(settings));
+            // 淇濆瓨鍒版湰鍦板瓨鍌?            localStorage.setItem('ovenSettings', JSON.stringify(settings));
             
-            showToast('è®¾ç½®å·²ä¿å­');
+            showToast('璁剧疆宸蹭繚瀛?);
         }
 
-        // å è½½è®¾ç½®
+        // 鍔犺浇璁剧疆
         function loadSettings() {
             const savedSettings = localStorage.getItem('ovenSettings');
             if (savedSettings) {
@@ -865,7 +854,7 @@
             }
         }
 
-        // æ´æ°è®¾å¤ä¿¡æ¯
+        // 鏇存柊璁惧淇℃伅
         async function updateDeviceInfo() {
             try {
                 const response = await fetch('/device-info');
@@ -879,89 +868,86 @@
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);
                     document.getElementById('memory-usage').textContent = (data.freeHeap || 0) + ' KB';
                     document.getElementById('last-boot').textContent = new Date(data.lastBoot || Date.now()).toLocaleString();
-                    document.getElementById('network-status').textContent = data.wifiConnected ? 'å·²è¿æ¥' : 'æªè¿æ¥';
+                    document.getElementById('network-status').textContent = data.wifiConnected ? '宸茶繛鎺? : '鏈繛鎺?;
                 }
             } catch (error) {
-                console.error('è·åè®¾å¤ä¿¡æ¯å¤±è´¥:', error);
+                console.error('鑾峰彇璁惧淇℃伅澶辫触:', error);
             }
         }
 
-        // æ ¼å¼åè¿è¡æ¶é´
-        function formatUptime(seconds) {
+        // 鏍煎紡鍖栬繍琛屾椂闂?        function formatUptime(seconds) {
             const days = Math.floor(seconds / 86400);
             const hours = Math.floor((seconds % 86400) / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             
             if (days > 0) {
-                return `${days}å¤© ${hours}å°æ¶`;
+                return `${days}澶?${hours}灏忔椂`;
             } else if (hours > 0) {
-                return `${hours}å°æ¶ ${minutes}åé`;
+                return `${hours}灏忔椂 ${minutes}鍒嗛挓`;
             } else {
-                return `${minutes}åé`;
+                return `${minutes}鍒嗛挓`;
             }
         }
 
-        // éå¯è®¾å¤
+        // 閲嶅惎璁惧
         function restartDevice() {
-            if (confirm('ç¡®å®è¦éå¯è®¾å¤åï¼éå¯è¿ç¨éè¦çº¦30ç§ã')) {
+            if (confirm('纭畾瑕侀噸鍚澶囧悧锛熼噸鍚繃绋嬮渶瑕佺害30绉掋€?)) {
                 fetch('/restart', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('è®¾å¤æ­£å¨éå¯...');
+                            showToast('璁惧姝ｅ湪閲嶅惎...');
                             setTimeout(() => {
-                                showToast('è®¾å¤éå¯å®æï¼è¯·éæ°è¿æ¥');
+                                showToast('璁惧閲嶅惎瀹屾垚锛岃閲嶆柊杩炴帴');
                             }, 35000);
                         }
                     })
                     .catch(error => {
-                        console.error('éå¯è®¾å¤å¤±è´¥:', error);
-                        showToast('éå¯å¤±è´¥ï¼è¯·æ£æ¥è¿æ¥');
+                        console.error('閲嶅惎璁惧澶辫触:', error);
+                        showToast('閲嶅惎澶辫触锛岃妫€鏌ヨ繛鎺?);
                     });
             }
         }
 
-        // æ¢å¤åºåè®¾ç½®
+        // 鎭㈠鍑哄巶璁剧疆
         function showResetModal() {
-            if (confirm('ç¡®å®è¦æ¢å¤åºåè®¾ç½®åï¼æ­¤æä½å°æ¸é¤ææWiFiéç½®åæ¸©åº¦æ ¡ååæ°ã')) {
+            if (confirm('纭畾瑕佹仮澶嶅嚭鍘傝缃悧锛熸鎿嶄綔灏嗘竻闄ゆ墍鏈塛iFi閰嶇疆鍜屾俯搴︽牎鍑嗗弬鏁般€?)) {
                 fetch('/factoryreset', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('è®¾å¤å·²æ¢å¤åºåè®¾ç½®ï¼æ­£å¨éå¯...');
-                            // æ¸é¤æ¬å°è®¾ç½®
+                            showToast('璁惧宸叉仮澶嶅嚭鍘傝缃紝姝ｅ湪閲嶅惎...');
+                            // 娓呴櫎鏈湴璁剧疆
                             localStorage.removeItem('ovenSettings');
-                            // 5ç§åéå®åå°ä¸»é¡µ
+                            // 5绉掑悗閲嶅畾鍚戝埌涓婚〉
                             setTimeout(() => {
                                 window.location.href = 'mobile_home.html';
                             }, 5000);
                         } else {
-                            throw new Error('æ¢å¤å¤±è´¥');
+                            throw new Error('鎭㈠澶辫触');
                         }
                     })
                     .catch(error => {
-                        console.error('æ¢å¤åºåè®¾ç½®å¤±è´¥:', error);
-                        showToast('æ¢å¤åºåè®¾ç½®å¤±è´¥ï¼è¯·éè¯');
+                        console.error('鎭㈠鍑哄巶璁剧疆澶辫触:', error);
+                        showToast('鎭㈠鍑哄巶璁剧疆澶辫触锛岃閲嶈瘯');
                     });
             }
         }
 
-        // èç³»ææ¯æ¯æ
-        function contactSupport() {
+        // 鑱旂郴鎶€鏈敮鎸?        function contactSupport() {
             const email = 'support@smartoven.com';
-            const subject = 'æºè½çµç¤ç®±ææ¯æ¯æè¯·æ±';
-            const body = `è®¾å¤ä¿¡æ¯ï¼\n- è®¾å¤åå·ï¼${document.getElementById('device-model').textContent}\n- åºä»¶çæ¬ï¼${document.getElementById('firmware-version').textContent}\n- é®é¢æè¿°ï¼`;
+            const subject = '鏅鸿兘鐢电儰绠辨妧鏈敮鎸佽姹?;
+            const body = `璁惧淇℃伅锛歕n- 璁惧鍨嬪彿锛?{document.getElementById('device-model').textContent}\n- 鍥轰欢鐗堟湰锛?{document.getElementById('firmware-version').textContent}\n- 闂鎻忚堪锛歚;
             
             window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
         }
 
-        // æ£æ¥æ´æ°
-        function checkUpdate() {
-            showToast('æ­£å¨æ£æ¥æ´æ°...');
+        // 妫€鏌ユ洿鏂?        function checkUpdate() {
+            showToast('姝ｅ湪妫€鏌ユ洿鏂?..');
             setTimeout(() => {
-                showToast('å½åå·²æ¯ææ°çæ¬');
+                showToast('褰撳墠宸叉槸鏈€鏂扮増鏈?);
             }, 2000);
         }
 
-        // å¯¼åºæ¥å¿
+        // 瀵煎嚭鏃ュ織
         function exportLogs() {
             const logs = {
                 timestamp: new Date().toISOString(),
@@ -983,10 +969,10 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showToast('æ¥å¿å·²å¯¼åº');
+            showToast('鏃ュ織宸插鍑?);
         }
 
-        // æ¾ç¤ºæç¤ºä¿¡æ¯
+        // 鏄剧ず鎻愮ず淇℃伅
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -997,10 +983,9 @@
             }, 2000);
         }
 
-        // é¡µé¢å è½½æ¶åå§å
+        // 椤甸潰鍔犺浇鏃跺垵濮嬪寲
         document.addEventListener('DOMContentLoaded', function() {
-            // å è½½ä¿å­çè®¾ç½®
-            loadSettings();
+            // 鍔犺浇淇濆瓨鐨勮缃?            loadSettings();
         });
     </script>
 </body>

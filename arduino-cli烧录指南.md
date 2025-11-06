@@ -1,293 +1,293 @@
-# SmartOven 智能电烤箱控制器 - arduino-cli烧录指南
+# SmartOven æºè½çµç¤ç®±æ§å¶å¨ - arduino-cliç§å½æå
 
-## 🚀 快速开始烧录
+## ð å¿«éå¼å§ç§å½
 
-### 1. 检查设备连接
+### 1. æ£æ¥è®¾å¤è¿æ¥
 ```bash
-# 检查可用的开发板和端口
+# æ£æ¥å¯ç¨çå¼åæ¿åç«¯å£
 arduino-cli board list
 ```
-应该显示类似：
+åºè¯¥æ¾ç¤ºç±»ä¼¼ï¼
 ```
 COM11 serial   Serial Port (USB) Unknown
 ```
 
-### 2. 编译代码
+### 2. ç¼è¯ä»£ç 
 ```bash
-# 编译SmartOvenController.ino
+# ç¼è¯SmartOvenController.ino
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 ```
 
-### 3. 烧录到设备
+### 3. ç§å½å°è®¾å¤
 ```bash
-# 烧录到COM11端口
+# ç§å½å°COM11ç«¯å£
 arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 ```
 
-## 📋 完整烧录流程
+## ð å®æ´ç§å½æµç¨
 
-### 步骤1：环境准备
+### æ­¥éª¤1ï¼ç¯å¢åå¤
 ```bash
-# 1. 更新核心索引
+# 1. æ´æ°æ ¸å¿ç´¢å¼
 arduino-cli core update-index
 
-# 2. 安装ESP8266核心
+# 2. å®è£ESP8266æ ¸å¿
 arduino-cli core install esp8266:esp8266
 
-# 3. 检查安装的核心
+# 3. æ£æ¥å®è£çæ ¸å¿
 arduino-cli core list
 ```
 
-### 步骤2：安装必要的库
+### æ­¥éª¤2ï¼å®è£å¿è¦çåº
 ```bash
-# 安装ESP8266WiFi库
+# å®è£ESP8266WiFiåº
 arduino-cli lib install "ESP8266WiFi"
 
-# 安装ESP8266WebServer库
+# å®è£ESP8266WebServeråº
 arduino-cli lib install "ESP8266WebServer"
 
-# 安装MAX6675库
+# å®è£MAX6675åº
 arduino-cli lib install "MAX6675"
 
-# 检查已安装的库
+# æ£æ¥å·²å®è£çåº
 arduino-cli lib list
 ```
 
-### 步骤3：修改WiFi配置
-编辑 `SmartOvenController.ino` 文件，修改以下配置：
+### æ­¥éª¤3ï¼ä¿®æ¹WiFiéç½®
+ç¼è¾ `SmartOvenController.ino` æä»¶ï¼ä¿®æ¹ä»¥ä¸éç½®ï¼
 ```cpp
-// 修改为您的实际WiFi信息
-const char* sta_ssid = "您的WiFi名称";
-const char* sta_password = "您的WiFi密码";
+// ä¿®æ¹ä¸ºæ¨çå®éWiFiä¿¡æ¯
+const char* sta_ssid = "æ¨çWiFiåç§°";
+const char* sta_password = "æ¨çWiFiå¯ç ";
 ```
 
-### 步骤4：编译代码
+### æ­¥éª¤4ï¼ç¼è¯ä»£ç 
 ```bash
-# 基本编译
+# åºæ¬ç¼è¯
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 
-# 详细编译（显示更多信息）
+# è¯¦ç»ç¼è¯ï¼æ¾ç¤ºæ´å¤ä¿¡æ¯ï¼
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --verbose SmartOvenController.ino
 
-# 带优化编译
+# å¸¦ä¼åç¼è¯
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --build-property "compiler.c.elf.flags=-Os" SmartOvenController.ino
 ```
 
-### 步骤5：烧录到设备
+### æ­¥éª¤5ï¼ç§å½å°è®¾å¤
 ```bash
-# 基本烧录
+# åºæ¬ç§å½
 arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 
-# 详细烧录（显示进度）
+# è¯¦ç»ç§å½ï¼æ¾ç¤ºè¿åº¦ï¼
 arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 --verbose SmartOvenController.ino
 
-# 强制烧录（忽略警告）
+# å¼ºå¶ç§å½ï¼å¿½ç¥è­¦åï¼
 arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 --verify SmartOvenController.ino
 ```
 
-## 🔧 高级烧录选项
+## ð§ é«çº§ç§å½éé¡¹
 
-### 批量烧录脚本
-创建 `flash_all.bat` 批处理文件：
+### æ¹éç§å½èæ¬
+åå»º `flash_all.bat` æ¹å¤çæä»¶ï¼
 ```batch
 @echo off
-echo 开始烧录SmartOven控制器...
+echo å¼å§ç§å½SmartOvenæ§å¶å¨...
 
-:: 检查设备连接
+:: æ£æ¥è®¾å¤è¿æ¥
 arduino-cli board list
 
-:: 编译代码
-echo 正在编译代码...
+:: ç¼è¯ä»£ç 
+echo æ­£å¨ç¼è¯ä»£ç ...
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 
 if %errorlevel% neq 0 (
-    echo 编译失败！请检查错误信息
+    echo ç¼è¯å¤±è´¥ï¼è¯·æ£æ¥éè¯¯ä¿¡æ¯
     pause
     exit /b 1
 )
 
-:: 烧录到设备
-echo 正在烧录到COM11...
+:: ç§å½å°è®¾å¤
+echo æ­£å¨ç§å½å°COM11...
 arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 
 if %errorlevel% neq 0 (
-    echo 烧录失败！请检查设备连接
+    echo ç§å½å¤±è´¥ï¼è¯·æ£æ¥è®¾å¤è¿æ¥
     pause
     exit /b 1
 )
 
-echo 烧录成功！
-echo 请打开串口监视器查看设备状态
+echo ç§å½æåï¼
+echo è¯·æå¼ä¸²å£çè§å¨æ¥çè®¾å¤ç¶æ
 pause
 ```
 
-### 多设备烧录
-如果连接了多个设备：
+### å¤è®¾å¤ç§å½
+å¦æè¿æ¥äºå¤ä¸ªè®¾å¤ï¼
 ```bash
-# 检查所有可用端口
+# æ£æ¥ææå¯ç¨ç«¯å£
 arduino-cli board list
 
-# 烧录到特定端口
+# ç§å½å°ç¹å®ç«¯å£
 arduino-cli upload -p COM3 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 arduino-cli upload -p COM4 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 arduino-cli upload -p COM5 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 ```
 
-## 🔍 烧录验证
+## ð ç§å½éªè¯
 
-### 1. 串口监视器验证
+### 1. ä¸²å£çè§å¨éªè¯
 ```bash
-# 打开串口监视器（波特率115200）
+# æå¼ä¸²å£çè§å¨ï¼æ³¢ç¹ç115200ï¼
 arduino-cli monitor -p COM11 --config baudrate=115200
 ```
 
-应该看到类似输出：
+åºè¯¥çå°ç±»ä¼¼è¾åºï¼
 ```
-✅ SmartOven控制器启动成功
-📡 WiFi连接中...
-🌐 连接到WiFi: 您的WiFi名称
-📊 设备IP地址: 192.168.1.100
-🔍 设备发现服务已启动
+â SmartOvenæ§å¶å¨å¯å¨æå
+ð¡ WiFiè¿æ¥ä¸­...
+ð è¿æ¥å°WiFi: æ¨çWiFiåç§°
+ð è®¾å¤IPå°å: 192.168.1.100
+ð è®¾å¤åç°æå¡å·²å¯å¨
 ```
 
-### 2. 快速验证脚本
-创建 `verify_flash.bat`：
+### 2. å¿«ééªè¯èæ¬
+åå»º `verify_flash.bat`ï¼
 ```batch
 @echo off
-echo 验证烧录结果...
+echo éªè¯ç§å½ç»æ...
 
-:: 检查设备是否响应
+:: æ£æ¥è®¾å¤æ¯å¦ååº
 arduino-cli board list | find "COM11"
 if %errorlevel% neq 0 (
-    echo 错误：COM11端口未检测到设备
+    echo éè¯¯ï¼COM11ç«¯å£æªæ£æµå°è®¾å¤
     pause
     exit /b 1
 )
 
-echo 设备检测正常，正在检查串口输出...
+echo è®¾å¤æ£æµæ­£å¸¸ï¼æ­£å¨æ£æ¥ä¸²å£è¾åº...
 
-:: 短暂打开串口监视器（5秒）
+:: ç­ææå¼ä¸²å£çè§å¨ï¼5ç§ï¼
 start /B arduino-cli monitor -p COM11 --config baudrate=115200 --timeout 5
 
-echo 验证完成！
+echo éªè¯å®æï¼
 pause
 ```
 
-## 🐛 故障排除
+## ð æéæé¤
 
-### 常见问题及解决方案
+### å¸¸è§é®é¢åè§£å³æ¹æ¡
 
-#### 1. 编译错误 - 库缺失
+#### 1. ç¼è¯éè¯¯ - åºç¼ºå¤±
 ```bash
-# 检查缺失的库
-arduino-cli lib search "库名称"
+# æ£æ¥ç¼ºå¤±çåº
+arduino-cli lib search "åºåç§°"
 
-# 安装特定版本的库
-arduino-cli lib install "库名称@版本号"
+# å®è£ç¹å®çæ¬çåº
+arduino-cli lib install "åºåç§°@çæ¬å·"
 ```
 
-#### 2. 烧录失败 - 端口被占用
+#### 2. ç§å½å¤±è´¥ - ç«¯å£è¢«å ç¨
 ```bash
-# 检查端口状态
+# æ£æ¥ç«¯å£ç¶æ
 netstat -ano | findstr "COM11"
 
-# 强制关闭占用端口的进程
-taskkill /F /PID 进程ID
+# å¼ºå¶å³é­å ç¨ç«¯å£çè¿ç¨
+taskkill /F /PID è¿ç¨ID
 ```
 
-#### 3. 设备无法识别
+#### 3. è®¾å¤æ æ³è¯å«
 ```bash
-# 重新扫描设备
+# éæ°æ«æè®¾å¤
 arduino-cli board list --watch
 
-# 检查驱动程序
+# æ£æ¥é©±å¨ç¨åº
 pnputil /enum-devices /connected | findstr "USB"
 ```
 
-#### 4. 烧录超时
+#### 4. ç§å½è¶æ¶
 ```bash
-# 增加超时时间
+# å¢å è¶æ¶æ¶é´
 arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 --timeout 60 SmartOvenController.ino
 
-# 重置设备进入编程模式
-# NodeMCU: 按住FLASH按钮，按RESET，松开FLASH
+# éç½®è®¾å¤è¿å¥ç¼ç¨æ¨¡å¼
+# NodeMCU: æä½FLASHæé®ï¼æRESETï¼æ¾å¼FLASH
 ```
 
-### 调试命令
+### è°è¯å½ä»¤
 ```bash
-# 详细模式查看编译过程
+# è¯¦ç»æ¨¡å¼æ¥çç¼è¯è¿ç¨
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --verbose SmartOvenController.ino
 
-# 查看编译输出目录
+# æ¥çç¼è¯è¾åºç®å½
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --build-path ./build SmartOvenController.ino
 
-# 清理编译缓存
+# æ¸çç¼è¯ç¼å­
 arduino-cli cache clean
 ```
 
-## 📊 性能优化
+## ð æ§è½ä¼å
 
-### 编译优化选项
+### ç¼è¯ä¼åéé¡¹
 ```bash
-# 最小尺寸优化
+# æå°å°ºå¯¸ä¼å
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --build-property "compiler.c.elf.flags=-Os" SmartOvenController.ino
 
-# 调试版本（带符号）
+# è°è¯çæ¬ï¼å¸¦ç¬¦å·ï¼
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --build-property "compiler.c.elf.flags=-g" SmartOvenController.ino
 
-# 性能优化
+# æ§è½ä¼å
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 --build-property "compiler.c.elf.flags=-O2" SmartOvenController.ino
 ```
 
-### 批量烧录优化
-创建 `flash_optimized.bat`：
+### æ¹éç§å½ä¼å
+åå»º `flash_optimized.bat`ï¼
 ```batch
 @echo off
-echo 优化烧录流程...
+echo ä¼åç§å½æµç¨...
 
-:: 并行编译和烧录准备
+:: å¹¶è¡ç¼è¯åç§å½åå¤
 start /B arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 
-:: 等待编译完成
+:: ç­å¾ç¼è¯å®æ
 timeout /t 10
 
-:: 批量烧录
+:: æ¹éç§å½
 for %%p in (COM3 COM4 COM5 COM6 COM7 COM8 COM9 COM10 COM11 COM12) do (
     arduino-cli board list | find "%%p" >nul
     if not errorlevel 1 (
-        echo 烧录到 %%p...
+        echo ç§å½å° %%p...
         arduino-cli upload -p %%p --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
     )
 )
 
-echo 批量烧录完成！
+echo æ¹éç§å½å®æï¼
 pause
 ```
 
-## 🔄 自动化脚本
+## ð èªå¨åèæ¬
 
-### 完整的烧录脚本 `auto_flash.bat`
+### å®æ´çç§å½èæ¬ `auto_flash.bat`
 ```batch
 @echo off
-title SmartOven自动烧录脚本
+title SmartOvenèªå¨ç§å½èæ¬
 color 0A
 
 echo ========================================
-echo      SmartOven控制器自动烧录工具
+echo      SmartOvenæ§å¶å¨èªå¨ç§å½å·¥å·
 echo ========================================
 echo.
 
-:: 步骤1：环境检查
-echo [1/5] 检查环境...
+:: æ­¥éª¤1ï¼ç¯å¢æ£æ¥
+echo [1/5] æ£æ¥ç¯å¢...
 arduino-cli --help >nul 2>&1
 if %errorlevel% neq 0 (
-    echo 错误：arduino-cli未安装或未在PATH中
+    echo éè¯¯ï¼arduino-cliæªå®è£ææªå¨PATHä¸­
     pause
     exit /b 1
 )
 
-:: 步骤2：设备检测
-echo [2/5] 检测设备...
+:: æ­¥éª¤2ï¼è®¾å¤æ£æµ
+echo [2/5] æ£æµè®¾å¤...
 set DEVICE_FOUND=0
 for /f "tokens=*" %%i in ('arduino-cli board list') do (
     echo %%i | find "COM" >nul
@@ -295,80 +295,80 @@ for /f "tokens=*" %%i in ('arduino-cli board list') do (
 )
 
 if %DEVICE_FOUND% equ 0 (
-    echo 警告：未检测到设备，请检查USB连接
-    echo 继续执行编译...
+    echo è­¦åï¼æªæ£æµå°è®¾å¤ï¼è¯·æ£æ¥USBè¿æ¥
+    echo ç»§ç»­æ§è¡ç¼è¯...
 )
 
-:: 步骤3：编译代码
-echo [3/5] 编译代码...
+:: æ­¥éª¤3ï¼ç¼è¯ä»£ç 
+echo [3/5] ç¼è¯ä»£ç ...
 arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 if %errorlevel% neq 0 (
-    echo 错误：编译失败
+    echo éè¯¯ï¼ç¼è¯å¤±è´¥
     pause
     exit /b 1
 )
 
-echo 编译成功！
+echo ç¼è¯æåï¼
 
-:: 步骤4：烧录到设备
-echo [4/5] 烧录到设备...
+:: æ­¥éª¤4ï¼ç§å½å°è®¾å¤
+echo [4/5] ç§å½å°è®¾å¤...
 if %DEVICE_FOUND% equ 1 (
     arduino-cli upload -p COM11 --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
     if %errorlevel% neq 0 (
-        echo 错误：烧录失败
+        echo éè¯¯ï¼ç§å½å¤±è´¥
         pause
         exit /b 1
     )
-    echo 烧录成功！
+    echo ç§å½æåï¼
 else
-    echo 跳过烧录（未检测到设备）
+    echo è·³è¿ç§å½ï¼æªæ£æµå°è®¾å¤ï¼
 fi
 
-:: 步骤5：验证
-echo [5/5] 验证烧录...
-echo 请手动打开串口监视器查看设备状态
-echo 命令：arduino-cli monitor -p COM11 --config baudrate=115200
+:: æ­¥éª¤5ï¼éªè¯
+echo [5/5] éªè¯ç§å½...
+echo è¯·æå¨æå¼ä¸²å£çè§å¨æ¥çè®¾å¤ç¶æ
+echo å½ä»¤ï¼arduino-cli monitor -p COM11 --config baudrate=115200
 
 echo.
 echo ========================================
-echo     烧录流程完成！
+echo     ç§å½æµç¨å®æï¼
 echo ========================================
 pause
 ```
 
-## 📞 技术支持
+## ð ææ¯æ¯æ
 
-### 获取帮助
+### è·åå¸®å©
 ```bash
-# 查看arduino-cli帮助
+# æ¥çarduino-cliå¸®å©
 arduino-cli help
 arduino-cli compile --help
 arduino-cli upload --help
 
-# 查看核心信息
+# æ¥çæ ¸å¿ä¿¡æ¯
 arduino-cli core search esp8266
 ```
 
-### 日志和调试
+### æ¥å¿åè°è¯
 ```bash
-# 启用详细日志
+# å¯ç¨è¯¦ç»æ¥å¿
 arduino-cli --log-level debug compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 
-# 保存日志到文件
+# ä¿å­æ¥å¿å°æä»¶
 arduino-cli --log-level debug --log-file arduino.log compile --fqbn esp8266:esp8266:nodemcuv2 SmartOvenController.ino
 ```
 
 ---
 
-## 🎯 烧录成功标志
+## ð¯ ç§å½æåæ å¿
 
-当您看到以下输出时，表示烧录成功：
+å½æ¨çå°ä»¥ä¸è¾åºæ¶ï¼è¡¨ç¤ºç§å½æåï¼
 
 ```
-✅ 编译成功 - 代码大小：xxx bytes
-✅ 烧录成功 - 设备已更新
-✅ 串口输出显示设备正常启动
-✅ Web界面可以正常访问
+â ç¼è¯æå - ä»£ç å¤§å°ï¼xxx bytes
+â ç§å½æå - è®¾å¤å·²æ´æ°
+â ä¸²å£è¾åºæ¾ç¤ºè®¾å¤æ­£å¸¸å¯å¨
+â Webçé¢å¯ä»¥æ­£å¸¸è®¿é®
 ```
 
-**使用arduino-cli烧录比Arduino IDE更快速、更稳定！** 🚀
+**ä½¿ç¨arduino-cliç§å½æ¯Arduino IDEæ´å¿«éãæ´ç¨³å®ï¼** ð

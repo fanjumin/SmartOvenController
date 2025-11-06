@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- 标题栏 -->
+        <!-- æ é¢æ  -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="OTA固件升级"
+                android:text="OTAåºä»¶åçº§"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark" />
@@ -31,14 +31,14 @@
                 android:id="@+id/checkUpdateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🔄 检查更新"
+                android:text="ð æ£æ¥æ´æ°"
                 android:textSize="12sp"
                 android:backgroundTint="@color/primary"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp" />
         </LinearLayout>
 
-        <!-- 设备信息卡片 -->
+        <!-- è®¾å¤ä¿¡æ¯å¡ç -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="📱 设备信息"
+                android:text="ð± è®¾å¤ä¿¡æ¯"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark"
@@ -61,7 +61,7 @@
                 android:id="@+id/deviceInfoText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="设备IP: --"
+                android:text="è®¾å¤IP: --"
                 android:textSize="14sp"
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
@@ -70,12 +70,12 @@
                 android:id="@+id/currentVersionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="当前版本: 检查中..."
+                android:text="å½åçæ¬: æ£æ¥ä¸­..."
                 android:textSize="14sp"
                 android:textColor="@color/text_primary" />
         </LinearLayout>
 
-        <!-- 固件选择卡片 -->
+        <!-- åºä»¶éæ©å¡ç -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="📁 选择固件文件"
+                android:text="ð éæ©åºä»¶æä»¶"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark"
@@ -98,13 +98,13 @@
                 android:id="@+id/selectFileButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="📂 选择固件文件 (.bin)"
+                android:text="ð éæ©åºä»¶æä»¶ (.bin)"
                 android:textSize="16sp"
                 android:backgroundTint="@color/primary"
                 android:layout_marginBottom="16dp"
                 android:paddingVertical="12dp" />
 
-            <!-- 文件信息布局 -->
+            <!-- æä»¶ä¿¡æ¯å¸å± -->
             <LinearLayout
                 android:id="@+id/fileInfoLayout"
                 android:layout_width="match_parent"
@@ -116,7 +116,7 @@
                     android:id="@+id/newVersionText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="新固件: --"
+                    android:text="æ°åºä»¶: --"
                     android:textSize="14sp"
                     android:textColor="@color/success"
                     android:textStyle="bold"
@@ -133,14 +133,14 @@
                     android:id="@+id/uploadButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🚀 开始上传"
+                    android:text="ð å¼å§ä¸ä¼ "
                     android:textSize="16sp"
                     android:backgroundTint="@color/accent"
                     android:paddingVertical="12dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 状态信息卡片 -->
+        <!-- ç¶æä¿¡æ¯å¡ç -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="📊 升级状态"
+                android:text="ð åçº§ç¶æ"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark"
@@ -163,14 +163,14 @@
                 android:id="@+id/statusText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="准备就绪"
+                android:text="åå¤å°±ç»ª"
                 android:textSize="14sp"
                 android:textColor="@color/text_primary"
                 android:padding="12dp"
                 android:background="@color/status_background"
                 android:gravity="center" />
 
-            <!-- 注意事项 -->
+            <!-- æ³¨æäºé¡¹ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="⚠️ 注意事项"
+                    android:text="â ï¸ æ³¨æäºé¡¹"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/warning"
@@ -191,27 +191,27 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• 确保设备电源稳定"
+                    android:text="â¢ ç¡®ä¿è®¾å¤çµæºç¨³å®"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• 升级过程中不要断开网络"
+                    android:text="â¢ åçº§è¿ç¨ä¸­ä¸è¦æ­å¼ç½ç»"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• 升级完成后设备会自动重启"
+                    android:text="â¢ åçº§å®æåè®¾å¤ä¼èªå¨éå¯"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 操作指南卡片 -->
+        <!-- æä½æåå¡ç -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -223,7 +223,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="📋 操作指南"
+                android:text="ð æä½æå"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark"
@@ -232,7 +232,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="1. 点击&quot;选择固件文件&quot;按钮"
+                android:text="1. ç¹å»&quot;éæ©åºä»¶æä»¶&quot;æé®"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginBottom="4dp" />
@@ -240,7 +240,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2. 选择编译好的 .bin 固件文件"
+                android:text="2. éæ©ç¼è¯å¥½ç .bin åºä»¶æä»¶"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginBottom="4dp" />
@@ -248,7 +248,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="3. 点击&quot;开始上传&quot;按钮"
+                android:text="3. ç¹å»&quot;å¼å§ä¸ä¼ &quot;æé®"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginBottom="4dp" />
@@ -256,7 +256,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="4. 等待上传完成和设备重启"
+                android:text="4. ç­å¾ä¸ä¼ å®æåè®¾å¤éå¯"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>

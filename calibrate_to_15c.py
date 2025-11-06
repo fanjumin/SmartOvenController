@@ -1,6 +1,6 @@
 """
-温度精确校准到15°C脚本
-专门用于将设备温度传感器校准到15°C
+æ¸©åº¦ç²¾ç¡®æ ¡åå°15Â°Cèæ¬
+ä¸é¨ç¨äºå°è®¾å¤æ¸©åº¦ä¼ æå¨æ ¡åå°15Â°C
 """
 
 import serial
@@ -9,133 +9,133 @@ import datetime
 import json
 
 def calibrate_to_15c():
-    """将温度精确校准到15°C"""
-    print("=== 温度精确校准到15°C ===")
-    print("目标温度: 15.00°C")
-    print("校准命令: CALIBRATE_TEMP 15")
+    """å°æ¸©åº¦ç²¾ç¡®æ ¡åå°15Â°C"""
+    print("=== æ¸©åº¦ç²¾ç¡®æ ¡åå°15Â°C ===")
+    print("ç®æ æ¸©åº¦: 15.00Â°C")
+    print("æ ¡åå½ä»¤: CALIBRATE_TEMP 15")
     print()
     
     try:
-        # 尝试连接串口
-        print("正在连接串口 COM11...")
+        # å°è¯è¿æ¥ä¸²å£
+        print("æ­£å¨è¿æ¥ä¸²å£ COM11...")
         ser = serial.Serial('COM11', 115200, timeout=2)
-        time.sleep(2)  # 等待串口初始化
-        print("串口连接成功")
+        time.sleep(2)  # ç­å¾ä¸²å£åå§å
+        print("ä¸²å£è¿æ¥æå")
         
-        # 先获取当前温度
-        print("\\n获取当前温度...")
+        # åè·åå½åæ¸©åº¦
+        print("\\nè·åå½åæ¸©åº¦...")
         ser.write(b'GET_TEMP\\r\\n')
         time.sleep(1)
         current_temp_response = ser.read(ser.in_waiting)
-        print("当前温度响应:")
+        print("å½åæ¸©åº¦ååº:")
         print(current_temp_response.decode('utf-8', errors='ignore'))
         
-        # 发送校准命令
-        print("\\n开始温度校准到15°C...")
+        # åéæ ¡åå½ä»¤
+        print("\\nå¼å§æ¸©åº¦æ ¡åå°15Â°C...")
         ser.write(b'CALIBRATE_TEMP 15\\r\\n')
-        time.sleep(3)  # 等待校准完成
+        time.sleep(3)  # ç­å¾æ ¡åå®æ
         
-        # 读取校准响应
+        # è¯»åæ ¡åååº
         response = b''
         start_time = time.time()
-        while time.time() - start_time < 8:  # 8秒超时，确保完整响应
+        while time.time() - start_time < 8:  # 8ç§è¶æ¶ï¼ç¡®ä¿å®æ´ååº
             if ser.in_waiting > 0:
                 response += ser.read(ser.in_waiting)
             time.sleep(0.1)
         
         if response:
-            print("\\n校准响应:")
+            print("\\næ ¡åååº:")
             response_text = response.decode('utf-8', errors='ignore')
             print(response_text)
             
-            # 检查校准是否成功
-            if "校准完成" in response_text or "Calibration" in response_text:
-                print("\\n✅ 温度校准成功!")
+            # æ£æ¥æ ¡åæ¯å¦æå
+            if "æ ¡åå®æ" in response_text or "Calibration" in response_text:
+                print("\\nâ æ¸©åº¦æ ¡åæå!")
             else:
-                print("\\n⚠️  校准响应异常，请检查设备状态")
+                print("\\nâ ï¸  æ ¡åååºå¼å¸¸ï¼è¯·æ£æ¥è®¾å¤ç¶æ")
         else:
-            print("\\n❌ 无校准响应")
+            print("\\nâ æ æ ¡åååº")
         
-        # 验证校准结果
-        print("\\n验证校准结果...")
+        # éªè¯æ ¡åç»æ
+        print("\\néªè¯æ ¡åç»æ...")
         ser.write(b'GET_TEMP\\r\\n')
         time.sleep(1)
         verify_response = ser.read(ser.in_waiting)
-        print("校准后温度:")
+        print("æ ¡ååæ¸©åº¦:")
         print(verify_response.decode('utf-8', errors='ignore'))
         
-        # 获取完整状态
-        print("\\n获取设备状态...")
+        # è·åå®æ´ç¶æ
+        print("\\nè·åè®¾å¤ç¶æ...")
         ser.write(b'GET_STATUS\\r\\n')
         time.sleep(1)
         status_response = ser.read(ser.in_waiting)
-        print("设备状态:")
+        print("è®¾å¤ç¶æ:")
         print(status_response.decode('utf-8', errors='ignore'))
         
         ser.close()
         
-        # 保存校准记录
+        # ä¿å­æ ¡åè®°å½
         calibration_record = {
             "target_temperature": 15.0,
             "calibration_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "device_id": "oven-8591756",
             "firmware_version": "0.6.0",
             "calibration_command": "CALIBRATE_TEMP 15",
-            "response": response_text if response else "无响应"
+            "response": response_text if response else "æ ååº"
         }
         
-        # 保存到文件
+        # ä¿å­å°æä»¶
         with open('calibration_15c_record.json', 'w', encoding='utf-8') as f:
             json.dump(calibration_record, f, indent=2, ensure_ascii=False)
         
-        print(f"\\n✅ 校准记录已保存到 calibration_15c_record.json")
-        print(f"📅 校准时间: {calibration_record['calibration_time']}")
+        print(f"\\nâ æ ¡åè®°å½å·²ä¿å­å° calibration_15c_record.json")
+        print(f"ð æ ¡åæ¶é´: {calibration_record['calibration_time']}")
         
     except serial.SerialException as e:
-        print(f"❌ 串口连接失败: {e}")
-        print("\\n可能的原因:")
-        print("1. 串口COM11被其他程序占用")
-        print("2. 设备未连接或电源未开启")
-        print("3. 串口驱动程序问题")
-        print("\\n解决方法:")
-        print("1. 关闭其他可能占用串口的程序")
-        print("2. 检查设备连接和电源")
-        print("3. 稍后重试")
+        print(f"â ä¸²å£è¿æ¥å¤±è´¥: {e}")
+        print("\\nå¯è½çåå :")
+        print("1. ä¸²å£COM11è¢«å¶ä»ç¨åºå ç¨")
+        print("2. è®¾å¤æªè¿æ¥æçµæºæªå¼å¯")
+        print("3. ä¸²å£é©±å¨ç¨åºé®é¢")
+        print("\\nè§£å³æ¹æ³:")
+        print("1. å³é­å¶ä»å¯è½å ç¨ä¸²å£çç¨åº")
+        print("2. æ£æ¥è®¾å¤è¿æ¥åçµæº")
+        print("3. ç¨åéè¯")
         
     except Exception as e:
-        print(f"❌ 校准过程中发生错误: {e}")
+        print(f"â æ ¡åè¿ç¨ä¸­åçéè¯¯: {e}")
 
 def check_web_temperature():
-    """检查Web页面温度显示"""
+    """æ£æ¥Webé¡µé¢æ¸©åº¦æ¾ç¤º"""
     import requests
     
     try:
-        print("\\n检查Web页面温度显示...")
+        print("\\næ£æ¥Webé¡µé¢æ¸©åº¦æ¾ç¤º...")
         response = requests.get('http://192.168.16.104/status', timeout=5)
         if response.status_code == 200:
             data = response.json()
-            print(f"Web页面温度: {data.get('temperature', 'N/A')}°C")
-            print(f"目标温度: {data.get('target_temperature', 'N/A')}°C")
-            print(f"校准状态: {data.get('calibrated', 'N/A')}")
+            print(f"Webé¡µé¢æ¸©åº¦: {data.get('temperature', 'N/A')}Â°C")
+            print(f"ç®æ æ¸©åº¦: {data.get('target_temperature', 'N/A')}Â°C")
+            print(f"æ ¡åç¶æ: {data.get('calibrated', 'N/A')}")
         else:
-            print(f"Web页面访问失败: {response.status_code}")
+            print(f"Webé¡µé¢è®¿é®å¤±è´¥: {response.status_code}")
     except Exception as e:
-        print(f"Web页面检查失败: {e}")
+        print(f"Webé¡µé¢æ£æ¥å¤±è´¥: {e}")
 
 if __name__ == "__main__":
-    print("温度精确校准脚本 v1.0")
+    print("æ¸©åº¦ç²¾ç¡®æ ¡åèæ¬ v1.0")
     print("=" * 50)
     
-    # 执行校准
+    # æ§è¡æ ¡å
     calibrate_to_15c()
     
-    # 检查Web页面
+    # æ£æ¥Webé¡µé¢
     check_web_temperature()
     
     print("\\n" + "=" * 50)
-    print("校准脚本执行完成")
-    print("\\n后续操作:")
-    print("1. 如果串口被占用，请稍后重试")
-    print("2. 校准成功后，温度应显示为15°C左右")
-    print("3. 校准参数已自动保存到EEPROM")
-    print("4. 可通过Web页面 http://192.168.16.104 查看实时温度")
+    print("æ ¡åèæ¬æ§è¡å®æ")
+    print("\\nåç»­æä½:")
+    print("1. å¦æä¸²å£è¢«å ç¨ï¼è¯·ç¨åéè¯")
+    print("2. æ ¡åæååï¼æ¸©åº¦åºæ¾ç¤ºä¸º15Â°Cå·¦å³")
+    print("3. æ ¡ååæ°å·²èªå¨ä¿å­å°EEPROM")
+    print("4. å¯éè¿Webé¡µé¢ http://192.168.16.104 æ¥çå®æ¶æ¸©åº¦")

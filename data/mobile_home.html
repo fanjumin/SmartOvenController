@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <!-- 鑷姩鍒锋柊鏃堕棿鎴? 1762412211 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>æºè½çµç¤ç®± - ææºæ§å¶</title>
+    <title>鏅鸿兘鐢电儰绠?- 鎵嬫満鎺у埗</title>
     <style>
         * {
             margin: 0;
@@ -168,34 +169,34 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>æºè½çµç¤ç®±</h1>
-            <p>ææºç«¯æ§å¶é¢æ¿</p>
+            <h1>鏅鸿兘鐢电儰绠?/h1>
+            <p>鎵嬫満绔帶鍒堕潰鏉?/p>
         </div>
 
         <div class="status-card">
             <div class="status-header">
-                <h2 class="status-title">æºè½çµç¤ç®±</h2>
+                <h2 class="status-title">鏅鸿兘鐢电儰绠?/h2>
                 <div class="connection-status">
                     <span class="status-dot"></span>
-                    <span class="status-text">è¿æ¥ä¸­...</span>
+                    <span class="status-text">杩炴帴涓?..</span>
                 </div>
             </div>
             
             <div class="temperature-display">
                 <div class="current-temp">
                     <span class="temp-value">--</span>
-                    <span class="temp-unit">Â°C</span>
+                    <span class="temp-unit">掳C</span>
                 </div>
                 <div class="target-temp">
-                    <span class="temp-label">ç®æ æ¸©åº¦:</span>
+                    <span class="temp-label">鐩爣娓╁害:</span>
                     <span class="temp-value">--</span>
-                    <span class="temp-unit">Â°C</span>
+                    <span class="temp-unit">掳C</span>
                 </div>
             </div>
             
             <div class="status-info">
                 <div class="info-item">
-                    <span class="info-label">å ç­ç¶æ:</span>
+                    <span class="info-label">鍔犵儹鐘舵€?</span>
                     <span class="info-value heating-status">--</span>
                 </div>
                 <div class="info-item">
@@ -203,7 +204,7 @@
                     <span class="info-value wifi-status">--</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">è®¾å¤ID:</span>
+                    <span class="info-label">璁惧ID:</span>
                     <span class="info-value device-id">--</span>
                 </div>
             </div>
@@ -212,16 +213,16 @@
         <div class="control-section">
             <div class="quick-controls">
                 <button class="control-btn primary" onclick="toggleHeating()">
-                    <span class="btn-icon">ð¥</span>
-                    <span class="btn-text">å¯å¨å ç­</span>
+                    <span class="btn-icon">馃敟</span>
+                    <span class="btn-text">鍚姩鍔犵儹</span>
                 </button>
                 <button class="control-btn secondary" onclick="quickSetTemp(180)">
-                    <span class="btn-icon">ð¡ï¸</span>
-                    <span class="btn-text">180Â°C</span>
+                    <span class="btn-icon">馃尅锔?/span>
+                    <span class="btn-text">180掳C</span>
                 </button>
                 <button class="control-btn tertiary" onclick="refreshData()">
-                    <span class="btn-icon">ð</span>
-                    <span class="btn-text">å·æ°</span>
+                    <span class="btn-icon">馃攧</span>
+                    <span class="btn-text">鍒锋柊</span>
                 </button>
             </div>
         </div>
@@ -229,95 +230,95 @@
         <div class="navigation-section">
             <div class="nav-grid">
                 <a href="temperature_control.html" class="nav-card">
-                    <div class="nav-icon">ð¡ï¸</div>
-                    <div class="nav-title">æ¸©åº¦æ§å¶</div>
-                    <div class="nav-desc">ç²¾ç¡®è°èæ¸©åº¦</div>
+                    <div class="nav-icon">馃尅锔?/div>
+                    <div class="nav-title">娓╁害鎺у埗</div>
+                    <div class="nav-desc">绮剧‘璋冭妭娓╁害</div>
                 </a>
                 
                 <a href="wifi_config.html" class="nav-card">
-                    <div class="nav-icon">ð¶</div>
-                    <div class="nav-title">WiFiéç½®</div>
-                    <div class="nav-desc">ç½ç»è¿æ¥è®¾ç½®</div>
+                    <div class="nav-icon">馃摱</div>
+                    <div class="nav-title">WiFi閰嶇疆</div>
+                    <div class="nav-desc">缃戠粶杩炴帴璁剧疆</div>
                 </a>
                 
                 <a href="device_status.html" class="nav-card">
-                    <div class="nav-icon">ð</div>
-                    <div class="nav-title">è®¾å¤ç¶æ</div>
-                    <div class="nav-desc">è¯¦ç»è¿è¡ä¿¡æ¯</div>
+                    <div class="nav-icon">馃搳</div>
+                    <div class="nav-title">璁惧鐘舵€?/div>
+                    <div class="nav-desc">璇︾粏杩愯淇℃伅</div>
                 </a>
                 
                 <a href="settings_help.html" class="nav-card">
-                    <div class="nav-icon">âï¸</div>
-                    <div class="nav-title">è®¾ç½®ä¸å¸®å©</div>
-                    <div class="nav-desc">ç³»ç»éç½®</div>
+                    <div class="nav-icon">鈿欙笍</div>
+                    <div class="nav-title">璁剧疆涓庡府鍔?/div>
+                    <div class="nav-desc">绯荤粺閰嶇疆</div>
                 </a>
             </div>
         </div>
 
         <div class="footer">
-            <p>æºè½çµç¤ç®±æ§å¶å¨ v0.6.1</p>
-            <p>Â© 2025 æºè½çµç¤ç®±é¡¹ç®</p>
+            <p>鏅鸿兘鐢电儰绠辨帶鍒跺櫒 v0.7.0</p>
+            <p>漏 2025 鏅鸿兘鐢电儰绠遍」鐩?/p>
         </div>
     </div>
 
-    <!-- å è½½é®ç½© -->
+    <!-- 鍔犺浇閬僵 -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <p>æ­£å¨è¿æ¥è®¾å¤...</p>
+            <p>姝ｅ湪杩炴帴璁惧...</p>
         </div>
     </div>
 
     <!-- JavaScript -->
-    <script src="mobile_utils.js"></script>
+    <script src="mobile_utils.js?v=1762412211"></script>
     <script>
-        // é¡µé¢å è½½å®æååå§å
+        // 椤甸潰鍔犺浇瀹屾垚鍚庡垵濮嬪寲
         document.addEventListener('DOMContentLoaded', function() {
             initializePage();
         });
 
-        // åå§åé¡µé¢
+        // 鍒濆鍖栭〉闈?
         async function initializePage() {
-            console.log('åå§åææºç«¯é¦é¡µ');
+            console.log('鍒濆鍖栨墜鏈虹棣栭〉');
             
-            // ä½¿ç¨å®éçMobileOvenControllerç±»ï¼èä¸æ¯æ¨¡ææ°æ®
-            // mobile_utils.jså·²ç»åå»ºäºå¨å±çmobileOvenControllerå®ä¾
-            // è¿éåªéè¦ç¡®ä¿mobile_utils.jså·²ç»å è½½å®æ
+            // 浣跨敤瀹為檯鐨凪obileOvenController绫伙紝鑰屼笉鏄ā鎷熸暟鎹?
+            // mobile_utils.js宸茬粡鍒涘缓浜嗗叏灞€鐨刴obileOvenController瀹炰緥
+            // 杩欓噷鍙渶瑕佺‘淇漨obile_utils.js宸茬粡鍔犺浇瀹屾垚
             if (!window.mobileOvenController) {
-                console.error('mobile_utils.jsæªæ­£ç¡®å è½½');
+                console.error('mobile_utils.js鏈纭姞杞?);
                 return;
             }
             
-            // è®¾ç½®è®¾å¤IPå°åï¼å¦æéè¦å¨è¿è¡æ¶å¨æè®¾ç½®ï¼
+            // 璁剧疆璁惧IP鍦板潃锛堝鏋滈渶瑕佸湪杩愯鏃跺姩鎬佽缃級
             window.mobileOvenController.baseURL = 'http://192.168.16.104';
             
             showLoading();
             
-            // æ£æ¥è¿æ¥ç¶æ
+            // 妫€鏌ヨ繛鎺ョ姸鎬?
             await checkConnection();
             
-            // å¼å§å®æ¶å·æ°æ°æ®
+            // 寮€濮嬪畾鏃跺埛鏂版暟鎹?
             startDataRefresh();
             
-            // è®¾ç½®è§¦æ¸åé¦
+            // 璁剧疆瑙︽懜鍙嶉
             setupTouchFeedback();
             
             hideLoading();
         }
 
-        // æ¾ç¤ºå è½½é®ç½©
+        // 鏄剧ず鍔犺浇閬僵
         function showLoading() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('show');
         }
 
-        // éèå è½½é®ç½©
+        // 闅愯棌鍔犺浇閬僵
         function hideLoading() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.remove('show');
         }
 
-        // æ£æ¥è¿æ¥ç¶æ
+        // 妫€鏌ヨ繛鎺ョ姸鎬?
         async function checkConnection() {
             const statusElement = document.querySelector('.connection-status');
             const statusText = statusElement.querySelector('.status-text');
@@ -326,22 +327,22 @@
             try {
                 const isConnected = await mobileOvenController.checkConnection();
                 if (isConnected) {
-                    statusText.textContent = 'å·²è¿æ¥';
+                    statusText.textContent = '宸茶繛鎺?;
                     statusDot.style.backgroundColor = '#10b981';
                     statusElement.className = 'connection-status connected';
                 } else {
-                    statusText.textContent = 'æªè¿æ¥';
+                    statusText.textContent = '鏈繛鎺?;
                     statusDot.style.backgroundColor = '#ef4444';
                     statusElement.className = 'connection-status disconnected';
                 }
             } catch (error) {
-                // æ¨¡ææ¼ç¤ºæ°æ®
-                console.log('ä½¿ç¨æ¼ç¤ºæ¨¡å¼');
-                statusText.textContent = 'æ¼ç¤ºæ¨¡å¼';
+                // 妯℃嫙婕旂ず鏁版嵁
+                console.log('浣跨敤婕旂ず妯″紡');
+                statusText.textContent = '婕旂ず妯″紡';
                 statusDot.style.backgroundColor = '#3b82f6';
                 statusElement.className = 'connection-status connected';
                 
-                // æ¾ç¤ºæ¼ç¤ºæ°æ®
+                // 鏄剧ず婕旂ず鏁版嵁
                 updateStatusDisplay({
                     currentTemp: 25,
                     targetTemp: 180,
@@ -349,87 +350,87 @@
                     wifiConnected: true,
                     wifiSSID: 'SmartOven_5G',
                     deviceId: 'OVEN-2024-001',
-                    firmwareVersion: 'v0.6.1',
+                    firmwareVersion: 'v0.6.0',
                     uptime: 86400,
                     freeHeap: 32000
                 });
             }
         }
 
-        // å¼å§æ°æ®å·æ°
+        // 寮€濮嬫暟鎹埛鏂?
         function startDataRefresh() {
-            // çå¬æ°æ®æ´æ°äºä»¶
+            // 鐩戝惉鏁版嵁鏇存柊浜嬩欢
             mobileOvenController.on('dataUpdated', updateStatusDisplay);
             mobileOvenController.on('dataError', handleDataError);
             
-            // ç«å³å·æ°ä¸æ¬¡æ°æ®
+            // 绔嬪嵆鍒锋柊涓€娆℃暟鎹?
             refreshData();
         }
 
-        // å·æ°æ°æ®
+        // 鍒锋柊鏁版嵁
         async function refreshData() {
             try {
                 await mobileOvenController.refreshData();
             } catch (error) {
-                console.error('å·æ°æ°æ®å¤±è´¥:', error);
+                console.error('鍒锋柊鏁版嵁澶辫触:', error);
             }
         }
 
-        // æ´æ°ç¶ææ¾ç¤º
+        // 鏇存柊鐘舵€佹樉绀?
         function updateStatusDisplay(status) {
-            console.log('æ´æ°ç¶ææ¾ç¤º:', status);
+            console.log('鏇存柊鐘舵€佹樉绀?', status);
             
-            // è§£æè®¾å¤è¿åçå®éæ°æ®æ ¼å¼
-            // è®¾å¤è¿åæ ¼å¼: {"device_id":"oven-8591756","firmware_version":"0.6.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+            // 瑙ｆ瀽璁惧杩斿洖鐨勫疄闄呮暟鎹牸寮?
+            // 璁惧杩斿洖鏍煎紡: {"device_id":"oven-8591756","firmware_version":"0.6.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
             
-            // æ´æ°æ¸©åº¦æ¾ç¤º
+            // 鏇存柊娓╁害鏄剧ず
             const currentTemp = status.temperature || status.currentTemp || 0;
             const targetTemp = status.target_temperature || status.targetTemp || 0;
             
             document.querySelector('.current-temp .temp-value').textContent = currentTemp.toFixed(1);
             document.querySelector('.target-temp .temp-value').textContent = targetTemp.toFixed(1);
             
-            // æ´æ°å ç­ç¶æ
+            // 鏇存柊鍔犵儹鐘舵€?
             const heatingEnabled = status.heating_enabled || status.heatingEnabled || false;
             const heatingStatus = document.querySelector('.heating-status');
-            heatingStatus.textContent = heatingEnabled ? 'å ç­ä¸­' : 'å·²åæ­¢';
+            heatingStatus.textContent = heatingEnabled ? '鍔犵儹涓? : '宸插仠姝?;
             heatingStatus.style.color = heatingEnabled ? '#10b981' : '#6b7280';
             
-            // æ´æ°WiFiç¶æ
+            // 鏇存柊WiFi鐘舵€?
             const wifiConnected = status.wifi_connected || status.wifiConnected || false;
             const wifiSSID = status.wifiSSID || '--';
             const wifiStatus = document.querySelector('.wifi-status');
-            wifiStatus.textContent = wifiConnected ? wifiSSID : 'æªè¿æ¥';
+            wifiStatus.textContent = wifiConnected ? wifiSSID : '鏈繛鎺?;
             wifiStatus.style.color = wifiConnected ? '#10b981' : '#6b7280';
             
-            // æ´æ°è®¾å¤ID
+            // 鏇存柊璁惧ID
             const deviceId = document.querySelector('.device-id');
             deviceId.textContent = status.device_id || status.deviceId || '--';
             
-            // æ´æ°è¿æ¥ç¶æ
+            // 鏇存柊杩炴帴鐘舵€?
             const statusElement = document.querySelector('.connection-status');
             const statusText = statusElement.querySelector('.status-text');
             const statusDot = statusElement.querySelector('.status-dot');
             
-            statusText.textContent = 'å·²è¿æ¥';
+            statusText.textContent = '宸茶繛鎺?;
             statusDot.style.backgroundColor = '#10b981';
             statusElement.className = 'connection-status connected';
         }
 
-        // å¤çæ°æ®éè¯¯
+        // 澶勭悊鏁版嵁閿欒
         function handleDataError(error) {
-            console.error('æ°æ®æ´æ°éè¯¯:', error);
+            console.error('鏁版嵁鏇存柊閿欒:', error);
             
             const statusElement = document.querySelector('.connection-status');
             const statusText = statusElement.querySelector('.status-text');
             const statusDot = statusElement.querySelector('.status-dot');
             
-            statusText.textContent = 'è¿æ¥å¼å¸¸';
+            statusText.textContent = '杩炴帴寮傚父';
             statusDot.style.backgroundColor = '#f59e0b';
             statusElement.className = 'connection-status disconnected';
         }
 
-        // è®¾ç½®è§¦æ¸åé¦
+        // 璁剧疆瑙︽懜鍙嶉
         function setupTouchFeedback() {
             const buttons = document.querySelectorAll('button, .nav-card');
             buttons.forEach(button => {
@@ -448,38 +449,38 @@
             });
         }
 
-        // åæ¢å ç­ç¶æ
+        // 鍒囨崲鍔犵儹鐘舵€?
         async function toggleHeating() {
             const currentStatus = document.querySelector('.heating-status').textContent;
-            const newStatus = currentStatus === 'å ç­ä¸­' ? false : true;
+            const newStatus = currentStatus === '鍔犵儹涓? ? false : true;
             
             try {
                 await mobileOvenController.setHeating(newStatus);
-                // ç¶æä¼å¨æ°æ®å·æ°æ¶èªå¨æ´æ°
+                // 鐘舵€佷細鍦ㄦ暟鎹埛鏂版椂鑷姩鏇存柊
             } catch (error) {
-                console.error('åæ¢å ç­ç¶æå¤±è´¥:', error);
+                console.error('鍒囨崲鍔犵儹鐘舵€佸け璐?', error);
             }
         }
 
-        // å¿«éè®¾ç½®æ¸©åº¦
+        // 蹇€熻缃俯搴?
         async function quickSetTemp(temperature) {
             try {
                 await mobileOvenController.setTargetTemperature(temperature);
-                // æ¸©åº¦ä¼å¨æ°æ®å·æ°æ¶èªå¨æ´æ°
+                // 娓╁害浼氬湪鏁版嵁鍒锋柊鏃惰嚜鍔ㄦ洿鏂?
             } catch (error) {
-                console.error('è®¾ç½®æ¸©åº¦å¤±è´¥:', error);
+                console.error('璁剧疆娓╁害澶辫触:', error);
             }
         }
 
-        // é¡µé¢å¯è§æ§ååå¤ç
+        // 椤甸潰鍙鎬у彉鍖栧鐞?
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
-                // é¡µé¢éæ°å¯è§æ¶å·æ°æ°æ®
+                // 椤甸潰閲嶆柊鍙鏃跺埛鏂版暟鎹?
                 refreshData();
             }
         });
 
-        // ç½ç»ç¶æååå¤ç
+        // 缃戠粶鐘舵€佸彉鍖栧鐞?
         window.addEventListener('online', function() {
             refreshData();
         });
@@ -489,7 +490,7 @@
             const statusText = statusElement.querySelector('.status-text');
             const statusDot = statusElement.querySelector('.status-dot');
             
-            statusText.textContent = 'ç½ç»æ­å¼';
+            statusText.textContent = '缃戠粶鏂紑';
             statusDot.style.backgroundColor = '#f59e0b';
             statusElement.className = 'connection-status disconnected';
         });

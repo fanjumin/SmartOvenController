@@ -1,6 +1,6 @@
 $(function() {
   function injectIssues(url, insertAfter, idBase, loadingText, messageFunction) {
-    var loadingPara = $("<p class='" + idBase + "-loading'>" + loadingText + " …</p>").insertAfter(insertAfter);
+    var loadingPara = $("<p class='" + idBase + "-loading'>" + loadingText + " â€¦</p>").insertAfter(insertAfter);
     var animate = true;
     var paraFadeOut = function() {
       loadingPara.fadeOut("80", animate ? paraFadeIn : null);
