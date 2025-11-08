@@ -1,435 +1,4003 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>智能电烤箱 - 主控制台</title>
-    <link rel="stylesheet" href="mobile_styles.css">
+
+    <title>智能电烤箱 - 管理员控制面板</title>
+
+    <script>
+
+        // 页面加载时检查登录状态
+
+        window.addEventListener('load', function() {
+
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+
+            if (!isLoggedIn) {
+
+                // 未登录，跳转到登录页面
+
+                window.location.href = 'login.html';
+
+            }
+
+        });
+
+        
+
+        // 登出功能
+
+        function logout() {
+
+            sessionStorage.removeItem('isLoggedIn');
+
+            window.location.href = 'login.html';
+
+        }
+
+        
+
+        // 修改密码功能
+
+        function changePassword() {
+
+            const newPassword = prompt('请输入新密码（至少8位）:');
+
+            if (newPassword && newPassword.length >= 8) {
+
+                localStorage.setItem('adminPassword', newPassword);
+
+                alert('密码修改成功！');
+
+            } else if (newPassword) {
+
+                alert('密码长度至少需要8位！');
+
+            }
+
+        }
+
+    </script>
+
     <style>
-        .welcome-section {
-            text-align: center;
-            padding: 40px 20px;
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+
+
+        body {
+
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            min-height: 100vh;
+
             color: white;
-            border-radius: 0 0 30px 30px;
-            margin-bottom: 30px;
+
+            overflow-x: hidden;
+
         }
 
-        .welcome-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
 
-        .welcome-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
 
-        .device-info {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
+        .container {
 
-        .info-item {
-            text-align: center;
-        }
+            max-width: 100%;
 
-        .info-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
+            padding: 20px;
 
-        .info-value {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 0 20px;
-            max-width: 1200px;
             margin: 0 auto;
+
         }
 
-        .feature-card {
-            background: white;
+
+
+        .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
         }
 
-        .feature-card:active {
-            transform: translateY(-2px);
+        .title-section {
+            flex: 1;
         }
 
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 50%;
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 32px;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-icon {
+            font-size: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .title-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
             color: white;
-        }
-
-        .feature-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .feature-description {
             font-size: 14px;
-            color: #666;
-            line-height: 1.5;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
         }
 
-        .connection-status {
-            display: inline-flex;
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .status-indicator {
+            display: flex;
             align-items: center;
             gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
             padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
             border-radius: 20px;
-            font-size: 14px;
-            margin-top: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.5);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #ef4444;
+            background: #10b981;
             animation: pulse 2s infinite;
         }
 
-        .status-dot.connected {
+        .status-dot.live {
             background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
         }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%, 100% { transform: scale(1); }
+
+            50% { transform: scale(1.1); }
+
         }
 
-        .quick-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
 
-        .quick-btn {
-            padding: 12px 20px;
-            border: none;
+
+        .status-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-value.temperature {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .connected {
+            color: #51cf66;
+        }
+
+
+
+        .control-section {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+
+
+        .quick-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            padding: 16px 12px;
+            border: none;
+            border-radius: 16px;
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-height: 80px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
             backdrop-filter: blur(10px);
         }
 
-        .quick-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .control-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
+
+        .control-btn.secondary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .control-btn.tertiary {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .btn-icon {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+
+
+        .admin-section {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+
+
+        .admin-title {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 15px;
+
+            text-align: center;
+
+        }
+
+
+
+        .admin-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .logout-btn, .change-password-btn {
+            padding: 16px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-height: 80px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .change-password-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .logout-btn:active, .change-password-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* 加热控制区域样式 */
+        .heating-control-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .heating-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .temp-time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .temp-time-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .temp-time-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .temp-time-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+        }
+
+        .temp-time-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .baking-mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .mode-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23ffffff' d='m0 0 4 4 4-4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+
+        .mode-select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mode-select option {
+            background: #2d3748;
+            color: white;
+        }
+
+        .temperature-control, .heating-mode, .heating-action {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .temp-label, .mode-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .temp-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .temp-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .temp-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .temp-set-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .temp-set-btn:active {
+            transform: scale(0.95);
+        }
+
+        .time-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .time-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .time-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .time-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .time-set-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-set-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .mode-btn {
+            padding: 12px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+        .mode-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        .mode-icon {
+            font-size: 16px;
+        }
+
+        .heating-toggle-btn {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .heating-toggle-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .heating-icon {
+            font-size: 20px;
+        }
+
+        /* 导航卡片样式 */
+        .navigation-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 100px;
+            justify-content: center;
+        }
+
+        .nav-card:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.98);
+        }
+
+        .nav-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .nav-desc {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        /* OTA升级样式 */
+
+        .ota-section {
+
+            background: rgba(0, 0, 0, 0.1);
+
+            border-radius: 15px;
+
+            padding: 15px;
+
+            margin-top: 10px;
+
+        }
+
+
+
+        .ota-info {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+        .ota-current, .ota-status {
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 10px;
+
+            padding: 10px;
+
+            text-align: center;
+
+        }
+
+
+
+        .ota-label {
+
+            display: block;
+
+            font-size: 12px;
+
+            opacity: 0.8;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .ota-version, .ota-status-text {
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+
+
+        .ota-upload {
+
+            display: flex;
+
+            gap: 10px;
+
+            justify-content: center;
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+        .ota-btn {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            min-width: 140px;
+
+            justify-content: center;
+
+        }
+
+
+
+        .ota-btn {
+
+            background: rgba(59, 130, 246, 0.8);
+
+            color: white;
+
+        }
+
+
+
+        .ota-btn.upload {
+
+            background: rgba(16, 185, 129, 0.8);
+
+        }
+
+
+
+        .ota-btn:disabled {
+
+            background: rgba(107, 114, 128, 0.5);
+
+            cursor: not-allowed;
+
+            opacity: 0.6;
+
+        }
+
+
+
+        .ota-btn:active:not(:disabled) {
+
+            transform: scale(0.95);
+
+        }
+
+
+
+        .ota-progress {
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+        .progress-bar {
+
+            width: 100%;
+
+            height: 8px;
+
+            background: rgba(255, 255, 255, 0.2);
+
+            border-radius: 4px;
+
+            overflow: hidden;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .progress-fill {
+
+            height: 100%;
+
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+
+            border-radius: 4px;
+
+            width: 0%;
+
+            transition: width 0.3s ease;
+
+        }
+
+
+
+        .progress-text {
+
+            text-align: center;
+
+            font-size: 12px;
+
+            opacity: 0.8;
+
+        }
+
+
+
+        .ota-message {
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 8px;
+
+            padding: 10px;
+
+            font-size: 12px;
+
+            text-align: center;
+
+            min-height: 20px;
+
+        }
+
+
+
+        .ota-message.success {
+
+            background: rgba(16, 185, 129, 0.2);
+
+            border: 1px solid rgba(16, 185, 129, 0.5);
+
+        }
+
+
+
+        .ota-message.error {
+
+            background: rgba(239, 68, 68, 0.2);
+
+            border: 1px solid rgba(239, 68, 68, 0.5);
+
+        }
+
+
+
+        .ota-message.warning {
+
+            background: rgba(245, 158, 11, 0.2);
+
+            border: 1px solid rgba(245, 158, 11, 0.5);
+
+        }
+
+
+
+
+
+
+
+        .api-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .api-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f8fafc;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .api-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            border-radius: 2px;
+        }
+
+        .api-endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        }
+
+        .api-endpoint {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .api-endpoint:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .endpoint-method {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .endpoint-method.get {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .endpoint-method.post {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .endpoint-path {
+            font-size: 14px;
+            color: #e2e8f0;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .endpoint-description {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .endpoint-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* API端点响应式优化 */
+        @media (max-width: 768px) {
+            .api-endpoints {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .api-endpoint {
+                padding: 12px;
+                gap: 10px;
+            }
+            
+            .endpoint-path {
+                font-size: 13px;
+            }
+            
+            .endpoint-description {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .api-section {
+                padding: 20px 15px;
+            }
+            
+            .api-title {
+                font-size: 18px;
+            }
+            
+            .api-endpoint {
+                padding: 10px;
+                gap: 8px;
+            }
+            
+            .endpoint-method {
+                min-width: 45px;
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+            
+            .endpoint-path {
+                font-size: 12px;
+            }
+        }
+
+
+
+
+
+
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 30px;
+
+            padding: 20px;
+
+            font-size: 12px;
+
+            opacity: 0.7;
+
+        }
+
+
+
+        .admin-controls {
+
+            display: flex;
+
+            gap: 15px;
+
+            align-items: center;
+
+        }
+
+
+
+        .logout-btn, .change-password-btn {
+
+            padding: 12px 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            border-radius: 12px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: white;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            backdrop-filter: blur(10px);
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+        }
+
+
+
+        .logout-btn:hover, .change-password-btn:hover {
+
+            background: rgba(255, 255, 255, 0.2);
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+        }
+
+
+
+        .logout-btn:active, .change-password-btn:active {
+
+            transform: translateY(0);
+
+        }
+
+
+
+        .btn-icon {
+
+            font-size: 16px;
+
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+
+        }
+
+
+
+        /* 温度控制面板样式 */
+
+        .temperature-display {
+
+            display: flex;
+
+            justify-content: space-around;
+
+            margin-bottom: 20px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 15px;
+
+            padding: 15px;
+
+        }
+
+
+
+        .temp-display-item {
+
+            text-align: center;
+
+            flex: 1;
+
+        }
+
+
+
+        .temp-label {
+
+            font-size: 14px;
+
+            opacity: 0.8;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .current-temp, .target-temp {
+
+            font-size: 32px;
+
+            font-weight: 600;
+
+        }
+
+
+
+        .current-temp {
+
+            color: #ff6b6b;
+
+        }
+
+
+
+        .target-temp {
+
+            color: #3b82f6;
+
+        }
+
+
+
+        .temp-controls {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .temp-btn {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            background: rgba(255, 255, 255, 0.2);
+
+            color: white;
+
+            min-width: 60px;
+
+        }
+
+
+
+        .temp-btn.large {
+
+            min-width: 80px;
+
+            background: rgba(255, 255, 255, 0.3);
+
+        }
+
+
+
+        .temp-btn:active {
+
+            transform: scale(0.95);
+
+            background: rgba(255, 255, 255, 0.4);
+
+        }
+
+
+
+        .temp-input-group {
+
+            margin-bottom: 20px;
+
+            text-align: center;
+
+        }
+
+
+
+        .temp-input-label {
+
+            display: block;
+
+            font-size: 14px;
+
+            opacity: 0.8;
+
+            margin-bottom: 8px;
+
+        }
+
+
+
+        .temp-input {
+
+            width: 200px;
+
+            padding: 12px;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: white;
+
+            font-size: 16px;
+
+            text-align: center;
+
+            margin-right: 10px;
+
+        }
+
+
+
+        .temp-input::placeholder {
+
+            color: rgba(255, 255, 255, 0.5);
+
+        }
+
+
+
+        .temp-apply-btn {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #10b981;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .temp-apply-btn:active {
+
+            transform: scale(0.95);
+
+        }
+
+
+
+        .temp-presets {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .preset-btn {
+
+            padding: 15px 10px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            color: white;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            text-align: center;
+
+        }
+
+
+
+        .preset-value {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .preset-label {
+
+            font-size: 12px;
+
+            opacity: 0.8;
+
+        }
+
+
+
+        .preset-btn:active {
+
+            transform: scale(0.95);
+
+            background: rgba(255, 255, 255, 0.25);
+
+        }
+
+
+
+        .action-buttons {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+        .btn {
+
+            padding: 15px 25px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            min-width: 140px;
+
+        }
+
+
+
+        .btn-primary {
+
+            background: #10b981;
+
+            color: white;
+
+        }
+
+
+
+        .btn-secondary {
+
+            background: rgba(255, 255, 255, 0.2);
+
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+        }
+
+
+
+        .btn:active {
+
+            transform: scale(0.95);
+
+        }
+
+
+
+        .status-indicator {
+
+            text-align: center;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            margin-top: 10px;
+
+        }
+
+
+
+        .status-idle {
+
+            background: rgba(107, 114, 128, 0.3);
+
+            color: rgba(255, 255, 255, 0.8);
+
+        }
+
+
+
+        .status-heating {
+
+            background: rgba(239, 68, 68, 0.3);
+
+            color: #ff6b6b;
+
+        }
+
+
+
+        .status-cooling {
+
+            background: rgba(59, 130, 246, 0.3);
+
+            color: #3b82f6;
+
+        }
+
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: white;
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .logout-btn:hover, .change-password-btn:hover {
+
+            background: rgba(255, 255, 255, 0.2);
+
+            transform: translateY(-1px);
+
+        }
+
+
+
+        .logout-btn:active, .change-password-btn:active {
+
+            transform: translateY(0);
+
+        }
+
+
+
+        @media (max-width: 480px) {
+
+            .status-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            
+
+            .quick-controls {
+
+                flex-direction: column;
+
+            }
+
+            
+
+            .control-btn {
+
+                min-width: auto;
+
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        @media (max-width: 480px) {
+
+
+
+            
+
+
+
+            
+
+
+
+            
+
+
+
+            
+
+            /* æ¸©åº¦æ§å¶é¢æ¿ååºå¼ä¼å */
+
+            .temperature-display {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .temp-display-item {
+
+                text-align: center;
+
+            }
+
+            
+
+            .temp-controls {
+
+                flex-wrap: wrap;
+
+                justify-content: center;
+
+                gap: 8px;
+
+            }
+
+            
+
+            .temp-btn {
+
+                min-width: 60px;
+
+                font-size: 14px;
+
+                padding: 8px 12px;
+
+            }
+
+            
+
+            .temp-btn.large {
+
+                min-width: 70px;
+
+            }
+
+            
+
+            .temp-input-group {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .temp-input-label {
+
+                text-align: center;
+
+            }
+
+            
+
+            .temp-input {
+
+                width: 100%;
+
+                text-align: center;
+
+            }
+
+            
+
+            .temp-apply-btn {
+
+                width: 100%;
+
+            }
+
+            
+
+            .temp-presets {
+
+                grid-template-columns: repeat(2, 1fr);
+
+                gap: 8px;
+
+            }
+
+            
+
+            .preset-btn {
+
+                min-height: 60px;
+
+            }
+
+            
+
+            .action-buttons {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .btn {
+
+                width: 100%;
+
+            }
+
+            
+
+            .status-indicator {
+
+                font-size: 12px;
+
+                padding: 8px 12px;
+
+            }
+
+            
+
+            /* ç®¡çåè½ååºå¼ä¼å */
+
+            .admin-buttons {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .admin-btn {
+
+                width: 100%;
+
+                justify-content: center;
+
+            }
+
+            
+
+            /* OTAåè½ååºå¼ä¼å */
+
+            .ota-upload {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .ota-btn {
+
+                width: 100%;
+
+                justify-content: center;
+
+            }
+
+            
+
+            /* APIç«¯ç¹ååºå¼ä¼å */
+
+            .api-section {
+
+                padding: 15px;
+
+            }
+
+            
+
+            .api-endpoints {
+
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .api-endpoint {
+
+                padding: 12px;
+
+            }
+
+            
+
+            .endpoint-method {
+
+                min-width: 60px;
+
+                font-size: 12px;
+
+            }
+
+            
+
+            .endpoint-path {
+
+                font-size: 12px;
+
+            }
+
+            
+
+            /* åè½ç½æ ¼ååºå¼ä¼å */
+
+            .feature-grid {
+
+                grid-template-columns: 1fr;
+
+                gap: 15px;
+
+            }
+
+            
+
+            .feature-card {
+
+                padding: 15px;
+
+            }
+
+            
+
+            .feature-icon {
+
+                font-size: 24px;
+
+            }
+
+            
+
+            .feature-title {
+
+                font-size: 16px;
+
+            }
+
+            
+
+            .feature-description {
+
+                font-size: 12px;
+
+            }
+
+        }
+
+        
+
+        @media (max-width: 768px) and (min-width: 481px) {
+
+            /* å¹³æ¿çµèåå¤§å±å¹ææºä¼å */
+
+            .temp-presets {
+
+                grid-template-columns: repeat(3, 1fr);
+
+            }
+
+            
+
+            .feature-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+            
+
+            .api-endpoints {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+        }
+
+        
+
+        /* 系统管理样式 */
+
+        .system-management {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+        
+
+        .section-title {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 15px;
+
+            text-align: center;
+
+            color: white;
+
+        }
+
+        
+
+        .management-grid {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+        }
+
+        
+
+        .management-card {
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+        
+
+        .management-card:hover {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+        }
+
+        
+
+        .management-icon {
+
+            font-size: 32px;
+
+            margin-bottom: 10px;
+
+        }
+
+        
+
+        .management-title {
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+
+            color: white;
+
+        }
+
+        
+
+        .management-description {
+
+            font-size: 12px;
+
+            opacity: 0.8;
+
+            line-height: 1.4;
+
+            color: rgba(255, 255, 255, 0.9);
+
+        }
+
+        
+
+        /* 系统管理响应式优化 */
 
         @media (max-width: 768px) {
-            .feature-grid {
-                grid-template-columns: 1fr;
-                padding: 0 15px;
+
+            .management-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
             }
-            
-            .device-info {
-                gap: 20px;
-            }
-            
-            .welcome-title {
-                font-size: 24px;
-            }
+
         }
-    </style>
-</head>
-<body>
-    <div class="mobile-container">
-        <!-- 欢迎区域 -->
-        <div class="welcome-section">
-            <div class="welcome-title">智能电烤箱控制台</div>
-            <div class="welcome-subtitle">一站式设备管理与控制</div>
+
+        
+
+        @media (max-width: 480px) {
+
+            .management-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
             
-            <div class="connection-status">
-                <div class="status-dot" id="status-dot"></div>
-                <span class="status-text" id="status-text">检测设备中...</span>
-            </div>
 
-            <div class="device-info">
-                <div class="info-item">
-                    <div class="info-label">设备ID</div>
-                    <div class="info-value" id="device-id">--</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">固件版本</div>
-                    <div class="info-value" id="firmware-version">--</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">运行时间</div>
-                    <div class="info-value" id="uptime">--</div>
-                </div>
-            </div>
+            .management-card {
 
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="refreshStatus()">🔄 刷新状态</button>
-                <button class="quick-btn" onclick="openMobileHome()">📱 手机界面</button>
-                <button class="quick-btn" onclick="openDesktopView()">💻 桌面界面</button>
-            </div>
-        </div>
+                padding: 15px;
 
-        <!-- 功能网格 -->
-        <div class="feature-grid">
-            <!-- 温度控制 -->
-            <div class="feature-card" onclick="openTemperatureControl()">
-                <div class="feature-icon">🌡️</div>
-                <div class="feature-title">温度控制</div>
-                <div class="feature-description">
-                    精确控制烤箱温度，设置目标温度，监控实时温度变化，确保最佳烘焙效果
-                </div>
-                <div class="temperature-preview" id="temp-preview">
-                    <small>当前: --°C | 目标: --°C</small>
-                </div>
-            </div>
+            }
 
-            <!-- WiFi配置 -->
-            <div class="feature-card" onclick="openWifiConfig()">
-                <div class="feature-icon">📶</div>
-                <div class="feature-title">WiFi配置</div>
-                <div class="feature-description">
-                    管理设备网络连接，扫描可用WiFi，配置网络参数，确保设备稳定联网
-                </div>
-                <div class="wifi-preview" id="wifi-preview">
-                    <small>状态: -- | 信号: --</small>
-                </div>
-            </div>
+            
 
-            <!-- 设备状态 -->
-            <div class="feature-card" onclick="openDeviceStatus()">
-                <div class="feature-icon">📊</div>
-                <div class="feature-title">设备状态</div>
-                <div class="feature-description">
-                    查看设备详细信息，监控系统资源，分析温度趋势，导出运行数据
-                </div>
-                <div class="status-preview" id="status-preview">
-                    <small>内存: -- | 加热: --</small>
-                </div>
-            </div>
+            .management-icon {
 
-            <!-- 设置与帮助 -->
-            <div class="feature-card" onclick="openSettingsHelp()">
-                <div class="feature-icon">⚙️</div>
-                <div class="feature-title">设置与帮助</div>
-                <div class="feature-description">
-                    系统设置调整，设备管理操作，查看帮助文档，获取技术支持
+                font-size: 28px;
+
+            }
+
+            
+
+            .management-title {
+
+                font-size: 14px;
+
+            }
+
+            
+
+            .management-description {
+
+                font-size: 11px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="main-title">
+                        <span class="title-icon">🔥</span>
+                        智能电烤箱
+                        <span class="title-badge">Pro</span>
+                    </h1>
+                    <p class="subtitle">智能烘焙控制系统 - 专业版</p>
                 </div>
-                <div class="settings-preview" id="settings-preview">
-                    <small>单位: °C | 精度: 标准</small>
+                <div class="status-indicator">
+                    <div class="status-dot live"></div>
+                    <span class="status-text">在线</span>
                 </div>
             </div>
         </div>
 
-        <!-- 底部信息 -->
-        <div style="text-align: center; padding: 30px; color: #666; font-size: 14px;">
-            <p>智能电烤箱控制系统 v0.3.1</p>
-            <p>© 2024 智能电烤箱项目组</p>
+        <!-- 设备状态卡片 -->
+        <div class="status-card">
+            <div class="status-header">
+                <h2 class="status-title">烤箱状态</h2>
+                <div class="connection-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">连接中...</span>
+                </div>
+            </div>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">当前温度</div>
+                    <div class="status-value temperature" id="current-temp-display">--°C</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">加热状态</div>
+                    <div class="status-value heating-status">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">WiFi</div>
+                    <div class="status-value wifi-status">--</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">设备ID</div>
+                    <div class="status-value device-id">--</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- 加热控制区域 -->
+        <div class="heating-control-section">
+            <h3>烘焙控制</h3>
+            <div class="heating-controls">
+                <!-- 温度和时间合并为一行 -->
+                <div class="temp-time-row">
+                    <div class="temp-time-control">
+                        <label class="temp-time-label">目标温度 (°C)</label>
+                        <input type="number" class="temp-time-input" id="target-temp" value="180" min="50" max="250" step="5" onblur="onTemperatureBlur()">
+                    </div>
+                    <div class="temp-time-control">
+                        <label class="temp-time-label">烘焙时间 (分钟)</label>
+                        <input type="number" class="temp-time-input" id="baking-time" value="30" min="1" max="120" step="1" onblur="onTimeBlur()">
+                    </div>
+                </div>
+                
+                <!-- 烘焙模式下拉选择框 -->
+                <div class="baking-mode-select">
+                    <label class="mode-label">烘焙模式</label>
+                    <select class="mode-select" id="baking-mode-select" onchange="onBakingModeChange()">
+                        <option value="bread">🍞 面包 (180°C, 30分钟)</option>
+                        <option value="cake">🎂 蛋糕 (160°C, 45分钟)</option>
+                        <option value="pizza">🍕 披萨 (220°C, 15分钟)</option>
+                        <option value="cookies">🍪 饼干 (170°C, 20分钟)</option>
+                        <option value="roast">🍗 烤肉 (200°C, 60分钟)</option>
+                        <option value="defrost">❄️ 解冻 (80°C, 10分钟)</option>
+                        <option value="custom">⚙️ 自定义模式</option>
+                    </select>
+                </div>
+                
+                <!-- 启动加热按钮 -->
+                <div class="heating-action">
+                    <button class="heating-toggle-btn" id="heating-toggle" onclick="toggleHeating()">
+                        <span class="heating-icon">🔥</span>
+                        <span class="heating-text">开始</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 导航卡片区域 -->
+        <div class="navigation-section">
+            <div class="nav-grid">
+
+                
+                <a href="wifi_config.html" class="nav-card">
+                    <div class="nav-icon">📶</div>
+                    <div class="nav-title">WiFi配置</div>
+                    <div class="nav-desc">网络连接设置</div>
+                </a>
+                
+                <a href="device_status.html" class="nav-card">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-title">设备状态</div>
+                    <div class="nav-desc">详细运行信息</div>
+                </a>
+                
+                <a href="temperature_calibration.html" class="nav-card">
+                    <div class="nav-icon">🌡️</div>
+                    <div class="nav-title">温度校准</div>
+                    <div class="nav-desc">温度传感器校准</div>
+                </a>
+                
+                <a href="settings_help.html" class="nav-card">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-title">设置与帮助</div>
+                    <div class="nav-desc">系统配置</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 管理员控制区域 -->
+        <div class="admin-section">
+            <h3>管理员控制</h3>
+            <div class="admin-buttons">
+                <button class="logout-btn" onclick="logout()">
+                    <span class="btn-icon">🚪</span>
+                    退出登录
+                </button>
+                <button class="change-password-btn" onclick="changePassword()">
+                    <span class="btn-icon">🔒</span>
+                    修改密码
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>正在连接设备...</p>
         </div>
     </div>
 
-    <script src="mobile_utils.js"></script>
-    <script>
-        // 设备状态检测
-        async function checkDeviceStatus() {
-            const statusDot = document.getElementById('status-dot');
-            const statusText = document.getElementById('status-text');
-            
-            try {
-                // 尝试检测设备连接
-                const response = await fetch('http://192.168.4.1/status', {
-                    method: 'GET',
-                    timeout: 3000
-                }).catch(() => null);
 
-                if (response && response.ok) {
-                    statusDot.className = 'status-dot connected';
-                    statusText.textContent = '设备已连接';
-                    
-                    // 更新设备信息
-                    updateDeviceInfo();
+
+        </div>
+
+
+
+
+
+
+
+        <!-- 系统管理 -->
+
+        <div class="system-management">
+
+            <div class="section-title">系统管理</div>
+
+            <div class="management-grid">
+
+                <div class="management-card" onclick="openWifiConfig()">
+
+                    <div class="management-icon">📶</div>
+
+                    <div class="management-title">WiFi配置</div>
+
+                    <div class="management-description">配置设备WiFi网络连接，修改SSID和密码</div>
+
+                </div>
+
+                <div class="management-card" onclick="restartDevice()">
+
+                    <div class="management-icon">🔄</div>
+
+                    <div class="management-title">重启设备</div>
+
+                    <div class="management-description">重启智能电烤箱设备，应用新的设置</div>
+
+                </div>
+
+                <div class="management-card" onclick="factoryReset()">
+
+                    <div class="management-icon">⚠️</div>
+
+                    <div class="management-title">恢复出厂设置</div>
+
+                    <div class="management-description">清除所有设置，恢复设备到出厂状态</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- OTA固件升级 -->
+
+        <div class="admin-section">
+
+            <div class="admin-title">固件升级 (OTA)</div>
+
+            <div class="ota-section">
+
+                <div class="ota-info">
+
+                    <div class="ota-current">
+
+                        <span class="ota-label">当前固件版本:</span>
+
+                        <span class="ota-version" id="current-firmware">--</span>
+
+                    </div>
+
+                    <div class="ota-status">
+
+                        <span class="ota-label">升级状态:</span>
+
+                        <span class="ota-status-text" id="ota-status">就绪</span>
+
+                    </div>
+
+                </div>
+
+                
+
+                <div class="ota-upload">
+
+                    <input type="file" id="firmware-file" accept=".bin,.hex,.ino" style="display: none;">
+
+                    <button class="ota-btn" onclick="document.getElementById('firmware-file').click()">
+
+                        <span>📁</span>
+
+                        <span>选择固件文件</span>
+
+                    </button>
+
+                    <button class="ota-btn upload" id="upload-btn" onclick="uploadFirmware()" disabled>
+
+                        <span>⬆️</span>
+
+                        <span>开始升级</span>
+
+                    </button>
+
+                </div>
+
+                
+
+                <div class="ota-progress" id="ota-progress" style="display: none;">
+
+                    <div class="progress-bar">
+
+                        <div class="progress-fill" id="progress-fill"></div>
+
+                    </div>
+
+                    <div class="progress-text" id="progress-text">0%</div>
+
+                </div>
+
+                
+
+                <div class="ota-message" id="ota-message"></div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- API端点信息 -->
+        <div class="api-section">
+            <div class="api-title">API端点</div>
+            <div class="api-endpoints">
+                <div class="api-endpoint">
+                    <span class="endpoint-method get">GET</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/status</div>
+                        <div class="endpoint-description">获取设备状态信息</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/control</div>
+                        <div class="endpoint-description">控制加热器开关</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/wificonfig</div>
+                        <div class="endpoint-description">配置WiFi网络连接</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/restart</div>
+                        <div class="endpoint-description">重启设备</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/factoryreset</div>
+                        <div class="endpoint-description">恢复出厂设置</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/ota_update</div>
+                        <div class="endpoint-description">OTA固件升级</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="footer">
+
+            <p>智能电烤箱控制器 v0.7.0</p>
+
+            <p>© 2025 智能电烤箱项目</p>
+
+        </div>
+
+    </div>
+
+            <script>
+
+        // 设备状态变量
+
+        let deviceStatus = {
+
+            currentTemp: 0,
+
+            targetTemp: 180,
+
+            heatingEnabled: false,
+
+            wifiConnected: false,
+
+            wifiSSID: '',
+
+            ipAddress: '',
+
+            deviceId: '',
+
+            firmwareVersion: ''
+
+        };
+
+
+
+        // 页面加载完成后初始化
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            console.log('智能电烤箱管理员页面已加载');
+
+            refreshData();
+
+            
+
+            // 每5秒自动刷新数据
+
+            setInterval(refreshData, 5000);
+
+            
+
+            // 初始化文件选择事件
+
+            const firmwareFileInput = document.getElementById('firmware-file');
+
+            if (firmwareFileInput) {
+
+                firmwareFileInput.addEventListener('change', handleFileSelect);
+
+            }
+
+        });
+
+
+
+        // 刷新设备数据
+
+        async function refreshData() {
+
+            try {
+
+                const response = await fetch('/status');
+
+                if (response.ok) {
+
+                    const data = await response.json();
+
+                    updateStatusDisplay(data);
+
                 } else {
-                    statusDot.className = 'status-dot';
-                    statusText.textContent = '设备未连接';
+
+                    console.error('获取设备状态失败');
+
                     showDemoData();
+
                 }
+
             } catch (error) {
-                statusDot.className = 'status-dot';
-                statusText.textContent = '设备未连接';
+
+                console.error('网络连接失败:', error);
+
                 showDemoData();
+
             }
+
         }
 
-        // 显示演示数据
+
+
+        // 更新状态显示
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifiSSID || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || ''
+
+            };
+
+
+
+            // 安全地更新温度显示
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+            if (statusItems.length >= 4) {
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + '°C';
+
+                statusItems[1].querySelector('.status-value').textContent = 
+
+                    deviceStatus.targetTemp.toFixed(1) + '°C';
+
+                
+
+                // 更新加热状态
+
+                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
+
+                statusItems[2].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // 更新WiFi状态
+
+                const wifiStatus = deviceStatus.wifiConnected ? '已连接' : '未连接';
+
+                statusItems[3].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[3].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+            }
+
+        }
+
+
+
+        // 显示演示数据（网络连接失败时）
+
         function showDemoData() {
-            document.getElementById('device-id').textContent = 'OVEN-2024-001';
-            document.getElementById('firmware-version').textContent = 'v0.3.1';
-            document.getElementById('uptime').textContent = '24小时';
+
+            const demoData = {
+                temperature: 25.0,
+                target_temperature: 180.0,
+                heating_enabled: false,
+                wifi_connected: true,
+                wifiSSID: 'SmartOven_AP',
+                ip_address: '192.168.4.1',
+                device_id: 'SmartOven_001',
+                firmware_version: '0.7.0'
+            };
+
             
-            document.getElementById('temp-preview').innerHTML = '<small>当前: 25°C | 目标: 180°C</small>';
-            document.getElementById('wifi-preview').innerHTML = '<small>状态: 已连接 | 信号: 优秀</small>';
-            document.getElementById('status-preview').innerHTML = '<small>内存: 32KB | 加热: 关闭</small>';
-            document.getElementById('settings-preview').innerHTML = '<small>单位: °C | 精度: 标准</small>';
+
+            const connectionStatus = document.getElementById('connection-status');
+
+            if (connectionStatus) {
+
+                connectionStatus.textContent = '演示模式';
+
+                connectionStatus.style.color = '#f59e0b';
+
+            }
+
+            updateStatusDisplay(demoData);
+
         }
 
-        // 更新设备信息
-        async function updateDeviceInfo() {
+
+
+        // 切换加热状态
+
+        async function toggleHeating() {
+
             try {
-                const response = await fetch('http://192.168.4.1/api/status');
-                const data = await response.json();
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        heating_enabled: !deviceStatus.heatingEnabled
+
+                    })
+
+                });
+
                 
-                document.getElementById('device-id').textContent = data.deviceId || 'OVEN-2024-001';
-                document.getElementById('firmware-version').textContent = data.firmwareVersion || 'v0.3.1';
-                document.getElementById('uptime').textContent = formatUptime(data.uptime) || '24小时';
-                
-                // 更新预览信息
-                updatePreviewData(data);
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('控制命令发送失败');
+
+                }
+
             } catch (error) {
-                showDemoData();
+
+                console.error('控制设备失败:', error);
+
+                alert('网络连接失败');
+
             }
+
         }
 
-        // 格式化运行时间
-        function formatUptime(seconds) {
-            if (!seconds) return '24小时';
+
+
+        // 快速设置温度
+
+        async function quickSetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('温度设置失败');
+
+                }
+
+            } catch (error) {
+
+                console.error('设置温度失败:', error);
+
+                alert('网络连接失败');
+
+            }
+
+        }
+
+
+
+        // 重启设备
+
+        async function restartDevice() {
+
+            if (confirm('确定要重启设备吗？设备将在5秒后重启。')) {
+
+                try {
+
+                    const response = await fetch('/restart', {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('设备重启命令已发送，请等待约30秒后重新连接');
+
+                    } else {
+
+                        alert('重启命令发送失败');
+
+                    }
+
+                } catch (error) {
+
+                    console.error('重启设备失败:', error);
+
+                    alert('网络连接失败');
+
+                }
+
+            }
+
+        }
+
+
+
+        // 恢复出厂设置
+
+        async function factoryReset() {
+
+            if (confirm('确定要恢复出厂设置吗？所有配置将被清除，设备将重启。')) {
+
+                try {
+
+                    const response = await fetch('/factoryreset', {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('恢复出厂设置命令已发送，设备将重启并进入配网模式');
+
+                    } else {
+
+                        alert('恢复出厂设置命令发送失败');
+
+                    }
+
+                } catch (error) {
+
+                    console.error('恢复出厂设置失败:', error);
+
+                    alert('网络连接失败');
+
+                }
+
+            }
+
+        }
+
+
+
+        // OTA固件升级功能
+
+        let selectedFirmwareFile = null;
+
+
+
+
+
+
+
+        // 处理文件选择
+
+        function handleFileSelect(event) {
+
+            const file = event.target.files[0];
+
+            if (file) {
+
+                // 检查文件类型
+
+                const allowedTypes = ['.bin', '.hex', '.ino'];
+
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+                
+
+                if (!allowedTypes.includes(fileExtension)) {
+
+                    showOtaMessage('请选择有效的固件文件 (.bin, .hex, .ino)', 'error');
+
+                    resetFileInput();
+
+                    return;
+
+                }
+
+                
+
+                // 检查文件大小（最大10MB）
+
+                if (file.size > 10 * 1024 * 1024) {
+
+                    showOtaMessage('文件大小不能超过10MB', 'error');
+
+                    resetFileInput();
+
+                    return;
+
+                }
+
+                
+
+                selectedFirmwareFile = file;
+
+                document.getElementById('upload-btn').disabled = false;
+
+                showOtaMessage(`已选择文件: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+
+                updateOtaStatus('文件已选择，准备上传');
+
+            }
+
+        }
+
+
+
+        // 重置文件输入
+
+        function resetFileInput() {
+
+            const fileInput = document.getElementById('firmware-file');
+
+            fileInput.value = '';
+
+            selectedFirmwareFile = null;
+
+            document.getElementById('upload-btn').disabled = true;
+
+        }
+
+
+
+        // 上传固件文件
+
+        async function uploadFirmware() {
+
+            if (!selectedFirmwareFile) {
+
+                showOtaMessage('请先选择固件文件', 'error');
+
+                return;
+
+            }
+
             
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
+
+            if (!confirm('确定要上传固件吗？设备将在升级过程中重启，请确保设备连接稳定。')) {
+
+                return;
+
+            }
+
             
-            if (hours > 0) {
-                return `${hours}小时${minutes > 0 ? `${minutes}分钟` : ''}`;
+
+            try {
+
+                updateOtaStatus('正在上传固件...');
+
+                showOtaMessage('开始上传固件文件，请勿关闭页面', 'warning');
+
+                
+
+                // 显示进度条
+
+                const progressContainer = document.getElementById('ota-progress');
+
+                const progressFill = document.getElementById('progress-fill');
+
+                const progressText = document.getElementById('progress-text');
+
+                progressContainer.style.display = 'block';
+
+                
+
+                // 创建FormData对象
+
+                const formData = new FormData();
+
+                formData.append('firmware', selectedFirmwareFile);
+
+                
+
+                // 发送OTA升级请求
+
+                const response = await fetch('/ota_update', {
+
+                    method: 'POST',
+
+                    body: formData
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    const result = await response.json();
+
+                    if (result.success) {
+
+                        showOtaMessage('固件升级成功！设备正在重启...', 'success');
+
+                        updateOtaStatus('升级完成');
+
+                        updateProgress(100);
+
+                        
+
+                        // 等待设备重启
+
+                        setTimeout(() => {
+
+                            showOtaMessage('设备重启完成，请重新连接', 'success');
+
+                            refreshData();
+
+                        }, 30000);
+
+                    } else {
+
+                        showOtaMessage(`升级失败: ${result.message}`, 'error');
+
+                        updateOtaStatus('升级失败');
+
+                    }
+
+                } else {
+
+                    showOtaMessage('服务器响应错误', 'error');
+
+                    updateOtaStatus('上传失败');
+
+                }
+
+                
+
+            } catch (error) {
+
+                console.error('OTA升级失败:', error);
+
+                showOtaMessage('网络连接失败，请检查设备连接', 'error');
+
+                updateOtaStatus('连接失败');
+
+            } finally {
+
+                // 重置状态
+
+                setTimeout(() => {
+
+                    resetFileInput();
+
+                    progressContainer.style.display = 'none';
+
+                    updateProgress(0);
+
+                }, 5000);
+
+            }
+
+        }
+
+
+
+        // 更新进度条
+
+        function updateProgress(percentage) {
+
+            const progressFill = document.getElementById('progress-fill');
+
+            const progressText = document.getElementById('progress-text');
+
+            
+
+            if (progressFill && progressText) {
+
+                progressFill.style.width = percentage + '%';
+
+                progressText.textContent = percentage + '%';
+
+            }
+
+        }
+
+
+
+        // 显示OTA消息
+
+        function showOtaMessage(message, type = '') {
+
+            const messageElement = document.getElementById('ota-message');
+
+            if (messageElement) {
+
+                messageElement.textContent = message;
+
+                messageElement.className = 'ota-message';
+
+                if (type) {
+
+                    messageElement.classList.add(type);
+
+                }
+
+            }
+
+        }
+
+
+
+        // 更新OTA状态
+
+        function updateOtaStatus(status) {
+
+            const statusElement = document.getElementById('ota-status');
+
+            if (statusElement) {
+
+                statusElement.textContent = status;
+
+            }
+
+        }
+
+
+
+        // 更新固件版本显示
+
+        function updateFirmwareDisplay() {
+
+            const firmwareElement = document.getElementById('current-firmware');
+
+            if (firmwareElement && deviceStatus.firmwareVersion) {
+
+                firmwareElement.textContent = deviceStatus.firmwareVersion;
+
+            }
+
+        }
+
+
+
+        // 在状态更新时也更新固件版本显示
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifiSSID || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || ''
+
+            };
+
+
+
+            // 安全地更新温度显示
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+            if (statusItems.length >= 4) {
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + '°C';
+
+                statusItems[1].querySelector('.status-value').textContent = 
+
+                    deviceStatus.targetTemp.toFixed(1) + '°C';
+
+                
+
+                // 更新加热状态
+
+                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
+
+                statusItems[2].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // 更新WiFi状态
+
+                const wifiStatus = deviceStatus.wifiConnected ? '已连接' : '未连接';
+
+                statusItems[3].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[3].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+            }
+
+            
+
+            // 更新固件版本显示
+
+            updateFirmwareDisplay();
+
+            
+
+            // 更新温度控制面板显示
+
+            updateTemperatureControlDisplay();
+
+        }
+
+
+
+        // 更新温度控制面板显示
+
+        function updateTemperatureControlDisplay() {
+
+            // 更新当前温度显示
+
+            const currentTempDisplay = document.getElementById('current-temp-display');
+
+            if (currentTempDisplay) {
+
+                currentTempDisplay.textContent = deviceStatus.currentTemp.toFixed(1) + '°C';
+
+            }
+
+            
+
+            // 更新目标温度显示
+
+            const targetTempDisplay = document.getElementById('target-temp-display');
+
+            if (targetTempDisplay) {
+
+                targetTempDisplay.textContent = deviceStatus.targetTemp.toFixed(1) + '°C';
+
+            }
+
+            
+
+            // 更新加热按钮状态
+
+            const heatingBtn = document.getElementById('heating-btn');
+
+            if (heatingBtn) {
+
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? '关闭加热' : '开启加热';
+
+                heatingBtn.className = deviceStatus.heatingEnabled ? 
+
+                    'btn btn-secondary' : 'btn btn-primary';
+
+            }
+
+            
+
+            // 更新加热状态指示器
+
+            const heatingStatus = document.getElementById('heating-status');
+
+            if (heatingStatus) {
+
+                if (deviceStatus.heatingEnabled) {
+
+                    heatingStatus.textContent = '加热器正在工作';
+
+                    heatingStatus.className = 'status-indicator status-heating';
+
+                } else {
+
+                    heatingStatus.textContent = '加热器已关闭';
+
+                    heatingStatus.className = 'status-indicator status-idle';
+
+                }
+
+            }
+
+        }
+
+
+
+        // 温度调节功能
+
+        function changeTemp(delta) {
+
+            const newTemp = deviceStatus.targetTemp + delta;
+
+            if (newTemp >= 0 && newTemp <= 300) {
+
+                setTargetTemp(newTemp);
+
             } else {
-                return `${minutes}分钟`;
+
+                alert('温度范围必须在 0°C 到 300°C 之间');
+
+            }
+
+        }
+
+
+
+        // 设置目标温度
+
+        async function setTargetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('温度设置失败');
+
+                }
+
+            } catch (error) {
+
+                console.error('设置温度失败:', error);
+
+                alert('网络连接失败');
+
+            }
+
+        }
+
+
+
+        // 预设温度设置
+
+        function setPresetTemp(temp) {
+
+            setTargetTemp(temp);
+
+        }
+
+
+
+        // 应用直接输入的温度
+
+        function applyTemperature() {
+
+            const tempInput = document.getElementById('temp-input');
+
+            if (tempInput && tempInput.value) {
+
+                const temp = parseInt(tempInput.value);
+
+                if (temp >= 0 && temp <= 300) {
+
+                    setTargetTemp(temp);
+
+                    tempInput.value = ''; // 清空输入框
+
+                } else {
+
+                    alert('请输入 0°C 到 300°C 之间的温度值');
+
+                }
+
+            } else {
+
+                alert('请先输入要设置的温度');
+
+            }
+
+        }
+
+
+
+
+
+
+
+        // 更新设备状态显示
+        function updateStatusDisplay(data) {
+            deviceStatus = {
+                currentTemp: data.temperature || 0,
+                targetTemp: data.target_temperature || 180,
+                heatingEnabled: data.heating_enabled || false,
+                wifiConnected: data.wifi_connected || false,
+                wifiSSID: data.wifiSSID || '',
+                ipAddress: data.ip_address || '',
+                deviceId: data.device_id || '',
+                firmwareVersion: data.firmware_version || '',
+                calibration: data.calibration || { offset: 0, scale: 1.0 }
+            };
+
+            // 安全地更新状态显示
+            const statusItems = document.querySelectorAll('.status-item');
+
+            if (statusItems.length >= 4) {
+                // 更新当前温度
+                statusItems[0].querySelector('.status-value').textContent = 
+                    deviceStatus.currentTemp.toFixed(1) + '°C';
+                
+                // 更新加热状态
+                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
+                statusItems[1].querySelector('.status-value').textContent = heatingStatus;
+                statusItems[1].querySelector('.status-value').style.color = 
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+                
+                // 更新WiFi状态
+                const wifiStatus = deviceStatus.wifiConnected ? '已连接' : '未连接';
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+                statusItems[2].querySelector('.status-value').style.color = 
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+                
+                // 更新设备ID
+                statusItems[3].querySelector('.status-value').textContent = 
+                    deviceStatus.deviceId || '--';
+            }
+
+            
+
+            // 更新固件版本显示
+
+            updateFirmwareDisplay();
+
+            
+
+            // 更新温度控制面板显示
+            updateTemperatureControlDisplay();
+            
+            // 更新校准显示
+            updateCalibrationDisplay();
+
+        }
+
+        // 更新校准显示
+        function updateCalibrationDisplay() {
+            if (deviceStatus.calibration) {
+                currentCalibration = deviceStatus.calibration;
+                // 这里可以添加校准状态显示逻辑
+                console.log('当前校准参数:', currentCalibration);
             }
         }
+        
+        // 全局变量
+        let currentCalibration = { offset: 0, scale: 1.0 };
 
-        // 更新预览数据
-        function updatePreviewData(data) {
-            document.getElementById('temp-preview').innerHTML = 
-                `<small>当前: ${data.currentTemp || 25}°C | 目标: ${data.targetTemp || 180}°C</small>`;
-            
-            document.getElementById('wifi-preview').innerHTML = 
-                `<small>状态: ${data.wifiConnected ? '已连接' : '未连接'} | 信号: ${getSignalStrength(data.signalStrength)}</small>`;
-            
-            document.getElementById('status-preview').innerHTML = 
-                `<small>内存: ${formatMemory(data.freeHeap)} | 加热: ${data.heatingEnabled ? '开启' : '关闭'}</small>`;
-            
-            document.getElementById('settings-preview').innerHTML = 
-                `<small>单位: °C | 精度: 标准</small>`;
-        }
 
-        // 获取信号强度描述
-        function getSignalStrength(strength) {
-            if (strength >= 80) return '优秀';
-            if (strength >= 60) return '良好';
-            if (strength >= 40) return '一般';
-            return '弱';
-        }
 
-        // 格式化内存显示
-        function formatMemory(bytes) {
-            if (!bytes) return '32KB';
-            return bytes >= 1024 ? `${(bytes / 1024).toFixed(1)}KB` : `${bytes}B`;
-        }
+        // 系统管理功能函数
 
-        // 页面导航函数
-        function openTemperatureControl() {
-            window.location.href = 'temperature_control.html';
-        }
+        
+
+        // 打开WiFi配置页面
 
         function openWifiConfig() {
-            window.location.href = 'wifi_config.html';
+
+            window.open('wifi_config.html', '_blank');
+
         }
 
-        function openDeviceStatus() {
-            window.location.href = 'device_status.html';
+        
+
+        // 重启设备
+
+        async function restartDevice() {
+
+            const confirmed = confirm('确定要重启设备吗？重启过程可能需要几分钟时间。');
+
+            if (!confirmed) return;
+
+            
+
+            try {
+
+                const response = await fetch('/restart', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    }
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert('设备重启命令已发送，设备将在几秒钟后重启。');
+
+                    // 显示重启提示
+
+                    showRestartMessage();
+
+                } else {
+
+                    alert('重启命令发送失败');
+
+                }
+
+            } catch (error) {
+
+                console.error('重启设备失败:', error);
+
+                alert('网络连接失败，无法重启设备');
+
+            }
+
         }
 
-        function openSettingsHelp() {
-            window.location.href = 'settings_help.html';
+        
+
+        // 显示重启提示
+
+        function showRestartMessage() {
+
+            const messageDiv = document.createElement('div');
+
+            messageDiv.style.cssText = `
+
+                position: fixed;
+
+                top: 50%;
+
+                left: 50%;
+
+                transform: translate(-50%, -50%);
+
+                background: rgba(0, 0, 0, 0.9);
+
+                color: white;
+
+                padding: 30px;
+
+                border-radius: 15px;
+
+                text-align: center;
+
+                z-index: 1000;
+
+                font-size: 16px;
+
+                max-width: 300px;
+
+            `;
+
+            messageDiv.innerHTML = `
+
+                <div style="font-size: 24px; margin-bottom: 15px;">🔄</div>
+
+                <div style="font-weight: 600; margin-bottom: 10px;">设备正在重启</div>
+
+                <div style="font-size: 14px; opacity: 0.8;">
+
+                    设备正在重启，请等待几分钟后重新连接。
+
+                </div>
+
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            
+
+            // 5秒后自动刷新页面
+
+            setTimeout(() => {
+
+                window.location.reload();
+
+            }, 5000);
+
         }
 
-        function openMobileHome() {
-            window.location.href = 'mobile_home.html';
+        
+
+        // 恢复出厂设置
+
+        async function factoryReset() {
+
+            const confirmed = confirm('⚠️ 警告：此操作将清除所有设置并恢复设备到出厂状态！\n\n确定要继续吗？');
+
+            if (!confirmed) return;
+
+            
+
+            const password = prompt('请输入管理员密码确认操作：');
+
+            if (!password) return;
+
+            
+
+            try {
+
+                const response = await fetch('/factoryreset', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        password: password
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert('设备已恢复出厂设置，系统将自动重启。');
+
+                    // 显示恢复出厂设置提示
+
+                    showFactoryResetMessage();
+
+                } else {
+
+                    alert('恢复出厂设置失败，密码可能不正确');
+
+                }
+
+            } catch (error) {
+
+                console.error('恢复出厂设置失败:', error);
+
+                alert('网络连接失败，无法恢复出厂设置');
+
+            }
+
         }
 
-        function openDesktopView() {
-            window.location.href = 'smart_oven_controller.html';
+        
+
+        // 显示恢复出厂设置提示
+        function showFactoryResetMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 1000;
+                font-size: 16px;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 15px;">⚠️</div>
+                <div style="font-weight: 600; margin-bottom: 10px;">设备正在恢复出厂设置</div>
+                <div style="font-size: 14px; opacity: 0.8;">
+                    所有设置将被清除，设备将重启并恢复出厂状态。
+                </div>
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // 5秒后自动刷新页面
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
         }
 
-        function refreshStatus() {
-            checkDeviceStatus();
-            showToast('状态已刷新', 'success');
+        // 加热控制功能
+        let isHeating = false;
+        let currentTemperature = 0;
+        let targetTemperature = 180;
+        let bakingTime = 30;
+        let bakingMode = 'standard';
+
+        // 烘焙模式预设参数
+        const bakingPresets = {
+            'bread': { temperature: 180, time: 30, name: '面包' },
+            'cake': { temperature: 160, time: 45, name: '蛋糕' },
+            'pizza': { temperature: 220, time: 15, name: '披萨' },
+            'cookies': { temperature: 170, time: 20, name: '饼干' },
+            'roast': { temperature: 200, time: 60, name: '烤肉' },
+            'defrost': { temperature: 80, time: 10, name: '解冻' },
+            'custom': { temperature: 180, time: 30, name: '自定义' }
+        };
+
+        // 烘焙模式选择变化处理
+        function onBakingModeChange() {
+            const modeSelect = document.getElementById('baking-mode-select');
+            const selectedMode = modeSelect.value;
+            const preset = bakingPresets[selectedMode];
+            
+            if (preset) {
+                // 更新温度和时间输入框
+                document.getElementById('target-temp').value = preset.temperature;
+                document.getElementById('baking-time').value = preset.time;
+                
+                // 更新全局变量
+                targetTemperature = preset.temperature;
+                bakingTime = preset.time;
+                bakingMode = selectedMode;
+                
+                if (selectedMode === 'custom') {
+                    showToast('已切换到自定义模式，您可以手动调整温度和时间');
+                } else {
+                    showToast(`已切换到${preset.name}模式：${preset.temperature}°C，${preset.time}分钟`);
+                }
+            }
         }
 
+        // 温度输入验证
+        function validateTemperature() {
+            const tempInput = document.getElementById('target-temp');
+            const temp = parseInt(tempInput.value);
+            
+            if (temp >= 50 && temp <= 250) {
+                targetTemperature = temp;
+                bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                return true;
+            } else {
+                showToast('温度范围应为 50-250°C');
+                tempInput.value = targetTemperature; // 恢复原值
+                return false;
+            }
+        }
+
+        // 时间输入验证
+        function validateTime() {
+            const timeInput = document.getElementById('baking-time');
+            const time = parseInt(timeInput.value);
+            
+            if (time >= 1 && time <= 120) {
+                bakingTime = time;
+                bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                return true;
+            } else {
+                showToast('时间范围应为 1-120 分钟');
+                timeInput.value = bakingTime; // 恢复原值
+                return false;
+            }
+        }
+
+        // 温度输入框失去焦点时验证
+        function onTemperatureBlur() {
+            validateTemperature();
+        }
+
+        // 时间输入框失去焦点时验证
+        function onTimeBlur() {
+            validateTime();
+        }
+
+        function toggleHeating() {
+            const toggleBtn = document.getElementById('heating-toggle');
+            const heatingIcon = toggleBtn.querySelector('.heating-icon');
+            const heatingText = toggleBtn.querySelector('.heating-text');
+            
+            isHeating = !isHeating;
+            
+            if (isHeating) {
+                toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                heatingIcon.textContent = '❄️';
+                heatingText.textContent = '停止加热';
+                showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                // 这里应该发送启动加热的请求到设备
+                // startHeating(targetTemperature, bakingTime, bakingMode);
+            } else {
+                toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                heatingIcon.textContent = '🔥';
+                heatingText.textContent = '启动加热';
+                showToast('加热已停止');
+                // 这里应该发送停止加热的请求到设备
+                // stopHeating();
+            }
+        }
+
+        // 移动端优化功能
+        
+        // 退出登录
+        async function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                try {
+                    const response = await fetch('/logout', {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    } else {
+                        alert('退出登录失败');
+                    }
+                } catch (error) {
+                    console.error('退出登录失败:', error);
+                    alert('网络连接失败');
+                }
+            }
+        }
+        
+        // 修改密码
+        async function changePassword() {
+            const oldPassword = prompt('请输入当前密码：');
+            if (!oldPassword) return;
+            
+            const newPassword = prompt('请输入新密码：');
+            if (!newPassword) return;
+            
+            const confirmPassword = prompt('请确认新密码：');
+            if (!confirmPassword) return;
+            
+            if (newPassword !== confirmPassword) {
+                alert('新密码输入不一致');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/changepassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        old_password: oldPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('密码修改成功');
+                } else {
+                    alert('密码修改失败，请检查当前密码是否正确');
+                }
+            } catch (error) {
+                console.error('修改密码失败:', error);
+                alert('网络连接失败');
+            }
+        }
+        
+        // 移动端触摸事件处理
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // 水平滑动超过50px且垂直滑动小于30px时触发刷新
+            if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 30) {
+                if (deltaX > 0) {
+                    // 向右滑动 - 刷新数据
+                    refreshData();
+                    showToast('数据已刷新');
+                }
+            }
+        }, { passive: true });
+        
         // 显示Toast提示
-        function showToast(message, type = 'info') {
-            // 简单的Toast实现
+        function showToast(message) {
             const toast = document.createElement('div');
-            toast.textContent = message;
             toast.style.cssText = `
                 position: fixed;
                 top: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                background: rgba(0, 0, 0, 0.8);
                 color: white;
-                padding: 12px 20px;
-                border-radius: 10px;
-                z-index: 1000;
+                padding: 12px 24px;
+                border-radius: 25px;
                 font-size: 14px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
             `;
-            
+            toast.textContent = message;
             document.body.appendChild(toast);
-            setTimeout(() => {
-                document.body.removeChild(toast);
-            }, 3000);
-        }
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            checkDeviceStatus();
             
-            // 每30秒自动刷新状态
-            setInterval(checkDeviceStatus, 30000);
-        });
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            /* 移动端按钮点击效果 */
+            .control-btn:active, .nav-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+            
+            /* 移动端优化滚动 */
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        `;
+        document.head.appendChild(style);
+
     </script>
+
 </body>
+
 </html>
