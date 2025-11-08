@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WiFi閰嶇疆 - 鏅鸿兘鐢电儰绠?/title>
+    <title>WiFi配置 - 智能电烤箱</title>
     <style>
         * {
             margin: 0;
@@ -317,65 +317,65 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">鈫?/button>
-            <h1>WiFi閰嶇疆</h1>
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1>WiFi配置</h1>
         </div>
 
         <div class="status-card">
             <div class="status-item">
-                <span class="status-label">杩炴帴鐘舵€?/span>
+                <span class="status-label">连接状态</span>
                 <span class="status-value" id="connection-status">--</span>
             </div>
             <div class="status-item">
-                <span class="status-label">缃戠粶鍚嶇О</span>
+                <span class="status-label">网络名称</span>
                 <span class="status-value" id="wifi-ssid">--</span>
             </div>
             <div class="status-item">
-                <span class="status-label">IP鍦板潃</span>
+                <span class="status-label">IP地址</span>
                 <span class="status-value" id="ip-address">--</span>
             </div>
             <div class="status-item">
-                <span class="status-label">淇″彿寮哄害</span>
+                <span class="status-label">信号强度</span>
                 <span class="status-value" id="signal-strength">--</span>
             </div>
         </div>
 
         <div class="wifi-form">
             <div class="form-group">
-                <label class="form-label">WiFi鍚嶇О (SSID)</label>
+                <label class="form-label">WiFi名称 (SSID)</label>
                 <input type="text" class="form-input" id="ssid-input" 
-                       placeholder="杈撳叆WiFi鍚嶇О" autocomplete="off">
+                       placeholder="输入WiFi名称" autocomplete="off">
             </div>
             
             <div class="form-group password-toggle">
-                <label class="form-label">WiFi瀵嗙爜</label>
+                <label class="form-label">WiFi密码</label>
                 <input type="password" class="form-input" id="password-input" 
-                       placeholder="杈撳叆WiFi瀵嗙爜" autocomplete="new-password">
-                <button class="toggle-btn" onclick="togglePassword()">鏄剧ず</button>
+                       placeholder="输入WiFi密码" autocomplete="new-password">
+                <button class="toggle-btn" onclick="togglePassword()">显示</button>
             </div>
 
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="connectToWiFi()">
-                    杩炴帴WiFi
+                    连接WiFi
                 </button>
                 <button class="btn btn-secondary" onclick="disconnectWiFi()">
-                    鏂紑杩炴帴
+                    断开连接
                 </button>
             </div>
         </div>
 
         <div class="wifi-list">
             <div class="wifi-list-header">
-                <div class="wifi-list-title">鍙敤缃戠粶</div>
+                <div class="wifi-list-title">可用网络</div>
                 <button class="refresh-btn" onclick="scanWiFi()">
-                    馃攧 鎵弿
+                    🔄 扫描
                 </button>
             </div>
             
             <div id="wifi-list-container">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>姝ｅ湪鎵弿鍙敤缃戠粶...</div>
+                    <div>正在扫描可用网络...</div>
                 </div>
             </div>
         </div>
@@ -386,39 +386,39 @@
     <script>
         let isPasswordVisible = false;
 
-        // 杩斿洖棣栭〉
+        // 返回首页
         function goBack() {
             window.location.href = 'mobile_home.html';
         }
 
-        // 鍒囨崲瀵嗙爜鏄剧ず
+        // 切换密码显示
         function togglePassword() {
             const passwordInput = document.getElementById('password-input');
             const toggleBtn = document.querySelector('.toggle-btn');
             
             if (isPasswordVisible) {
                 passwordInput.type = 'password';
-                toggleBtn.textContent = '鏄剧ず';
+                toggleBtn.textContent = '显示';
             } else {
                 passwordInput.type = 'text';
-                toggleBtn.textContent = '闅愯棌';
+                toggleBtn.textContent = '隐藏';
             }
             
             isPasswordVisible = !isPasswordVisible;
         }
 
-        // 杩炴帴WiFi
+        // 连接WiFi
         async function connectToWiFi() {
             const ssid = document.getElementById('ssid-input').value.trim();
             const password = document.getElementById('password-input').value;
             
             if (!ssid) {
-                showToast('璇疯緭鍏iFi鍚嶇О');
+                showToast('请输入WiFi名称');
                 return;
             }
 
             try {
-                showToast('姝ｅ湪杩炴帴...');
+                showToast('正在连接...');
                 
                 const response = await fetch('/wificonfig', {
                     method: 'POST',
@@ -429,21 +429,23 @@
                 });
 
                 if (response.ok) {
-                    showToast('杩炴帴璇锋眰宸插彂閫侊紝璁惧灏嗗皾璇曡繛鎺?);
-                    // 娓呯┖杈撳叆妗?                    document.getElementById('ssid-input').value = '';
+                    showToast('连接请求已发送，设备将尝试连接');
+                    // 清空输入框
+                    document.getElementById('ssid-input').value = '';
                     document.getElementById('password-input').value = '';
                     
-                    // 绛夊緟涓€娈垫椂闂村悗鏇存柊鐘舵€?                    setTimeout(updateConnectionStatus, 3000);
+                    // 等待一段时间后更新状态
+                    setTimeout(updateConnectionStatus, 3000);
                 } else {
-                    showToast('杩炴帴璇锋眰澶辫触');
+                    showToast('连接请求失败');
                 }
             } catch (error) {
-                console.error('杩炴帴WiFi澶辫触:', error);
-                showToast('缃戠粶杩炴帴澶辫触');
+                console.error('连接WiFi失败:', error);
+                showToast('网络连接失败');
             }
         }
 
-        // 鏂紑WiFi杩炴帴
+        // 断开WiFi连接
         async function disconnectWiFi() {
             try {
                 const response = await fetch('/wificonfig', {
@@ -455,24 +457,24 @@
                 });
 
                 if (response.ok) {
-                    showToast('宸叉柇寮€WiFi杩炴帴');
+                    showToast('已断开WiFi连接');
                     updateConnectionStatus();
                 } else {
-                    showToast('鏂紑杩炴帴澶辫触');
+                    showToast('断开连接失败');
                 }
             } catch (error) {
-                console.error('鏂紑WiFi杩炴帴澶辫触:', error);
-                showToast('缃戠粶杩炴帴澶辫触');
+                console.error('断开WiFi连接失败:', error);
+                showToast('网络连接失败');
             }
         }
 
-        // 鎵弿WiFi缃戠粶
+        // 扫描WiFi网络
         async function scanWiFi() {
             const container = document.getElementById('wifi-list-container');
             container.innerHTML = `
                 <div class="loading">
                     <div class="spinner"></div>
-                    <div>姝ｅ湪鎵弿鍙敤缃戠粶...</div>
+                    <div>正在扫描可用网络...</div>
                 </div>
             `;
 
@@ -482,34 +484,34 @@
                     const networks = await response.json();
                     displayWiFiNetworks(networks);
                 } else {
-                    container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">鎵弿澶辫触锛岃閲嶈瘯</div>';
+                    container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">扫描失败，请重试</div>';
                 }
             } catch (error) {
-                console.error('鎵弿WiFi澶辫触:', error);
-                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">缃戠粶杩炴帴澶辫触</div>';
+                console.error('扫描WiFi失败:', error);
+                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">网络连接失败</div>';
             }
         }
 
-        // 鏄剧ずWiFi缃戠粶鍒楄〃
+        // 显示WiFi网络列表
         function displayWiFiNetworks(networks) {
             const container = document.getElementById('wifi-list-container');
             
             if (!networks || networks.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">鏈彂鐜板彲鐢ㄧ綉缁?/div>';
+                container.innerHTML = '<div style="text-align: center; padding: 30px; opacity: 0.7;">未发现可用网络</div>';
                 return;
             }
 
             let html = '';
             networks.forEach(network => {
                 const signalBars = getSignalBars(network.rssi);
-                const encryption = network.encryption > 0 ? '馃敀' : '馃敁';
+                const encryption = network.encryption > 0 ? '🔒' : '🔓';
                 
                 html += `
                     <div class="wifi-item" onclick="selectNetwork('${network.ssid}')">
                         <div class="wifi-info">
                             <div class="wifi-name">${network.ssid}</div>
                             <div class="wifi-details">
-                                ${encryption} 淇″彿寮哄害: ${network.rssi} dBm
+                                ${encryption} 信号强度: ${network.rssi} dBm
                             </div>
                         </div>
                         <div class="wifi-signal">
@@ -522,14 +524,15 @@
             container.innerHTML = html;
         }
 
-        // 閫夋嫨缃戠粶
+        // 选择网络
         function selectNetwork(ssid) {
             document.getElementById('ssid-input').value = ssid;
             document.getElementById('password-input').focus();
-            showToast(`宸查€夋嫨缃戠粶: ${ssid}`);
+            showToast(`已选择网络: ${ssid}`);
         }
 
-        // 鑾峰彇淇″彿寮哄害鏉?        function getSignalBars(rssi) {
+        // 获取信号强度条
+        function getSignalBars(rssi) {
             let bars = 0;
             if (rssi > -50) bars = 4;
             else if (rssi > -60) bars = 3;
@@ -543,7 +546,8 @@
             return html;
         }
 
-        // 鏇存柊杩炴帴鐘舵€?        async function updateConnectionStatus() {
+        // 更新连接状态
+        async function updateConnectionStatus() {
             try {
                 const response = await fetch('/status');
                 if (response.ok) {
@@ -555,13 +559,13 @@
                     const signalElement = document.getElementById('signal-strength');
                     
                     if (data.wifiConnected) {
-                        statusElement.textContent = '宸茶繛鎺?;
+                        statusElement.textContent = '已连接';
                         statusElement.className = 'status-value connected';
                         ssidElement.textContent = data.wifiSSID || '--';
                         ipElement.textContent = data.ipAddress || '--';
                         signalElement.textContent = (data.rssi || '--') + ' dBm';
                     } else {
-                        statusElement.textContent = '鏈繛鎺?;
+                        statusElement.textContent = '未连接';
                         statusElement.className = 'status-value disconnected';
                         ssidElement.textContent = '--';
                         ipElement.textContent = '--';
@@ -569,11 +573,11 @@
                     }
                 }
             } catch (error) {
-                console.error('鑾峰彇杩炴帴鐘舵€佸け璐?', error);
+                console.error('获取连接状态失败:', error);
             }
         }
 
-        // 鏄剧ず鎻愮ず淇℃伅
+        // 显示提示信息
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -584,14 +588,16 @@
             }, 2000);
         }
 
-        // 椤甸潰鍔犺浇鏃跺垵濮嬪寲
+        // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 绔嬪嵆鏇存柊涓€娆＄姸鎬?            updateConnectionStatus();
+            // 立即更新一次状态
+            updateConnectionStatus();
             
-            // 鎵弿WiFi缃戠粶
+            // 扫描WiFi网络
             scanWiFi();
             
-            // 姣?0绉掓洿鏂颁竴娆＄姸鎬?            setInterval(updateConnectionStatus, 10000);
+            // 每10秒更新一次状态
+            setInterval(updateConnectionStatus, 10000);
         });
     </script>
 </body>

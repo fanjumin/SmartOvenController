@@ -1,0 +1,15 @@
+{
+  "temperature": [
+    300
+  ],
+  "threshold": [],
+  "pid_params": [],
+  "port": [
+    0,
+    0
+  ],
+  "timeout": [
+    0,
+    0
+  ]
+}

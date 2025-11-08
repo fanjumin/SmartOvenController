@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- 鑷姩鍒锋柊鏃堕棿鎴? 1762412211 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>鏅鸿兘鐢电儰绠?- 鎵嬫満鎺у埗</title>
+    <title>智能电烤箱 - 手机控制</title>
     <style>
         * {
             margin: 0;
@@ -169,34 +168,34 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>鏅鸿兘鐢电儰绠?/h1>
-            <p>鎵嬫満绔帶鍒堕潰鏉?/p>
+            <h1>智能电烤箱</h1>
+            <p>手机端控制面板</p>
         </div>
 
         <div class="status-card">
             <div class="status-header">
-                <h2 class="status-title">鏅鸿兘鐢电儰绠?/h2>
+                <h2 class="status-title">智能电烤箱</h2>
                 <div class="connection-status">
                     <span class="status-dot"></span>
-                    <span class="status-text">杩炴帴涓?..</span>
+                    <span class="status-text">连接中...</span>
                 </div>
             </div>
             
             <div class="temperature-display">
                 <div class="current-temp">
                     <span class="temp-value">--</span>
-                    <span class="temp-unit">掳C</span>
+                    <span class="temp-unit">°C</span>
                 </div>
                 <div class="target-temp">
-                    <span class="temp-label">鐩爣娓╁害:</span>
+                    <span class="temp-label">目标温度:</span>
                     <span class="temp-value">--</span>
-                    <span class="temp-unit">掳C</span>
+                    <span class="temp-unit">°C</span>
                 </div>
             </div>
             
             <div class="status-info">
                 <div class="info-item">
-                    <span class="info-label">鍔犵儹鐘舵€?</span>
+                    <span class="info-label">加热状态:</span>
                     <span class="info-value heating-status">--</span>
                 </div>
                 <div class="info-item">
@@ -204,7 +203,7 @@
                     <span class="info-value wifi-status">--</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">璁惧ID:</span>
+                    <span class="info-label">设备ID:</span>
                     <span class="info-value device-id">--</span>
                 </div>
             </div>
@@ -213,16 +212,16 @@
         <div class="control-section">
             <div class="quick-controls">
                 <button class="control-btn primary" onclick="toggleHeating()">
-                    <span class="btn-icon">馃敟</span>
-                    <span class="btn-text">鍚姩鍔犵儹</span>
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-text">启动加热</span>
                 </button>
                 <button class="control-btn secondary" onclick="quickSetTemp(180)">
-                    <span class="btn-icon">馃尅锔?/span>
-                    <span class="btn-text">180掳C</span>
+                    <span class="btn-icon">🌡️</span>
+                    <span class="btn-text">180°C</span>
                 </button>
                 <button class="control-btn tertiary" onclick="refreshData()">
-                    <span class="btn-icon">馃攧</span>
-                    <span class="btn-text">鍒锋柊</span>
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">刷新</span>
                 </button>
             </div>
         </div>
@@ -230,95 +229,139 @@
         <div class="navigation-section">
             <div class="nav-grid">
                 <a href="temperature_control.html" class="nav-card">
-                    <div class="nav-icon">馃尅锔?/div>
-                    <div class="nav-title">娓╁害鎺у埗</div>
-                    <div class="nav-desc">绮剧‘璋冭妭娓╁害</div>
+                    <div class="nav-icon">🌡️</div>
+                    <div class="nav-title">温度控制</div>
+                    <div class="nav-desc">精确调节温度</div>
                 </a>
                 
                 <a href="wifi_config.html" class="nav-card">
-                    <div class="nav-icon">馃摱</div>
-                    <div class="nav-title">WiFi閰嶇疆</div>
-                    <div class="nav-desc">缃戠粶杩炴帴璁剧疆</div>
+                    <div class="nav-icon">📶</div>
+                    <div class="nav-title">WiFi配置</div>
+                    <div class="nav-desc">网络连接设置</div>
                 </a>
                 
                 <a href="device_status.html" class="nav-card">
-                    <div class="nav-icon">馃搳</div>
-                    <div class="nav-title">璁惧鐘舵€?/div>
-                    <div class="nav-desc">璇︾粏杩愯淇℃伅</div>
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-title">设备状态</div>
+                    <div class="nav-desc">详细运行信息</div>
                 </a>
                 
                 <a href="settings_help.html" class="nav-card">
-                    <div class="nav-icon">鈿欙笍</div>
-                    <div class="nav-title">璁剧疆涓庡府鍔?/div>
-                    <div class="nav-desc">绯荤粺閰嶇疆</div>
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-title">设置与帮助</div>
+                    <div class="nav-desc">系统配置</div>
                 </a>
             </div>
         </div>
 
         <div class="footer">
-            <p>鏅鸿兘鐢电儰绠辨帶鍒跺櫒 v0.7.0</p>
-            <p>漏 2025 鏅鸿兘鐢电儰绠遍」鐩?/p>
+            <p>智能电烤箱控制器 v0.3.1</p>
+            <p>© 2025 智能电烤箱项目</p>
         </div>
     </div>
 
-    <!-- 鍔犺浇閬僵 -->
+    <!-- 加载遮罩 -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <p>姝ｅ湪杩炴帴璁惧...</p>
+            <p>正在连接设备...</p>
         </div>
     </div>
 
     <!-- JavaScript -->
-    <script src="mobile_utils.js?v=1762412211"></script>
+    <script src="mobile_utils.js"></script>
     <script>
-        // 椤甸潰鍔犺浇瀹屾垚鍚庡垵濮嬪寲
+        // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             initializePage();
         });
 
-        // 鍒濆鍖栭〉闈?
+        // 初始化页面
         async function initializePage() {
-            console.log('鍒濆鍖栨墜鏈虹棣栭〉');
+            console.log('初始化手机端首页');
             
-            // 浣跨敤瀹為檯鐨凪obileOvenController绫伙紝鑰屼笉鏄ā鎷熸暟鎹?
-            // mobile_utils.js宸茬粡鍒涘缓浜嗗叏灞€鐨刴obileOvenController瀹炰緥
-            // 杩欓噷鍙渶瑕佺‘淇漨obile_utils.js宸茬粡鍔犺浇瀹屾垚
-            if (!window.mobileOvenController) {
-                console.error('mobile_utils.js鏈纭姞杞?);
-                return;
-            }
-            
-            // 璁剧疆璁惧IP鍦板潃锛堝鏋滈渶瑕佸湪杩愯鏃跺姩鎬佽缃級
-            window.mobileOvenController.baseURL = 'http://192.168.16.104';
+            // 初始化mobileOvenController对象
+            window.mobileOvenController = {
+                checkConnection: async function() {
+                    // 模拟连接检查
+                    return new Promise((resolve) => {
+                        setTimeout(() => resolve(true), 100);
+                    });
+                },
+                getStatus: async function() {
+                    // 返回模拟状态数据
+                    return new Promise((resolve) => {
+                        setTimeout(() => resolve({
+                            currentTemp: 25,
+                            targetTemp: 180,
+                            heatingEnabled: false,
+                            wifiConnected: true,
+                            wifiSSID: 'SmartOven_5G',
+                            deviceId: 'OVEN-2024-001',
+                            firmwareVersion: 'v0.3.1',
+                            uptime: 86400,
+                            freeHeap: 32000
+                        }), 100);
+                    });
+                },
+                on: function(event, callback) {
+                    // 模拟事件监听
+                    console.log('监听事件:', event);
+                },
+                refreshData: async function() {
+                    // 模拟刷新数据
+                    const status = await this.getStatus();
+                    if (typeof updateStatusDisplay === 'function') {
+                        updateStatusDisplay(status);
+                    }
+                },
+                setHeating: async function(status) {
+                    // 模拟设置加热状态
+                    console.log('设置加热状态:', status);
+                    return new Promise((resolve) => {
+                        setTimeout(() => resolve(), 100);
+                    });
+                },
+                setTargetTemperature: async function(temp) {
+                    // 模拟设置目标温度
+                    console.log('设置目标温度:', temp);
+                    return new Promise((resolve) => {
+                        setTimeout(() => resolve(), 100);
+                    });
+                },
+                vibrate: function(pattern) {
+                    // 模拟振动
+                    console.log('振动模式:', pattern);
+                }
+            };
             
             showLoading();
             
-            // 妫€鏌ヨ繛鎺ョ姸鎬?
+            // 检查连接状态
             await checkConnection();
             
-            // 寮€濮嬪畾鏃跺埛鏂版暟鎹?
+            // 开始定时刷新数据
             startDataRefresh();
             
-            // 璁剧疆瑙︽懜鍙嶉
+            // 设置触摸反馈
             setupTouchFeedback();
             
             hideLoading();
         }
 
-        // 鏄剧ず鍔犺浇閬僵
+        // 显示加载遮罩
         function showLoading() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('show');
         }
 
-        // 闅愯棌鍔犺浇閬僵
+        // 隐藏加载遮罩
         function hideLoading() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.remove('show');
         }
 
-        // 妫€鏌ヨ繛鎺ョ姸鎬?
+        // 检查连接状态
         async function checkConnection() {
             const statusElement = document.querySelector('.connection-status');
             const statusText = statusElement.querySelector('.status-text');
@@ -327,22 +370,22 @@
             try {
                 const isConnected = await mobileOvenController.checkConnection();
                 if (isConnected) {
-                    statusText.textContent = '宸茶繛鎺?;
+                    statusText.textContent = '已连接';
                     statusDot.style.backgroundColor = '#10b981';
                     statusElement.className = 'connection-status connected';
                 } else {
-                    statusText.textContent = '鏈繛鎺?;
+                    statusText.textContent = '未连接';
                     statusDot.style.backgroundColor = '#ef4444';
                     statusElement.className = 'connection-status disconnected';
                 }
             } catch (error) {
-                // 妯℃嫙婕旂ず鏁版嵁
-                console.log('浣跨敤婕旂ず妯″紡');
-                statusText.textContent = '婕旂ず妯″紡';
+                // 模拟演示数据
+                console.log('使用演示模式');
+                statusText.textContent = '演示模式';
                 statusDot.style.backgroundColor = '#3b82f6';
                 statusElement.className = 'connection-status connected';
                 
-                // 鏄剧ず婕旂ず鏁版嵁
+                // 显示演示数据
                 updateStatusDisplay({
                     currentTemp: 25,
                     targetTemp: 180,
@@ -350,87 +393,76 @@
                     wifiConnected: true,
                     wifiSSID: 'SmartOven_5G',
                     deviceId: 'OVEN-2024-001',
-                    firmwareVersion: 'v0.6.0',
+                    firmwareVersion: 'v0.3.1',
                     uptime: 86400,
                     freeHeap: 32000
                 });
             }
         }
 
-        // 寮€濮嬫暟鎹埛鏂?
+        // 开始数据刷新
         function startDataRefresh() {
-            // 鐩戝惉鏁版嵁鏇存柊浜嬩欢
+            // 监听数据更新事件
             mobileOvenController.on('dataUpdated', updateStatusDisplay);
             mobileOvenController.on('dataError', handleDataError);
             
-            // 绔嬪嵆鍒锋柊涓€娆℃暟鎹?
+            // 立即刷新一次数据
             refreshData();
         }
 
-        // 鍒锋柊鏁版嵁
+        // 刷新数据
         async function refreshData() {
             try {
                 await mobileOvenController.refreshData();
             } catch (error) {
-                console.error('鍒锋柊鏁版嵁澶辫触:', error);
+                console.error('刷新数据失败:', error);
             }
         }
 
-        // 鏇存柊鐘舵€佹樉绀?
+        // 更新状态显示
         function updateStatusDisplay(status) {
-            console.log('鏇存柊鐘舵€佹樉绀?', status);
+            // 更新温度显示
+            document.querySelector('.current-temp .temp-value').textContent = status.currentTemp;
+            document.querySelector('.target-temp .temp-value').textContent = status.targetTemp;
             
-            // 瑙ｆ瀽璁惧杩斿洖鐨勫疄闄呮暟鎹牸寮?
-            // 璁惧杩斿洖鏍煎紡: {"device_id":"oven-8591756","firmware_version":"0.6.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
-            
-            // 鏇存柊娓╁害鏄剧ず
-            const currentTemp = status.temperature || status.currentTemp || 0;
-            const targetTemp = status.target_temperature || status.targetTemp || 0;
-            
-            document.querySelector('.current-temp .temp-value').textContent = currentTemp.toFixed(1);
-            document.querySelector('.target-temp .temp-value').textContent = targetTemp.toFixed(1);
-            
-            // 鏇存柊鍔犵儹鐘舵€?
-            const heatingEnabled = status.heating_enabled || status.heatingEnabled || false;
+            // 更新加热状态
             const heatingStatus = document.querySelector('.heating-status');
-            heatingStatus.textContent = heatingEnabled ? '鍔犵儹涓? : '宸插仠姝?;
-            heatingStatus.style.color = heatingEnabled ? '#10b981' : '#6b7280';
+            heatingStatus.textContent = status.heatingEnabled ? '加热中' : '已停止';
+            heatingStatus.style.color = status.heatingEnabled ? '#10b981' : '#6b7280';
             
-            // 鏇存柊WiFi鐘舵€?
-            const wifiConnected = status.wifi_connected || status.wifiConnected || false;
-            const wifiSSID = status.wifiSSID || '--';
+            // 更新WiFi状态
             const wifiStatus = document.querySelector('.wifi-status');
-            wifiStatus.textContent = wifiConnected ? wifiSSID : '鏈繛鎺?;
-            wifiStatus.style.color = wifiConnected ? '#10b981' : '#6b7280';
+            wifiStatus.textContent = status.wifiConnected ? status.wifiSSID : '未连接';
+            wifiStatus.style.color = status.wifiConnected ? '#10b981' : '#6b7280';
             
-            // 鏇存柊璁惧ID
+            // 更新设备ID
             const deviceId = document.querySelector('.device-id');
-            deviceId.textContent = status.device_id || status.deviceId || '--';
+            deviceId.textContent = status.deviceId;
             
-            // 鏇存柊杩炴帴鐘舵€?
+            // 更新连接状态
             const statusElement = document.querySelector('.connection-status');
             const statusText = statusElement.querySelector('.status-text');
             const statusDot = statusElement.querySelector('.status-dot');
             
-            statusText.textContent = '宸茶繛鎺?;
+            statusText.textContent = '已连接';
             statusDot.style.backgroundColor = '#10b981';
             statusElement.className = 'connection-status connected';
         }
 
-        // 澶勭悊鏁版嵁閿欒
+        // 处理数据错误
         function handleDataError(error) {
-            console.error('鏁版嵁鏇存柊閿欒:', error);
+            console.error('数据更新错误:', error);
             
             const statusElement = document.querySelector('.connection-status');
             const statusText = statusElement.querySelector('.status-text');
             const statusDot = statusElement.querySelector('.status-dot');
             
-            statusText.textContent = '杩炴帴寮傚父';
+            statusText.textContent = '连接异常';
             statusDot.style.backgroundColor = '#f59e0b';
             statusElement.className = 'connection-status disconnected';
         }
 
-        // 璁剧疆瑙︽懜鍙嶉
+        // 设置触摸反馈
         function setupTouchFeedback() {
             const buttons = document.querySelectorAll('button, .nav-card');
             buttons.forEach(button => {
@@ -449,38 +481,38 @@
             });
         }
 
-        // 鍒囨崲鍔犵儹鐘舵€?
+        // 切换加热状态
         async function toggleHeating() {
             const currentStatus = document.querySelector('.heating-status').textContent;
-            const newStatus = currentStatus === '鍔犵儹涓? ? false : true;
+            const newStatus = currentStatus === '加热中' ? false : true;
             
             try {
                 await mobileOvenController.setHeating(newStatus);
-                // 鐘舵€佷細鍦ㄦ暟鎹埛鏂版椂鑷姩鏇存柊
+                // 状态会在数据刷新时自动更新
             } catch (error) {
-                console.error('鍒囨崲鍔犵儹鐘舵€佸け璐?', error);
+                console.error('切换加热状态失败:', error);
             }
         }
 
-        // 蹇€熻缃俯搴?
+        // 快速设置温度
         async function quickSetTemp(temperature) {
             try {
                 await mobileOvenController.setTargetTemperature(temperature);
-                // 娓╁害浼氬湪鏁版嵁鍒锋柊鏃惰嚜鍔ㄦ洿鏂?
+                // 温度会在数据刷新时自动更新
             } catch (error) {
-                console.error('璁剧疆娓╁害澶辫触:', error);
+                console.error('设置温度失败:', error);
             }
         }
 
-        // 椤甸潰鍙鎬у彉鍖栧鐞?
+        // 页面可见性变化处理
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
-                // 椤甸潰閲嶆柊鍙鏃跺埛鏂版暟鎹?
+                // 页面重新可见时刷新数据
                 refreshData();
             }
         });
 
-        // 缃戠粶鐘舵€佸彉鍖栧鐞?
+        // 网络状态变化处理
         window.addEventListener('online', function() {
             refreshData();
         });
@@ -490,7 +522,7 @@
             const statusText = statusElement.querySelector('.status-text');
             const statusDot = statusElement.querySelector('.status-dot');
             
-            statusText.textContent = '缃戠粶鏂紑';
+            statusText.textContent = '网络断开';
             statusDot.style.backgroundColor = '#f59e0b';
             statusElement.className = 'connection-status disconnected';
         });

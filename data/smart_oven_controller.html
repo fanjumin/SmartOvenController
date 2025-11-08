@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>鏅鸿兘鐢电儰绠辨帶鍒跺櫒</title>
+    <title>智能电烤箱控制器</title>
     <style>
         * {
             margin: 0;
@@ -198,38 +198,6 @@
         .status-connected {
             background: #d4edda;
             color: #155724;
-        }
-
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .diagnostic-panel {
-            background: #f8f9fa;
-            border-left: 4px solid #007bff;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-
-        .diagnostic-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #007bff;
-        }
-
-        .diagnostic-item {
-            margin: 5px 0;
-            font-size: 14px;
-        }
             border: 1px solid #c3e6cb;
         }
 
@@ -289,55 +257,55 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>鏅鸿兘鐢电儰绠辨帶鍒跺櫒</h1>
-            <p>v0.3.0 - 杩滅▼鎺у埗</p>
+            <h1>智能电烤箱控制器</h1>
+            <p>v0.3.0 - 远程控制</p>
         </div>
 
         <div id="connectionStatus" class="connection-status status-disconnected" style="display: none;">
-            姝ｅ湪杩炴帴璁惧...
+            正在连接设备...
         </div>
 
         <div id="errorMessage" class="error-message" style="display: none;"></div>
 
         <div id="loading" class="loading">
-            姝ｅ湪鍔犺浇璁惧淇℃伅...
+            正在加载设备信息...
         </div>
 
         <div id="manualIpSection" class="control-panel" style="display: block;">
             <div class="control-group">
-                <label class="control-label">璁惧IP鍦板潃</label>
+                <label class="control-label">设备IP地址</label>
                 <input type="text" id="manualIpInput" class="temperature-input" 
-                       placeholder="渚嬪: 192.168.1.100" value="192.168.16.104">
+                       placeholder="例如: 192.168.1.100" value="192.168.16.104">
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                    濡傛灉鑷姩鎵弿澶辫触锛岃鎵嬪姩杈撳叆璁惧IP鍦板潃
+                    如果自动扫描失败，请手动输入设备IP地址
                 </p>
             </div>
             <div class="button-group">
-                <button id="connectBtn" class="btn btn-primary">杩炴帴璁惧</button>
-                <button id="scanBtn" class="btn btn-secondary">鑷姩鎵弿</button>
+                <button id="connectBtn" class="btn btn-primary">连接设备</button>
+                <button id="scanBtn" class="btn btn-secondary">自动扫描</button>
             </div>
         </div>
 
         <div id="content" style="display: none;">
             <div class="status-panel">
                 <div class="status-item">
-                    <span class="status-label">褰撳墠娓╁害</span>
-                    <span id="currentTemp" class="status-value temperature">-- 掳C</span>
+                    <span class="status-label">当前温度</span>
+                    <span id="currentTemp" class="status-value temperature">-- °C</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">鐩爣娓╁害</span>
-                    <span id="targetTemp" class="status-value">-- 掳C</span>
+                    <span class="status-label">目标温度</span>
+                    <span id="targetTemp" class="status-value">-- °C</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">鍔犵儹鐘舵€?/span>
+                    <span class="status-label">加热状态</span>
                     <span id="heatingStatus" class="status-value">--</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">WiFi杩炴帴</span>
+                    <span class="status-label">WiFi连接</span>
                     <span id="wifiStatus" class="status-value">--</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">LED鐘舵€?/span>
+                    <span class="status-label">LED状态</span>
                     <span id="ledStatus" class="status-value">
                         <span class="led-indicator led-off"></span>--
                     </span>
@@ -346,55 +314,25 @@
 
             <div class="control-panel">
                 <div class="control-group">
-                    <label class="control-label">鐩爣娓╁害璁剧疆 (掳C)</label>
+                    <label class="control-label">目标温度设置 (°C)</label>
                     <input type="number" id="targetTempInput" class="temperature-input" 
-                           min="0" max="300" step="5" value="180" placeholder="璁剧疆鐩爣娓╁害">
+                           min="0" max="300" step="5" value="180" placeholder="设置目标温度">
                 </div>
 
                 <div class="button-group">
-                    <button id="startBtn" class="btn btn-primary">寮€濮嬪姞鐑?/button>
-                    <button id="stopBtn" class="btn btn-secondary">鍋滄鍔犵儹</button>
+                    <button id="startBtn" class="btn btn-primary">开始加热</button>
+                    <button id="stopBtn" class="btn btn-secondary">停止加热</button>
                 </div>
 
                 <div class="button-group" style="margin-top: 15px;">
-                    <button id="refreshBtn" class="btn btn-secondary">鍒锋柊鐘舵€?/button>
+                    <button id="refreshBtn" class="btn btn-secondary">刷新状态</button>
                 </div>
             </div>
 
             <div class="device-info">
-                <p><strong>璁惧ID:</strong> <span id="deviceId">--</span></p>
-                <p><strong>鍥轰欢鐗堟湰:</strong> <span id="firmwareVersion">--</span></p>
-                <p><strong>IP鍦板潃:</strong> <span id="ipAddress">--</span></p>
-            </div>
-
-            <!-- 娓╁害浼犳劅鍣ㄨ瘖鏂潰鏉?-->
-            <div id="temperatureDiagnostic" class="diagnostic-panel" style="display: none;">
-                <div class="diagnostic-title">馃敡 娓╁害浼犳劅鍣ㄨ瘖鏂?/div>
-                <div class="diagnostic-item">
-                    <strong>浼犳劅鍣ㄧ姸鎬?</strong> <span id="sensorStatus">--</span>
-                </div>
-                <div class="diagnostic-item">
-                    <strong>鍘熷鏁版嵁:</strong> <span id="rawData">--</span>
-                </div>
-                <div class="diagnostic-item">
-                    <strong>閿欒鏍囧織:</strong> <span id="errorFlag">--</span>
-                </div>
-                <div class="diagnostic-item">
-                    <strong>娓╁害浣?</strong> <span id="tempBits">--</span>
-                </div>
-                <div class="diagnostic-item">
-                    <strong>鏈牎鍑嗘俯搴?</strong> <span id="rawTemperature">--</span>
-                </div>
-                <div class="diagnostic-item">
-                    <strong>鏍″噯鍙傛暟:</strong> <span id="calibrationParams">--</span>
-                </div>
-                <div class="diagnostic-item">
-                    <strong>璇婃柇寤鸿:</strong> <span id="diagnosticAdvice">--</span>
-                </div>
-                <div class="button-group" style="margin-top: 10px;">
-                    <button id="diagnosticBtn" class="btn btn-secondary">杩愯璇婃柇</button>
-                    <button id="resetCalibrationBtn" class="btn btn-secondary">閲嶇疆鏍″噯</button>
-                </div>
+                <p><strong>设备ID:</strong> <span id="deviceId">--</span></p>
+                <p><strong>固件版本:</strong> <span id="firmwareVersion">--</span></p>
+                <p><strong>IP地址:</strong> <span id="ipAddress">--</span></p>
             </div>
         </div>
     </div>
@@ -409,11 +347,11 @@
             }
 
             async init() {
-                // 鏄剧ず鎵嬪姩IP杈撳叆鐣岄潰
+                // 显示手动IP输入界面
                 document.getElementById('manualIpSection').style.display = 'block';
                 document.getElementById('loading').style.display = 'none';
                 
-                // 灏濊瘯鑷姩鎵弿璁惧
+                // 尝试自动扫描设备
                 await this.detectDeviceIp();
                 if (this.deviceIp) {
                     await this.loadDeviceStatus();
@@ -422,8 +360,11 @@
             }
 
             async detectDeviceIp() {
-                // 灏濊瘯甯歌鐨勮澶嘔P鍦板潃锛堜紭鍏圓P妯″紡鍦板潃锛?                const commonIps = [
-                    '192.168.16.104',   // 鐢ㄦ埛鎻愪緵鐨勮澶嘔P锛堢鍙?0锛?                    '192.168.4.1',      // ESP8266 AP妯″紡榛樿IP锛堢鍙?0锛?                    '192.168.1.1',
+                // 尝试常见的设备IP地址（优先AP模式地址）
+                const commonIps = [
+                    '192.168.16.104',   // 用户提供的设备IP（端口80）
+                    '192.168.4.1',      // ESP8266 AP模式默认IP（端口80）
+                    '192.168.1.1',
                     '192.168.1.100',
                     '192.168.1.101',
                     '192.168.1.102',
@@ -440,23 +381,26 @@
                         });
                         if (response.ok) {
                             this.deviceIp = ip;
-                            this.showConnectionStatus('杩炴帴鎴愬姛', true);
+                            this.showConnectionStatus('连接成功', true);
                             return;
                         }
                     } catch (error) {
-                        // 缁х画灏濊瘯涓嬩竴涓狪P
+                        // 继续尝试下一个IP
                         continue;
                     }
                 }
 
-                // 濡傛灉娌℃湁鎵惧埌璁惧锛屾樉绀烘墜鍔ㄨ緭鍏ョ晫闈?            this.showError('鑷姩鎵弿鏈壘鍒拌澶囷紝璇锋墜鍔ㄨ緭鍏P鍦板潃');
+                // 如果没有找到设备，显示手动输入界面
+            this.showError('自动扫描未找到设备，请手动输入IP地址');
             }
 
             async testConnection() {
                 try {
-                    // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80锛屼笉闇€瑕佹寚瀹氱鍙?                    const ip = this.deviceIp;
+                    // 设备Web服务器运行在端口80，不需要指定端口
+                    const ip = this.deviceIp;
                     
-                    // 娣诲姞璇︾粏鐨勮繛鎺ヨ瘖鏂?                    console.log(`灏濊瘯杩炴帴璁惧: http://${ip}/status`);
+                    // 添加详细的连接诊断
+                    console.log(`尝试连接设备: http://${ip}/status`);
                     
                     const response = await fetch(`http://${ip}/status`, { 
                         method: 'GET',
@@ -464,23 +408,23 @@
                     });
                     
                     if (response.ok) {
-                        this.showConnectionStatus('杩炴帴鎴愬姛', true);
-                        console.log('璁惧Web鏈嶅姟鍣ㄥ搷搴旀甯?);
+                        this.showConnectionStatus('连接成功', true);
+                        console.log('设备Web服务器响应正常');
                         return true;
                     } else {
-                        this.showError(`HTTP閿欒: ${response.status}`);
+                        this.showError(`HTTP错误: ${response.status}`);
                         return false;
                     }
                 } catch (error) {
-                    console.error('杩炴帴澶辫触璇︽儏:', error);
+                    console.error('连接失败详情:', error);
                     
-                    // 鎻愪緵鏇磋缁嗙殑閿欒淇℃伅
+                    // 提供更详细的错误信息
                     if (error.name === 'TypeError') {
-                        this.showError('缃戠粶杩炴帴澶辫触锛岃妫€鏌ヨ澶囨槸鍚﹀湪绾?);
+                        this.showError('网络连接失败，请检查设备是否在线');
                     } else if (error.name === 'AbortError') {
-                        this.showError('杩炴帴瓒呮椂锛岃澶嘩eb鏈嶅姟鍣ㄥ彲鑳芥湭鍚姩');
+                        this.showError('连接超时，设备Web服务器可能未启动');
                     } else {
-                        this.showError(`杩炴帴澶辫触: ${error.message}`);
+                        this.showError(`连接失败: ${error.message}`);
                     }
                 }
                 return false;
@@ -488,7 +432,7 @@
 
             async loadDeviceStatus() {
                 try {
-                    // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80
+                    // 设备Web服务器运行在端口80
                     const ip = this.deviceIp;
                     
                     const response = await fetch(`http://${ip}/status`);
@@ -501,64 +445,66 @@
                     this.isConnected = true;
                     
                 } catch (error) {
-                    this.showError(`鑾峰彇鐘舵€佸け璐? ${error.message}`);
+                    this.showError(`获取状态失败: ${error.message}`);
                     this.isConnected = false;
                 }
             }
 
             updateUI(data) {
-                // 鏇存柊娓╁害鏄剧ず
-                document.getElementById('currentTemp').textContent = data.temperature + ' 掳C';
-                document.getElementById('targetTemp').textContent = data.target_temperature + ' 掳C';
+                // 更新温度显示
+                document.getElementById('currentTemp').textContent = data.temperature + ' °C';
+                document.getElementById('targetTemp').textContent = data.target_temperature + ' °C';
                 
-                // 鏇存柊鍔犵儹鐘舵€?                const heatingStatus = document.getElementById('heatingStatus');
+                // 更新加热状态
+                const heatingStatus = document.getElementById('heatingStatus');
                 if (data.heating_enabled) {
-                    heatingStatus.textContent = '鍔犵儹涓?;
+                    heatingStatus.textContent = '加热中';
                     heatingStatus.className = 'status-value heating';
                 } else {
-                    heatingStatus.textContent = '寰呮満';
+                    heatingStatus.textContent = '待机';
                     heatingStatus.className = 'status-value';
                 }
                 
-                // 鏇存柊WiFi鐘舵€?                const wifiStatus = document.getElementById('wifiStatus');
+                // 更新WiFi状态
+                const wifiStatus = document.getElementById('wifiStatus');
                 if (data.wifi_connected) {
-                    wifiStatus.textContent = '宸茶繛鎺?;
+                    wifiStatus.textContent = '已连接';
                     wifiStatus.className = 'status-value connected';
                 } else {
-                    wifiStatus.textContent = '鏈繛鎺?;
+                    wifiStatus.textContent = '未连接';
                     wifiStatus.className = 'status-value disconnected';
                 }
                 
-                // 鏇存柊LED鐘舵€侊紙鍩轰簬鍔犵儹鐘舵€佹帹鏂級
+                // 更新LED状态（基于加热状态推断）
                 const ledIndicator = document.querySelector('.led-indicator');
                 const ledStatus = document.getElementById('ledStatus');
                 
                 if (data.heating_enabled) {
                     ledIndicator.className = 'led-indicator led-on';
-                    ledStatus.innerHTML = '<span class="led-indicator led-on"></span>鍔犵儹涓?- 甯镐寒';
+                    ledStatus.innerHTML = '<span class="led-indicator led-on"></span>加热中 - 常亮';
                 } else {
                     ledIndicator.className = 'led-indicator led-blinking';
-                    ledStatus.innerHTML = '<span class="led-indicator led-blinking"></span>寰呮満 - 鎱㈤棯';
+                    ledStatus.innerHTML = '<span class="led-indicator led-blinking"></span>待机 - 慢闪';
                 }
                 
-                // 鏇存柊璁惧淇℃伅
+                // 更新设备信息
                 document.getElementById('deviceId').textContent = data.device_id;
                 document.getElementById('firmwareVersion').textContent = data.firmware_version;
                 document.getElementById('ipAddress').textContent = data.ip_address;
                 
-                // 鏄剧ず鍐呭鍖哄煙
+                // 显示内容区域
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
             }
 
             async controlDevice(targetTemp, heatingEnabled) {
                 if (!this.isConnected) {
-                    this.showError('璁惧鏈繛鎺?);
+                    this.showError('设备未连接');
                     return false;
                 }
 
                 try {
-                    // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80
+                    // 设备Web服务器运行在端口80
                     const ip = this.deviceIp;
                     
                     const formData = new URLSearchParams();
@@ -574,19 +520,21 @@
                     });
 
                     if (response.ok) {
-                        this.showConnectionStatus('鎺у埗鍛戒护鍙戦€佹垚鍔?, true);
-                        await this.loadDeviceStatus(); // 绔嬪嵆鍒锋柊鐘舵€?                        return true;
+                        this.showConnectionStatus('控制命令发送成功', true);
+                        await this.loadDeviceStatus(); // 立即刷新状态
+                        return true;
                     } else {
                         throw new Error(`HTTP ${response.status}`);
                     }
                 } catch (error) {
-                    this.showError(`鎺у埗澶辫触: ${error.message}`);
+                    this.showError(`控制失败: ${error.message}`);
                     return false;
                 }
             }
 
             startAutoUpdate() {
-                // 姣?绉掕嚜鍔ㄦ洿鏂扮姸鎬?                this.updateInterval = setInterval(() => {
+                // 每5秒自动更新状态
+                this.updateInterval = setInterval(() => {
                     if (this.isConnected) {
                         this.loadDeviceStatus();
                     }
@@ -606,7 +554,7 @@
                 statusElement.className = `connection-status ${isSuccess ? 'status-connected' : 'status-disconnected'}`;
                 statusElement.style.display = 'block';
                 
-                // 3绉掑悗鑷姩闅愯棌
+                // 3秒后自动隐藏
                 setTimeout(() => {
                     statusElement.style.display = 'none';
                 }, 3000);
@@ -617,93 +565,27 @@
                 errorElement.textContent = message;
                 errorElement.style.display = 'block';
                 
-                // 5绉掑悗鑷姩闅愯棌
+                // 5秒后自动隐藏
                 setTimeout(() => {
                     errorElement.style.display = 'none';
                 }, 5000);
             }
-
-            // 娓╁害浼犳劅鍣ㄨ瘖鏂姛鑳?            async runTemperatureDiagnostic() {
-                if (!this.isConnected) {
-                    this.showError('璁惧鏈繛鎺ワ紝鏃犳硶杩愯璇婃柇');
-                    return;
-                }
-
-                try {
-                    const ip = this.deviceIp;
-                    const response = await fetch(`http://${ip}/diagnostic`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    
-                    const diagnosticData = await response.json();
-                    this.updateDiagnosticPanel(diagnosticData);
-                    
-                    // 鏄剧ず璇婃柇闈㈡澘
-                    document.getElementById('temperatureDiagnostic').style.display = 'block';
-                    
-                } catch (error) {
-                    this.showError(`璇婃柇澶辫触: ${error.message}`);
-                }
-            }
-
-            updateDiagnosticPanel(data) {
-                // 鏇存柊璇婃柇淇℃伅
-                document.getElementById('sensorStatus').textContent = data.sensor_status || '--';
-                document.getElementById('rawData').textContent = data.raw_data || '--';
-                document.getElementById('errorFlag').textContent = data.error_flag || '--';
-                document.getElementById('tempBits').textContent = data.temp_bits || '--';
-                document.getElementById('rawTemperature').textContent = data.raw_temperature || '--';
-                document.getElementById('calibrationParams').textContent = data.calibration_params || '--';
-                document.getElementById('diagnosticAdvice').textContent = data.diagnostic_advice || '--';
-
-                // 鏍规嵁浼犳劅鍣ㄧ姸鎬佽缃牱寮?                const diagnosticPanel = document.getElementById('temperatureDiagnostic');
-                if (data.sensor_status === '姝ｅ父') {
-                    diagnosticPanel.className = 'diagnostic-panel status-ok';
-                } else if (data.sensor_status === '璀﹀憡') {
-                    diagnosticPanel.className = 'diagnostic-panel status-warning';
-                } else {
-                    diagnosticPanel.className = 'diagnostic-panel status-error';
-                }
-            }
-
-            async resetTemperatureCalibration() {
-                if (!this.isConnected) {
-                    this.showError('璁惧鏈繛鎺ワ紝鏃犳硶閲嶇疆鏍″噯');
-                    return;
-                }
-
-                try {
-                    const ip = this.deviceIp;
-                    const response = await fetch(`http://${ip}/reset_calibration`, {
-                        method: 'POST'
-                    });
-                    
-                    if (response.ok) {
-                        this.showConnectionStatus('鏍″噯鍙傛暟宸查噸缃?, true);
-                        // 閲嶆柊杩愯璇婃柇
-                        await this.runTemperatureDiagnostic();
-                    } else {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                } catch (error) {
-                    this.showError(`閲嶇疆鏍″噯澶辫触: ${error.message}`);
-                }
-            }
         }
 
-        // 鍒濆鍖栧簲鐢?        document.addEventListener('DOMContentLoaded', () => {
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
             const ovenController = new SmartOvenController();
 
-            // 鎵嬪姩杩炴帴浜嬩欢
+            // 手动连接事件
             document.getElementById('connectBtn').addEventListener('click', async () => {
                 let manualIp = document.getElementById('manualIpInput').value.trim();
                 if (!manualIp) {
-                    ovenController.showError('璇疯緭鍏ヨ澶嘔P鍦板潃');
+                    ovenController.showError('请输入设备IP地址');
                     return;
                 }
                 
-                // 璁惧Web鏈嶅姟鍣ㄨ繍琛屽湪绔彛80锛屼笉闇€瑕佹坊鍔犵鍙?                // 濡傛灉鐢ㄦ埛杈撳叆浜嗙鍙ｏ紝绉婚櫎绔彛閮ㄥ垎
+                // 设备Web服务器运行在端口80，不需要添加端口
+                // 如果用户输入了端口，移除端口部分
                 if (manualIp.includes(':')) {
                     manualIp = manualIp.split(':')[0];
                 }
@@ -713,12 +595,13 @@
                     await ovenController.loadDeviceStatus();
                     ovenController.startAutoUpdate();
                     
-                    // 闅愯棌鎵嬪姩杈撳叆鐣岄潰锛屾樉绀烘帶鍒剁晫闈?                    document.getElementById('manualIpSection').style.display = 'none';
+                    // 隐藏手动输入界面，显示控制界面
+                    document.getElementById('manualIpSection').style.display = 'none';
                     document.getElementById('content').style.display = 'block';
                 }
             });
 
-            // 鑷姩鎵弿浜嬩欢
+            // 自动扫描事件
             document.getElementById('scanBtn').addEventListener('click', async () => {
                 document.getElementById('manualIpSection').style.display = 'none';
                 document.getElementById('loading').style.display = 'block';
@@ -734,11 +617,11 @@
                 }
             });
 
-            // 浜嬩欢鐩戝惉
+            // 事件监听
             document.getElementById('startBtn').addEventListener('click', async () => {
                 const targetTemp = parseInt(document.getElementById('targetTempInput').value);
                 if (targetTemp < 0 || targetTemp > 300) {
-                    ovenController.showError('娓╁害鑼冨洿: 0-300掳C');
+                    ovenController.showError('温度范围: 0-300°C');
                     return;
                 }
                 await ovenController.controlDevice(targetTemp, true);
@@ -753,22 +636,14 @@
                 await ovenController.loadDeviceStatus();
             });
 
-            // 璇婃柇鎸夐挳浜嬩欢
-            document.getElementById('diagnosticBtn').addEventListener('click', async () => {
-                await ovenController.runTemperatureDiagnostic();
-            });
-
-            document.getElementById('resetCalibrationBtn').addEventListener('click', async () => {
-                await ovenController.resetTemperatureCalibration();
-            });
-
-            // 娓╁害杈撳叆妗嗗洖杞︿簨浠?            document.getElementById('targetTempInput').addEventListener('keypress', (e) => {
+            // 温度输入框回车事件
+            document.getElementById('targetTempInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     document.getElementById('startBtn').click();
                 }
             });
 
-            // 椤甸潰鍙鎬у彉鍖栨椂璋冩暣杞
+            // 页面可见性变化时调整轮询
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     ovenController.stopAutoUpdate();

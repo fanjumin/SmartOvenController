@@ -393,9 +393,9 @@
             </div>
         </div>
 
-        <!-- 绯荤粺淇℃伅鍗＄墖 -->
+        <!-- 系统信息卡片 -->
         <div class="status-card">
-            <div class="card-title">鈿欙笍 绯荤粺淇℃伅</div>
+            <div class="card-title">⚙️ 系统信息</div>
             
             <div class="status-list">
                 <div class="list-item">
@@ -419,7 +419,7 @@
 
         <!-- 温度趋势图 -->
         <div class="status-card">
-            <div class="card-title">📈 温度趋势</div>
+            <div class="card-title">📊 温度趋势</div>
             
             <div class="chart-container">
                 <svg class="chart" viewBox="0 0 300 120" preserveAspectRatio="none">
@@ -434,7 +434,7 @@
                 </svg>
             </div>
             
-            <div class="timestamp" id="chart-timestamp">鏁版嵁鏇存柊鏃堕棿: --</div>
+            <div class="timestamp" id="chart-timestamp">数据更新时间: --</div>
         </div>
 
         <div class="action-buttons">
@@ -455,64 +455,71 @@
         let temperatureHistory = [];
         const maxHistoryPoints = 20;
 
-        // 杩斿洖棣栭〉
+        // 返回首页
         function goBack() {
             window.location.href = 'mobile_home.html';
         }
 
-        // 鍒锋柊鐘舵€?        function refreshStatus() {
+        // 刷新状态
+        function refreshStatus() {
             updateDeviceStatus();
-            showToast('鐘舵€佸凡鍒锋柊');
+            showToast('状态已刷新');
         }
 
-        // 鏇存柊璁惧鐘舵€?        async function updateDeviceStatus() {
+        // 更新设备状态
+        async function updateDeviceStatus() {
             try {
                 const response = await fetch('/status');
                 if (response.ok) {
                     const data = await response.json();
                     
-                    // 鏇存柊娓╁害淇℃伅
-                    document.getElementById('current-temp').textContent = data.currentTemp + '掳C';
-                    document.getElementById('target-temp').textContent = data.targetTemp + '掳C';
+                    // 更新温度信息
+                    document.getElementById('current-temp').textContent = data.currentTemp + '°C';
+                    document.getElementById('target-temp').textContent = data.targetTemp + '°C';
                     
                     const tempDiff = data.targetTemp - data.currentTemp;
                     document.getElementById('temp-diff').textContent = 
-                        (tempDiff > 0 ? '+' : '') + tempDiff + '掳C';
+                        (tempDiff > 0 ? '+' : '') + tempDiff + '°C';
                     
-                    // 鏇存柊鍔犵儹鐘舵€?                    const heatingStatus = document.getElementById('heating-status');
-                    heatingStatus.textContent = data.heatingEnabled ? '鍔犵儹涓? : '鍏抽棴';
+                    // 更新加热状态
+                    const heatingStatus = document.getElementById('heating-status');
+                    heatingStatus.textContent = data.heatingEnabled ? '加热中' : '关闭';
                     heatingStatus.style.color = data.heatingEnabled ? '#f39c12' : '#95a5a6';
                     
-                    // 鏇存柊娓╁害杩涘害鏉?                    const progress = data.targetTemp > 0 ? 
+                    // 更新温度进度条
+                    const progress = data.targetTemp > 0 ? 
                         Math.min((data.currentTemp / data.targetTemp) * 100, 100) : 0;
                     document.getElementById('temp-progress').style.width = progress + '%';
                     document.getElementById('temp-progress-text').textContent = 
-                        '娓╁害杩涘害: ' + progress.toFixed(1) + '%';
+                        '温度进度: ' + progress.toFixed(1) + '%';
                     
-                    // 鏇存柊缃戠粶鐘舵€?                    updateConnectionStatus(data);
+                    // 更新网络状态
+                    updateConnectionStatus(data);
                     
-                    // 鏇存柊绯荤粺淇℃伅
+                    // 更新系统信息
                     updateSystemInfo(data);
                     
-                    // 鏇存柊娓╁害鍘嗗彶
+                    // 更新温度历史
                     updateTemperatureHistory(data.currentTemp);
                     
-                    // 鏇存柊鏈€鍚庡埛鏂版椂闂?                    document.getElementById('last-refresh').textContent = 
-                        '鏈€鍚庡埛鏂? ' + new Date().toLocaleString();
+                    // 更新最后刷新时间
+                    document.getElementById('last-refresh').textContent = 
+                        '最后刷新: ' + new Date().toLocaleString();
                 }
             } catch (error) {
-                console.error('鑾峰彇璁惧鐘舵€佸け璐?', error);
-                showToast('鑾峰彇鐘舵€佸け璐?);
+                console.error('获取设备状态失败:', error);
+                showToast('获取状态失败');
             }
         }
 
-        // 鏇存柊杩炴帴鐘舵€?        function updateConnectionStatus(data) {
+        // 更新连接状态
+        function updateConnectionStatus(data) {
             const indicator = document.getElementById('connection-indicator');
             const statusElement = document.getElementById('connection-status');
             
             if (data.wifiConnected) {
                 indicator.className = 'indicator indicator-online';
-                statusElement.innerHTML = '<span class="indicator indicator-online"></span>宸茶繛鎺?;
+                statusElement.innerHTML = '<span class="indicator indicator-online"></span>已连接';
                 
                 document.getElementById('wifi-ssid').textContent = data.wifiSSID || '--';
                 document.getElementById('ip-address').textContent = data.ipAddress || '--';
@@ -520,7 +527,7 @@
                     (data.rssi || '--') + ' dBm';
             } else {
                 indicator.className = 'indicator indicator-offline';
-                statusElement.innerHTML = '<span class="indicator indicator-offline"></span>鏈繛鎺?;
+                statusElement.innerHTML = '<span class="indicator indicator-offline"></span>未连接';
                 
                 document.getElementById('wifi-ssid').textContent = '--';
                 document.getElementById('ip-address').textContent = '--';
@@ -531,7 +538,7 @@
             document.getElementById('firmware-version').textContent = data.firmwareVersion || '--';
         }
 
-        // 鏇存柊绯荤粺淇℃伅
+        // 更新系统信息
         function updateSystemInfo(data) {
             document.getElementById('uptime').textContent = 
                 formatUptime(data.uptime || 0);
@@ -541,37 +548,38 @@
                 new Date().toLocaleString();
         }
 
-        // 鏍煎紡鍖栬繍琛屾椂闂?        function formatUptime(seconds) {
+        // 格式化运行时间
+        function formatUptime(seconds) {
             const days = Math.floor(seconds / 86400);
             const hours = Math.floor((seconds % 86400) / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             
             if (days > 0) {
-                return `${days}澶?${hours}灏忔椂`;
+                return `${days}天 ${hours}小时`;
             } else if (hours > 0) {
-                return `${hours}灏忔椂 ${minutes}鍒嗛挓`;
+                return `${hours}小时 ${minutes}分钟`;
             } else {
-                return `${minutes}鍒嗛挓`;
+                return `${minutes}分钟`;
             }
         }
 
-        // 鏇存柊娓╁害鍘嗗彶
+        // 更新温度历史
         function updateTemperatureHistory(currentTemp) {
             temperatureHistory.push({
                 temp: currentTemp,
                 time: new Date()
             });
             
-            // 淇濇寔鏈€澶?0涓暟鎹偣
+            // 保持最多20个数据点
             if (temperatureHistory.length > maxHistoryPoints) {
                 temperatureHistory.shift();
             }
             
-            // 鏇存柊鍥捐〃
+            // 更新图表
             updateTemperatureChart();
         }
 
-        // 鏇存柊娓╁害鍥捐〃
+        // 更新温度图表
         function updateTemperatureChart() {
             if (temperatureHistory.length < 2) return;
             
@@ -579,8 +587,9 @@
             const chartHeight = 120;
             const maxTemp = Math.max(...temperatureHistory.map(d => d.temp));
             const minTemp = Math.min(...temperatureHistory.map(d => d.temp));
-            const tempRange = Math.max(maxTemp - minTemp, 10); // 鏈€灏忚寖鍥?0搴?            
-            // 鐢熸垚鎶樼嚎璺緞
+            const tempRange = Math.max(maxTemp - minTemp, 10); // 最小范围10度
+            
+            // 生成折线路径
             let linePath = '';
             let areaPath = '';
             
@@ -605,10 +614,10 @@
             document.getElementById('chart-area').setAttribute('d', areaPath);
             
             document.getElementById('chart-timestamp').textContent = 
-                '鏁版嵁鏇存柊鏃堕棿: ' + new Date().toLocaleTimeString();
+                '数据更新时间: ' + new Date().toLocaleTimeString();
         }
 
-        // 瀵煎嚭鏁版嵁
+        // 导出数据
         function exportData() {
             const data = {
                 timestamp: new Date().toISOString(),
@@ -630,17 +639,17 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showToast('鏁版嵁宸插鍑?);
+            showToast('数据已导出');
         }
 
-        // 閲嶇疆缁熻
+        // 重置统计
         function resetStats() {
             temperatureHistory = [];
             updateTemperatureChart();
-            showToast('缁熻宸查噸缃?);
+            showToast('统计已重置');
         }
 
-        // 鏄剧ず鎻愮ず淇℃伅
+        // 显示提示信息
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -651,11 +660,13 @@
             }, 2000);
         }
 
-        // 椤甸潰鍔犺浇鏃跺垵濮嬪寲
+        // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 绔嬪嵆鏇存柊涓€娆＄姸鎬?            updateDeviceStatus();
+            // 立即更新一次状态
+            updateDeviceStatus();
             
-            // 姣?绉掓洿鏂颁竴娆＄姸鎬?            setInterval(updateDeviceStatus, 5000);
+            // 每5秒更新一次状态
+            setInterval(updateDeviceStatus, 5000);
         });
     </script>
 </body>

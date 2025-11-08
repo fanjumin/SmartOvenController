@@ -3,589 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>æºè½çµç¤ç®± - ç®¡çåé¡µé¢</title>
-    <script>
-        // é¡µé¢å è½½æ¶æ£æ¥ç»å½ç¶æ
-        window.addEventListener('load', function() {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            if (!isLoggedIn) {
-                // æªç»å½ï¼è·³è½¬å°ç»å½é¡µé¢
-                window.location.href = 'login.html';
-            }
-        });
-        
-        // ç»åºåè½
-        function logout() {
-            sessionStorage.removeItem('isLoggedIn');
-            window.location.href = 'login.html';
-        }
-        
-        // ä¿®æ¹å¯ç åè½
-        function changePassword() {
-            const newPassword = prompt('è¯·è¾å¥æ°å¯ç ï¼è³å°8ä½ï¼:');
-            if (newPassword && newPassword.length >= 8) {
-                localStorage.setItem('adminPassword', newPassword);
-                alert('å¯ç ä¿®æ¹æåï¼');
-            } else if (newPassword) {
-                alert('å¯ç é¿åº¦è³å°éè¦8ä½ï¼');
-            }
-        }
-    </script>
+    <title>智能电烤箱 - 主控制台</title>
+    <link rel="stylesheet" href="mobile_styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 100%;
-            padding: 20px;
-            margin: 0 auto;
-        }
-
-        .header {
+        .welcome-section {
             text-align: center;
-            padding: 30px 20px;
-            margin-bottom: 20px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 30px;
         }
 
-        .header h1 {
+        .welcome-title {
             font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+            margin-bottom: 10px;
         }
 
-        .header p {
+        .welcome-subtitle {
             font-size: 16px;
             opacity: 0.9;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .logout-btn, .change-password-btn {
-            padding: 8px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .status-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+        .device-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
-        .status-item {
+        .info-item {
             text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
         }
 
-        .status-label {
-            font-size: 14px;
+        .info-label {
+            font-size: 12px;
             opacity: 0.8;
             margin-bottom: 5px;
         }
 
-        .status-value {
-            font-size: 24px;
+        .info-value {
+            font-size: 18px;
             font-weight: 600;
         }
 
-        .temperature {
-            color: #ff6b6b;
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .connected {
-            color: #51cf66;
-        }
-
-        .control-section {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
+        .feature-card {
+            background: white;
             border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .quick-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .control-btn {
-            padding: 15px 20px;
-            border: none;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card:active {
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-width: 120px;
             justify-content: center;
-        }
-
-        .control-btn.primary {
-            background: #10b981;
+            font-size: 32px;
             color: white;
         }
 
-        .control-btn.secondary {
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .connection-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 15px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .control-btn:active {
-            transform: scale(0.95);
-        }
-
-        .admin-section {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .admin-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .admin-buttons {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-
-        .admin-btn {
-            padding: 15px;
-            border: none;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .admin-btn.wifi {
-            background: rgba(59, 130, 246, 0.2);
-            color: white;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        .admin-btn.restart {
-            background: rgba(245, 158, 11, 0.2);
-            color: white;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .admin-btn.reset {
-            background: rgba(239, 68, 68, 0.2);
-            color: white;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .api-section {
-            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .api-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            text-align: center;
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
-        .api-endpoints {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-        }
-
-        .api-endpoint {
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: monospace;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 20px;
-            opacity: 0.7;
-            font-size: 14px;
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+            
+            .device-info {
+                gap: 20px;
+            }
+            
+            .welcome-title {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>æºè½çµç¤ç®±</h1>
-            <p>ç®¡çåæ§å¶é¢æ¿</p>
-            <div class="admin-controls">
-                <button class="logout-btn" onclick="logout()">ç»åº</button>
-                <button class="change-password-btn" onclick="changePassword()">ä¿®æ¹å¯ç </button>
-            </div>
-        </div>
-
-        <!-- è®¾å¤ç¶æ -->
-        <div class="status-card">
-            <div class="status-grid">
-                <div class="status-item">
-                    <div class="status-label">å½åæ¸©åº¦</div>
-                    <div class="status-value temperature">--</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">ç®æ æ¸©åº¦</div>
-                    <div class="status-value">--</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">å ç­ç¶æ</div>
-                    <div class="status-value">--</div>
-                </div>
-                <div class="status-item">
-                    <div class="status-label">WiFiç¶æ</div>
-                    <div class="status-value connected">--</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- æ¸©åº¦æ§å¶ -->
-        <div class="control-section">
-            <h3 style="text-align: center; margin-bottom: 20px; font-size: 20px;">æ¸©åº¦æ§å¶</h3>
+    <div class="mobile-container">
+        <!-- 欢迎区域 -->
+        <div class="welcome-section">
+            <div class="welcome-title">智能电烤箱控制台</div>
+            <div class="welcome-subtitle">一站式设备管理与控制</div>
             
-            <!-- æ¸©åº¦è°æ´æé® -->
-            <div class="temp-controls" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
-                <button class="temp-btn" onclick="changeTemp(-5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-5Â°</button>
-                <button class="temp-btn" onclick="changeTemp(-1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">-1Â°</button>
-                <button class="temp-btn" onclick="changeTemp(1)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+1Â°</button>
-                <button class="temp-btn" onclick="changeTemp(5)" style="background: rgba(255, 255, 255, 0.2); border: none; border-radius: 10px; padding: 15px; font-size: 18px; color: white; cursor: pointer;">+5Â°</button>
+            <div class="connection-status">
+                <div class="status-dot" id="status-dot"></div>
+                <span class="status-text" id="status-text">检测设备中...</span>
             </div>
-            
-            <!-- ç´æ¥è®¾ç½®æ¸©åº¦ -->
-            <div class="temp-input-group" style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px; font-size: 16px; font-weight: 500;">ç´æ¥è®¾ç½®æ¸©åº¦ (Â°C)</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="number" id="temp-input" style="flex: 1; padding: 15px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 16px;" placeholder="è¾å¥ç®æ æ¸©åº¦" min="0" max="300" step="1">
-                    <button onclick="setCustomTemp()" style="padding: 15px 20px; border: none; border-radius: 10px; background: #10b981; color: white; font-size: 16px; cursor: pointer;">è®¾ç½®</button>
+
+            <div class="device-info">
+                <div class="info-item">
+                    <div class="info-label">设备ID</div>
+                    <div class="info-value" id="device-id">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">固件版本</div>
+                    <div class="info-value" id="firmware-version">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">运行时间</div>
+                    <div class="info-value" id="uptime">--</div>
                 </div>
             </div>
-            
-            <!-- é¢è®¾æ¸©åº¦ -->
-            <div class="temp-presets" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
-                <button onclick="setPresetTemp(50)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">50Â°C</button>
-                <button onclick="setPresetTemp(100)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">100Â°C</button>
-                <button onclick="setPresetTemp(150)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">150Â°C</button>
-                <button onclick="setPresetTemp(180)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">180Â°C</button>
-                <button onclick="setPresetTemp(200)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">200Â°C</button>
-                <button onclick="setPresetTemp(250)" style="padding: 10px; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; cursor: pointer;">250Â°C</button>
-            </div>
-            
-            <!-- åºç¡æ§å¶ -->
-            <div class="quick-controls">
-                <button class="control-btn primary" onclick="toggleHeating()">
-                    <span>ð¥</span>
-                    <span>å¯å¨å ç­</span>
-                </button>
-                <button class="control-btn secondary" onclick="refreshData()">
-                    <span>ð</span>
-                    <span>å·æ°</span>
-                </button>
+
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="refreshStatus()">🔄 刷新状态</button>
+                <button class="quick-btn" onclick="openMobileHome()">📱 手机界面</button>
+                <button class="quick-btn" onclick="openDesktopView()">💻 桌面界面</button>
             </div>
         </div>
 
-        <!-- ç®¡çååè½ -->
-        <div class="admin-section">
-            <div class="admin-title">ç³»ç»ç®¡ç</div>
-            <div class="admin-buttons">
-                <button class="admin-btn wifi" onclick="window.location.href='wifi_config.html'">
-                    <span>ð¶</span>
-                    <span>WiFiéç½®</span>
-                </button>
-                <button class="admin-btn restart" onclick="restartDevice()">
-                    <span>ð</span>
-                    <span>éå¯è®¾å¤</span>
-                </button>
-                <button class="admin-btn reset" onclick="factoryReset()">
-                    <span>â ï¸</span>
-                    <span>æ¢å¤åºåè®¾ç½®</span>
-                </button>
+        <!-- 功能网格 -->
+        <div class="feature-grid">
+            <!-- 温度控制 -->
+            <div class="feature-card" onclick="openTemperatureControl()">
+                <div class="feature-icon">🌡️</div>
+                <div class="feature-title">温度控制</div>
+                <div class="feature-description">
+                    精确控制烤箱温度，设置目标温度，监控实时温度变化，确保最佳烘焙效果
+                </div>
+                <div class="temperature-preview" id="temp-preview">
+                    <small>当前: --°C | 目标: --°C</small>
+                </div>
+            </div>
+
+            <!-- WiFi配置 -->
+            <div class="feature-card" onclick="openWifiConfig()">
+                <div class="feature-icon">📶</div>
+                <div class="feature-title">WiFi配置</div>
+                <div class="feature-description">
+                    管理设备网络连接，扫描可用WiFi，配置网络参数，确保设备稳定联网
+                </div>
+                <div class="wifi-preview" id="wifi-preview">
+                    <small>状态: -- | 信号: --</small>
+                </div>
+            </div>
+
+            <!-- 设备状态 -->
+            <div class="feature-card" onclick="openDeviceStatus()">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">设备状态</div>
+                <div class="feature-description">
+                    查看设备详细信息，监控系统资源，分析温度趋势，导出运行数据
+                </div>
+                <div class="status-preview" id="status-preview">
+                    <small>内存: -- | 加热: --</small>
+                </div>
+            </div>
+
+            <!-- 设置与帮助 -->
+            <div class="feature-card" onclick="openSettingsHelp()">
+                <div class="feature-icon">⚙️</div>
+                <div class="feature-title">设置与帮助</div>
+                <div class="feature-description">
+                    系统设置调整，设备管理操作，查看帮助文档，获取技术支持
+                </div>
+                <div class="settings-preview" id="settings-preview">
+                    <small>单位: °C | 精度: 标准</small>
+                </div>
             </div>
         </div>
 
-        <!-- APIç«¯ç¹ä¿¡æ¯ -->
-        <div class="api-section">
-            <div class="api-title">APIç«¯ç¹</div>
-            <div class="api-endpoints">
-                <div class="api-endpoint">GET /status - è·åè®¾å¤ç¶æ</div>
-                <div class="api-endpoint">POST /control - æ§å¶å ç­å¨</div>
-                <div class="api-endpoint">POST /wificonfig - éç½®WiFi</div>
-                <div class="api-endpoint">POST /restart - éå¯è®¾å¤</div>
-                <div class="api-endpoint">POST /factoryreset - æ¢å¤åºåè®¾ç½®</div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>æºè½çµç¤ç®±æ§å¶å¨ v0.6.0</p>
-            <p>Â© 2025 æºè½çµç¤ç®±é¡¹ç®</p>
+        <!-- 底部信息 -->
+        <div style="text-align: center; padding: 30px; color: #666; font-size: 14px;">
+            <p>智能电烤箱控制系统 v0.3.1</p>
+            <p>© 2024 智能电烤箱项目组</p>
         </div>
     </div>
 
+    <script src="mobile_utils.js"></script>
     <script>
-        // è®¾å¤ç¶æåé
-        let deviceStatus = {
-            currentTemp: 0,
-            targetTemp: 180,
-            heatingEnabled: false,
-            wifiConnected: false,
-            wifiSSID: '',
-            ipAddress: '',
-            deviceId: '',
-            firmwareVersion: ''
-        };
-
-        // é¡µé¢å è½½å®æååå§å
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('æºè½çµç¤ç®±ç®¡çåé¡µé¢å·²å è½½');
-            refreshData();
+        // 设备状态检测
+        async function checkDeviceStatus() {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
             
-            // æ¯5ç§èªå¨å·æ°æ°æ®
-            setInterval(refreshData, 5000);
-        });
-
-        // å·æ°è®¾å¤æ°æ®
-        async function refreshData() {
             try {
-                const response = await fetch('/status');
-                if (response.ok) {
-                    const data = await response.json();
-                    updateStatusDisplay(data);
+                // 尝试检测设备连接
+                const response = await fetch('http://192.168.4.1/status', {
+                    method: 'GET',
+                    timeout: 3000
+                }).catch(() => null);
+
+                if (response && response.ok) {
+                    statusDot.className = 'status-dot connected';
+                    statusText.textContent = '设备已连接';
+                    
+                    // 更新设备信息
+                    updateDeviceInfo();
                 } else {
-                    console.error('è·åè®¾å¤ç¶æå¤±è´¥');
+                    statusDot.className = 'status-dot';
+                    statusText.textContent = '设备未连接';
                     showDemoData();
                 }
             } catch (error) {
-                console.error('ç½ç»è¿æ¥å¤±è´¥:', error);
+                statusDot.className = 'status-dot';
+                statusText.textContent = '设备未连接';
                 showDemoData();
             }
         }
 
-        // æ´æ°ç¶ææ¾ç¤º
-        function updateStatusDisplay(data) {
-            deviceStatus = {
-                currentTemp: data.temperature || 0,
-                targetTemp: data.target_temperature || 180,
-                heatingEnabled: data.heating_enabled || false,
-                wifiConnected: data.wifi_connected || false,
-                wifiSSID: data.wifiSSID || '',
-                ipAddress: data.ip_address || '',
-                deviceId: data.device_id || '',
-                firmwareVersion: data.firmware_version || ''
-            };
-
-            // å®å¨å°æ´æ°æ¸©åº¦æ¾ç¤º
-            const statusItems = document.querySelectorAll('.status-item');
-            if (statusItems.length >= 4) {
-                statusItems[0].querySelector('.status-value').textContent = 
-                    deviceStatus.currentTemp.toFixed(1) + 'Â°C';
-                statusItems[1].querySelector('.status-value').textContent = 
-                    deviceStatus.targetTemp.toFixed(1) + 'Â°C';
-                
-                // æ´æ°å ç­ç¶æ
-                const heatingStatus = deviceStatus.heatingEnabled ? 'å ç­ä¸­' : 'å·²åæ­¢';
-                statusItems[2].querySelector('.status-value').textContent = heatingStatus;
-                statusItems[2].querySelector('.status-value').style.color = 
-                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
-                
-                // æ´æ°WiFiç¶æ
-                const wifiStatus = deviceStatus.wifiConnected ? 'å·²è¿æ¥' : 'æªè¿æ¥';
-                statusItems[3].querySelector('.status-value').textContent = wifiStatus;
-                statusItems[3].querySelector('.status-value').style.color = 
-                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
-            }
-        }
-
-        // æ¾ç¤ºæ¼ç¤ºæ°æ®ï¼ç½ç»è¿æ¥å¤±è´¥æ¶ï¼
+        // 显示演示数据
         function showDemoData() {
-            const demoData = {
-                temperature: 25.5,
-                target_temperature: 180,
-                heating_enabled: false,
-                wifi_connected: true,
-                wifiSSID: 'SmartOven_AP',
-                ip_address: '192.168.4.1',
-                device_id: 'SmartOven_001',
-                firmware_version: 'v1.0'
-            };
+            document.getElementById('device-id').textContent = 'OVEN-2024-001';
+            document.getElementById('firmware-version').textContent = 'v0.3.1';
+            document.getElementById('uptime').textContent = '24小时';
             
-            const connectionStatus = document.getElementById('connection-status');
-            if (connectionStatus) {
-                connectionStatus.textContent = 'æ¼ç¤ºæ¨¡å¼';
-                connectionStatus.style.color = '#f59e0b';
-            }
-            updateStatusDisplay(demoData);
+            document.getElementById('temp-preview').innerHTML = '<small>当前: 25°C | 目标: 180°C</small>';
+            document.getElementById('wifi-preview').innerHTML = '<small>状态: 已连接 | 信号: 优秀</small>';
+            document.getElementById('status-preview').innerHTML = '<small>内存: 32KB | 加热: 关闭</small>';
+            document.getElementById('settings-preview').innerHTML = '<small>单位: °C | 精度: 标准</small>';
         }
 
-        // åæ¢å ç­ç¶æ
-        async function toggleHeating() {
+        // 更新设备信息
+        async function updateDeviceInfo() {
             try {
-                const response = await fetch('/control', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        heating_enabled: !deviceStatus.heatingEnabled
-                    })
-                });
+                const response = await fetch('http://192.168.4.1/api/status');
+                const data = await response.json();
                 
-                if (response.ok) {
-                    refreshData();
-                } else {
-                    alert('æ§å¶å½ä»¤åéå¤±è´¥');
-                }
+                document.getElementById('device-id').textContent = data.deviceId || 'OVEN-2024-001';
+                document.getElementById('firmware-version').textContent = data.firmwareVersion || 'v0.3.1';
+                document.getElementById('uptime').textContent = formatUptime(data.uptime) || '24小时';
+                
+                // 更新预览信息
+                updatePreviewData(data);
             } catch (error) {
-                console.error('æ§å¶è®¾å¤å¤±è´¥:', error);
-                alert('ç½ç»è¿æ¥å¤±è´¥');
+                showDemoData();
             }
         }
 
-        // æ¸©åº¦è°æ´å½æ°
-        function changeTemp(delta) {
-            const newTemp = Math.max(0, Math.min(300, deviceStatus.targetTemp + delta));
-            setTargetTemp(newTemp);
-        }
-
-        // è®¾ç½®é¢è®¾æ¸©åº¦
-        function setPresetTemp(temp) {
-            setTargetTemp(temp);
-        }
-
-        // è®¾ç½®èªå®ä¹æ¸©åº¦
-        function setCustomTemp() {
-            const input = document.getElementById('temp-input');
-            const temp = parseInt(input.value);
-            if (!isNaN(temp) && temp >= 0 && temp <= 300) {
-                setTargetTemp(temp);
-                input.value = '';
+        // 格式化运行时间
+        function formatUptime(seconds) {
+            if (!seconds) return '24小时';
+            
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            
+            if (hours > 0) {
+                return `${hours}小时${minutes > 0 ? `${minutes}分钟` : ''}`;
             } else {
-                alert('è¯·è¾å¥0-300Â°Cä¹é´çæææ¸©åº¦å¼');
+                return `${minutes}分钟`;
             }
         }
 
-        // è®¾ç½®ç®æ æ¸©åº¦
-        async function setTargetTemp(temp) {
-            try {
-                const response = await fetch('/control', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        target_temperature: temp
-                    })
-                });
-                
-                if (response.ok) {
-                    deviceStatus.targetTemp = temp;
-                    refreshData();
-                } else {
-                    alert('æ¸©åº¦è®¾ç½®å¤±è´¥');
-                }
-            } catch (error) {
-                console.error('è®¾ç½®æ¸©åº¦å¤±è´¥:', error);
-                alert('ç½ç»è¿æ¥å¤±è´¥');
-            }
+        // 更新预览数据
+        function updatePreviewData(data) {
+            document.getElementById('temp-preview').innerHTML = 
+                `<small>当前: ${data.currentTemp || 25}°C | 目标: ${data.targetTemp || 180}°C</small>`;
+            
+            document.getElementById('wifi-preview').innerHTML = 
+                `<small>状态: ${data.wifiConnected ? '已连接' : '未连接'} | 信号: ${getSignalStrength(data.signalStrength)}</small>`;
+            
+            document.getElementById('status-preview').innerHTML = 
+                `<small>内存: ${formatMemory(data.freeHeap)} | 加热: ${data.heatingEnabled ? '开启' : '关闭'}</small>`;
+            
+            document.getElementById('settings-preview').innerHTML = 
+                `<small>单位: °C | 精度: 标准</small>`;
         }
 
-        // éå¯è®¾å¤
-        async function restartDevice() {
-            if (confirm('ç¡®å®è¦éå¯è®¾å¤åï¼è®¾å¤å°å¨5ç§åéå¯ã')) {
-                try {
-                    const response = await fetch('/restart', {
-                        method: 'POST'
-                    });
-                    
-                    if (response.ok) {
-                        alert('è®¾å¤éå¯å½ä»¤å·²åéï¼è¯·ç­å¾çº¦30ç§åéæ°è¿æ¥');
-                    } else {
-                        alert('éå¯å½ä»¤åéå¤±è´¥');
-                    }
-                } catch (error) {
-                    console.error('éå¯è®¾å¤å¤±è´¥:', error);
-                    alert('ç½ç»è¿æ¥å¤±è´¥');
-                }
-            }
+        // 获取信号强度描述
+        function getSignalStrength(strength) {
+            if (strength >= 80) return '优秀';
+            if (strength >= 60) return '良好';
+            if (strength >= 40) return '一般';
+            return '弱';
         }
 
-        // æ¢å¤åºåè®¾ç½®
-        async function factoryReset() {
-            if (confirm('ç¡®å®è¦æ¢å¤åºåè®¾ç½®åï¼ææéç½®å°è¢«æ¸é¤ï¼è®¾å¤å°éå¯ã')) {
-                try {
-                    const response = await fetch('/factoryreset', {
-                        method: 'POST'
-                    });
-                    
-                    if (response.ok) {
-                        alert('æ¢å¤åºåè®¾ç½®å½ä»¤å·²åéï¼è®¾å¤å°éå¯å¹¶è¿å¥éç½æ¨¡å¼');
-                    } else {
-                        alert('æ¢å¤åºåè®¾ç½®å½ä»¤åéå¤±è´¥');
-                    }
-                } catch (error) {
-                    console.error('æ¢å¤åºåè®¾ç½®å¤±è´¥:', error);
-                    alert('ç½ç»è¿æ¥å¤±è´¥');
-                }
-            }
+        // 格式化内存显示
+        function formatMemory(bytes) {
+            if (!bytes) return '32KB';
+            return bytes >= 1024 ? `${(bytes / 1024).toFixed(1)}KB` : `${bytes}B`;
         }
+
+        // 页面导航函数
+        function openTemperatureControl() {
+            window.location.href = 'temperature_control.html';
+        }
+
+        function openWifiConfig() {
+            window.location.href = 'wifi_config.html';
+        }
+
+        function openDeviceStatus() {
+            window.location.href = 'device_status.html';
+        }
+
+        function openSettingsHelp() {
+            window.location.href = 'settings_help.html';
+        }
+
+        function openMobileHome() {
+            window.location.href = 'mobile_home.html';
+        }
+
+        function openDesktopView() {
+            window.location.href = 'smart_oven_controller.html';
+        }
+
+        function refreshStatus() {
+            checkDeviceStatus();
+            showToast('状态已刷新', 'success');
+        }
+
+        // 显示Toast提示
+        function showToast(message, type = 'info') {
+            // 简单的Toast实现
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                z-index: 1000;
+                font-size: 14px;
+            `;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 3000);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkDeviceStatus();
+            
+            // 每30秒自动刷新状态
+            setInterval(checkDeviceStatus, 30000);
+        });
     </script>
 </body>
 </html>

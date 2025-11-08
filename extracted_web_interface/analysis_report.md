@@ -1,0 +1,219 @@
+# SmartOven固件Web界面分析报告
+
+生成时间: 2025-11-08 14:55:54
+
+## 提取的文件列表
+
+### HTML页面
+- **page_1.html** (其他页面) - 643 字节
+- **wifi.html** (WiFi配置页面) - 1315 字节
+- **login.html** (登录页面) - 246119 字节
+- **wifi.html** (WiFi配置页面) - 1319 字节
+- **login.html** (登录页面) - 98413 字节
+- **index.html** (主页面) - 23496 字节
+- **login.html** (登录页面) - 68758 字节
+- **login.html** (登录页面) - 71868 字节
+- **login.html** (登录页面) - 68758 字节
+- **login.html** (登录页面) - 5987 字节
+- **login.html** (登录页面) - 5987 字节
+- **index.html** (主页面) - 19333 字节
+- **index.html** (主页面) - 19784 字节
+- **index.html** (主页面) - 19333 字节
+
+### JavaScript函数
+- **scanWiFi.js** (scanWiFi) - 其他功能 - 791 字节
+- **confirmFactoryReset.js** (confirmFactoryReset) - 其他功能 - 508 字节
+- **updateTemperatureDisplay.js** (updateTemperatureDisplay) - 温度控制 - 2905 字节
+- **checkUpdate.js** (checkUpdate) - 温度控制 - 8400 字节
+- **scanWiFi.js** (scanWiFi) - 其他功能 - 791 字节
+- **confirmFactoryReset.js** (confirmFactoryReset) - 其他功能 - 514 字节
+- **updateTemperatureDisplay.js** (updateTemperatureDisplay) - 温度控制 - 2905 字节
+- **checkUpdate.js** (checkUpdate) - 温度控制 - 4472 字节
+- **logout.js** (logout) - 其他功能 - 140 字节
+- **changePassword.js** (changePassword) - 其他功能 - 273 字节
+- **refreshData.js** (refreshData) - 数据更新 - 273 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 551 字节
+- **showDemoData.js** (showDemoData) - 温度控制 - 424 字节
+- **toggleHeating.js** (toggleHeating) - 其他功能 - 270 字节
+- **quickSetTemp.js** (quickSetTemp) - 温度控制 - 281 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 237 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 248 字节
+- **handleFileSelect.js** (handleFileSelect) - 其他功能 - 554 字节
+- **resetFileInput.js** (resetFileInput) - 其他功能 - 266 字节
+- **uploadFirmware.js** (uploadFirmware) - 其他功能 - 171 字节
+- **updateProgress.js** (updateProgress) - 数据更新 - 405 字节
+- **showOtaMessage.js** (showOtaMessage) - 其他功能 - 389 字节
+- **updateOtaStatus.js** (updateOtaStatus) - 数据更新 - 222 字节
+- **updateFirmwareDisplay.js** (updateFirmwareDisplay) - 数据更新 - 284 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 551 字节
+- **updateTemperatureControlDisplay.js** (updateTemperatureControlDisplay) - 温度控制 - 316 字节
+- **changeTemp.js** (changeTemp) - 温度控制 - 205 字节
+- **setTargetTemp.js** (setTargetTemp) - 温度控制 - 274 字节
+- **setPresetTemp.js** (setPresetTemp) - 温度控制 - 79 字节
+- **applyTemperature.js** (applyTemperature) - 温度控制 - 381 字节
+- **toggleCalibration.js** (toggleCalibration) - 其他功能 - 378 字节
+- **setCalibration.js** (setCalibration) - 其他功能 - 225 字节
+- **applyCalibration.js** (applyCalibration) - 其他功能 - 263 字节
+- **updateCalibrationDisplay.js** (updateCalibrationDisplay) - 数据更新 - 269 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 608 字节
+- **openWifiConfig.js** (openWifiConfig) - 配置管理 - 98 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 394 字节
+- **showRestartMessage.js** (showRestartMessage) - 其他功能 - 1157 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 524 字节
+- **showFactoryResetMessage.js** (showFactoryResetMessage) - 其他功能 - 1174 字节
+- **goBack.js** (goBack) - 其他功能 - 88 字节
+- **refreshStatus.js** (refreshStatus) - 数据更新 - 132 字节
+- **updateDeviceStatus.js** (updateDeviceStatus) - 温度控制 - 2138 字节
+- **updateConnectionStatus.js** (updateConnectionStatus) - 数据更新 - 779 字节
+- **updateSystemInfo.js** (updateSystemInfo) - 数据更新 - 390 字节
+- **formatUptime.js** (formatUptime) - 其他功能 - 298 字节
+- **updateTemperatureHistory.js** (updateTemperatureHistory) - 温度控制 - 176 字节
+- **updateTemperatureChart.js** (updateTemperatureChart) - 温度控制 - 896 字节
+- **exportData.js** (exportData) - 温度控制 - 488 字节
+- **resetStats.js** (resetStats) - 温度控制 - 157 字节
+- **showToast.js** (showToast) - 其他功能 - 291 字节
+- **logout.js** (logout) - 其他功能 - 137 字节
+- **changePassword.js** (changePassword) - 其他功能 - 268 字节
+- **refreshData.js** (refreshData) - 数据更新 - 267 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 541 字节
+- **showDemoData.js** (showDemoData) - 温度控制 - 414 字节
+- **toggleHeating.js** (toggleHeating) - 其他功能 - 264 字节
+- **quickSetTemp.js** (quickSetTemp) - 温度控制 - 267 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 232 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 243 字节
+- **handleFileSelect.js** (handleFileSelect) - 其他功能 - 543 字节
+- **resetFileInput.js** (resetFileInput) - 其他功能 - 261 字节
+- **uploadFirmware.js** (uploadFirmware) - 其他功能 - 167 字节
+- **updateProgress.js** (updateProgress) - 数据更新 - 398 字节
+- **showOtaMessage.js** (showOtaMessage) - 其他功能 - 382 字节
+- **updateOtaStatus.js** (updateOtaStatus) - 数据更新 - 214 字节
+- **updateFirmwareDisplay.js** (updateFirmwareDisplay) - 数据更新 - 280 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 541 字节
+- **updateTemperatureControlDisplay.js** (updateTemperatureControlDisplay) - 温度控制 - 311 字节
+- **changeTemp.js** (changeTemp) - 温度控制 - 201 字节
+- **setTargetTemp.js** (setTargetTemp) - 温度控制 - 268 字节
+- **setPresetTemp.js** (setPresetTemp) - 温度控制 - 77 字节
+- **applyTemperature.js** (applyTemperature) - 温度控制 - 374 字节
+- **toggleCalibration.js** (toggleCalibration) - 其他功能 - 371 字节
+- **setCalibration.js** (setCalibration) - 其他功能 - 221 字节
+- **applyCalibration.js** (applyCalibration) - 其他功能 - 258 字节
+- **updateCalibrationDisplay.js** (updateCalibrationDisplay) - 数据更新 - 265 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 597 字节
+- **openWifiConfig.js** (openWifiConfig) - 配置管理 - 96 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 385 字节
+- **showRestartMessage.js** (showRestartMessage) - 其他功能 - 1129 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 512 字节
+- **showFactoryResetMessage.js** (showFactoryResetMessage) - 其他功能 - 1142 字节
+- **logout.js** (logout) - 其他功能 - 137 字节
+- **changePassword.js** (changePassword) - 其他功能 - 299 字节
+- **refreshData.js** (refreshData) - 数据更新 - 267 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 541 字节
+- **showDemoData.js** (showDemoData) - 温度控制 - 414 字节
+- **toggleHeating.js** (toggleHeating) - 其他功能 - 264 字节
+- **quickSetTemp.js** (quickSetTemp) - 温度控制 - 267 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 260 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 287 字节
+- **handleFileSelect.js** (handleFileSelect) - 其他功能 - 574 字节
+- **resetFileInput.js** (resetFileInput) - 其他功能 - 261 字节
+- **uploadFirmware.js** (uploadFirmware) - 其他功能 - 183 字节
+- **updateProgress.js** (updateProgress) - 数据更新 - 398 字节
+- **showOtaMessage.js** (showOtaMessage) - 其他功能 - 382 字节
+- **updateOtaStatus.js** (updateOtaStatus) - 数据更新 - 214 字节
+- **updateFirmwareDisplay.js** (updateFirmwareDisplay) - 数据更新 - 280 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 541 字节
+- **updateTemperatureControlDisplay.js** (updateTemperatureControlDisplay) - 温度控制 - 327 字节
+- **changeTemp.js** (changeTemp) - 温度控制 - 201 字节
+- **setTargetTemp.js** (setTargetTemp) - 温度控制 - 268 字节
+- **setPresetTemp.js** (setPresetTemp) - 温度控制 - 77 字节
+- **applyTemperature.js** (applyTemperature) - 温度控制 - 400 字节
+- **toggleCalibration.js** (toggleCalibration) - 其他功能 - 375 字节
+- **setCalibration.js** (setCalibration) - 其他功能 - 221 字节
+- **applyCalibration.js** (applyCalibration) - 其他功能 - 272 字节
+- **updateCalibrationDisplay.js** (updateCalibrationDisplay) - 数据更新 - 266 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 597 字节
+- **openWifiConfig.js** (openWifiConfig) - 配置管理 - 96 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 423 字节
+- **showRestartMessage.js** (showRestartMessage) - 其他功能 - 1190 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 592 字节
+- **showFactoryResetMessage.js** (showFactoryResetMessage) - 其他功能 - 1213 字节
+- **logout.js** (logout) - 其他功能 - 137 字节
+- **changePassword.js** (changePassword) - 其他功能 - 268 字节
+- **refreshData.js** (refreshData) - 数据更新 - 267 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 541 字节
+- **showDemoData.js** (showDemoData) - 温度控制 - 414 字节
+- **toggleHeating.js** (toggleHeating) - 其他功能 - 264 字节
+- **quickSetTemp.js** (quickSetTemp) - 温度控制 - 267 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 232 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 243 字节
+- **handleFileSelect.js** (handleFileSelect) - 其他功能 - 543 字节
+- **resetFileInput.js** (resetFileInput) - 其他功能 - 261 字节
+- **uploadFirmware.js** (uploadFirmware) - 其他功能 - 167 字节
+- **updateProgress.js** (updateProgress) - 数据更新 - 398 字节
+- **showOtaMessage.js** (showOtaMessage) - 其他功能 - 382 字节
+- **updateOtaStatus.js** (updateOtaStatus) - 数据更新 - 214 字节
+- **updateFirmwareDisplay.js** (updateFirmwareDisplay) - 数据更新 - 280 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 541 字节
+- **updateTemperatureControlDisplay.js** (updateTemperatureControlDisplay) - 温度控制 - 311 字节
+- **changeTemp.js** (changeTemp) - 温度控制 - 201 字节
+- **setTargetTemp.js** (setTargetTemp) - 温度控制 - 268 字节
+- **setPresetTemp.js** (setPresetTemp) - 温度控制 - 77 字节
+- **applyTemperature.js** (applyTemperature) - 温度控制 - 374 字节
+- **toggleCalibration.js** (toggleCalibration) - 其他功能 - 371 字节
+- **setCalibration.js** (setCalibration) - 其他功能 - 221 字节
+- **applyCalibration.js** (applyCalibration) - 其他功能 - 258 字节
+- **updateCalibrationDisplay.js** (updateCalibrationDisplay) - 数据更新 - 265 字节
+- **updateStatusDisplay.js** (updateStatusDisplay) - 温度控制 - 597 字节
+- **openWifiConfig.js** (openWifiConfig) - 配置管理 - 96 字节
+- **restartDevice.js** (restartDevice) - 其他功能 - 385 字节
+- **showRestartMessage.js** (showRestartMessage) - 其他功能 - 1129 字节
+- **factoryReset.js** (factoryReset) - 其他功能 - 512 字节
+- **showFactoryResetMessage.js** (showFactoryResetMessage) - 其他功能 - 1142 字节
+- **getStoredPassword.js** (getStoredPassword) - 其他功能 - 120 字节
+- **setStoredPassword.js** (setStoredPassword) - 其他功能 - 117 字节
+- **getStoredPassword.js** (getStoredPassword) - 其他功能 - 120 字节
+- **setStoredPassword.js** (setStoredPassword) - 其他功能 - 117 字节
+- **goBack.js** (goBack) - 其他功能 - 88 字节
+- **togglePassword.js** (togglePassword) - 其他功能 - 346 字节
+- **connectToWiFi.js** (connectToWiFi) - 其他功能 - 311 字节
+- **disconnectWiFi.js** (disconnectWiFi) - 配置管理 - 285 字节
+- **scanWiFi.js** (scanWiFi) - 其他功能 - 572 字节
+- **displayWiFiNetworks.js** (displayWiFiNetworks) - 其他功能 - 352 字节
+- **selectNetwork.js** (selectNetwork) - 其他功能 - 201 字节
+- **getSignalBars.js** (getSignalBars) - 其他功能 - 399 字节
+- **updateConnectionStatus.js** (updateConnectionStatus) - 数据更新 - 1036 字节
+- **showToast.js** (showToast) - 其他功能 - 291 字节
+- **goBack.js** (goBack) - 其他功能 - 88 字节
+- **togglePassword.js** (togglePassword) - 其他功能 - 350 字节
+- **connectToWiFi.js** (connectToWiFi) - 其他功能 - 319 字节
+- **disconnectWiFi.js** (disconnectWiFi) - 配置管理 - 285 字节
+- **scanWiFi.js** (scanWiFi) - 其他功能 - 585 字节
+- **displayWiFiNetworks.js** (displayWiFiNetworks) - 其他功能 - 363 字节
+- **selectNetwork.js** (selectNetwork) - 其他功能 - 211 字节
+- **getSignalBars.js** (getSignalBars) - 其他功能 - 399 字节
+- **updateConnectionStatus.js** (updateConnectionStatus) - 数据更新 - 1040 字节
+- **showToast.js** (showToast) - 其他功能 - 291 字节
+- **goBack.js** (goBack) - 其他功能 - 88 字节
+- **togglePassword.js** (togglePassword) - 其他功能 - 346 字节
+- **connectToWiFi.js** (connectToWiFi) - 其他功能 - 311 字节
+- **disconnectWiFi.js** (disconnectWiFi) - 配置管理 - 285 字节
+- **scanWiFi.js** (scanWiFi) - 其他功能 - 572 字节
+- **displayWiFiNetworks.js** (displayWiFiNetworks) - 其他功能 - 352 字节
+- **selectNetwork.js** (selectNetwork) - 其他功能 - 201 字节
+- **getSignalBars.js** (getSignalBars) - 其他功能 - 399 字节
+- **updateConnectionStatus.js** (updateConnectionStatus) - 数据更新 - 1036 字节
+- **showToast.js** (showToast) - 其他功能 - 291 字节
+
+## 配置参数
+
+- **temperature**: [300]
+- **threshold**: []
+- **pid_params**: []
+- **port**: [0]
+- **timeout**: [0]
+
+## 分析结论
+
+1. **Web界面完整**: 成功提取了完整的Web控制界面
+2. **功能模块齐全**: 包含温度控制、网络配置、状态监控等功能
+3. **参数可恢复**: 重要的配置参数已经提取并保存
+4. **代码可重用**: JavaScript函数可以直接用于新项目

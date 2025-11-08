@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>璁剧疆涓庡府鍔?- 鏅鸿兘鐢电儰绠?/title>
+    <title>设置与帮助 - 智能电烤箱</title>
     <style>
         * {
             margin: 0;
@@ -194,7 +194,7 @@
         }
 
         .select-wrapper:after {
-            content: "鈻?;
+            content: "▼";
             position: absolute;
             right: 10px;
             top: 50%;
@@ -423,40 +423,40 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">鈫?/button>
-            <h1>璁剧疆涓庡府鍔?/h1>
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1>设置与帮助</h1>
         </div>
 
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('settings')">鈿欙笍 璁剧疆</button>
-                <button class="tab-btn" onclick="switchTab('help')">鉂?甯姪</button>
-                <button class="tab-btn" onclick="switchTab('about')">鈩癸笍 鍏充簬</button>
+                <button class="tab-btn active" onclick="switchTab('settings')">⚙️ 设置</button>
+                <button class="tab-btn" onclick="switchTab('help')">❓ 帮助</button>
+                <button class="tab-btn" onclick="switchTab('about')">ℹ️ 关于</button>
             </div>
 
-            <!-- 璁剧疆鏍囩椤?-->
+            <!-- 设置标签页 -->
             <div id="settings" class="tab-content active">
                 <div class="section">
-                    <div class="section-title">馃尅锔?娓╁害璁剧疆</div>
+                    <div class="section-title">🌡️ 温度设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">娓╁害鍗曚綅</span>
+                            <span class="setting-label">温度单位</span>
                             <div class="select-wrapper">
                                 <select id="temp-unit">
-                                    <option value="celsius">鎽勬皬搴?(掳C)</option>
-                                    <option value="fahrenheit">鍗庢皬搴?(掳F)</option>
+                                    <option value="celsius">摄氏度 (°C)</option>
+                                    <option value="fahrenheit">华氏度 (°F)</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">娓╁害绮惧害</span>
+                            <span class="setting-label">温度精度</span>
                             <div class="select-wrapper">
                                 <select id="temp-precision">
-                                    <option value="1">1掳C</option>
-                                    <option value="5">5掳C</option>
-                                    <option value="10">10掳C</option>
+                                    <option value="1">1°C</option>
+                                    <option value="5">5°C</option>
+                                    <option value="10">10°C</option>
                                 </select>
                             </div>
                         </div>
@@ -464,7 +464,7 @@
 
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">鑷姩淇濆瓨娓╁害璁剧疆</span>
+                            <span class="setting-label">自动保存温度设置</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="auto-save-temp">
                                 <span class="slider"></span>
@@ -472,7 +472,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">娓╁害鎶ヨ鎻愰啋</span>
+                            <span class="setting-label">温度报警提醒</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="temp-alert">
                                 <span class="slider"></span>
@@ -482,25 +482,25 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">馃摫 鐣岄潰璁剧疆</div>
+                    <div class="section-title">📱 界面设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">涓婚妯″紡</span>
+                            <span class="setting-label">主题模式</span>
                             <div class="select-wrapper">
                                 <select id="theme-mode">
-                                    <option value="light">娴呰壊妯″紡</option>
-                                    <option value="dark">娣辫壊妯″紡</option>
-                                    <option value="auto">鑷姩鍒囨崲</option>
+                                    <option value="light">浅色模式</option>
+                                    <option value="dark">深色模式</option>
+                                    <option value="auto">自动切换</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">璇█璁剧疆</span>
+                            <span class="setting-label">语言设置</span>
                             <div class="select-wrapper">
                                 <select id="language">
-                                    <option value="zh-CN">绠€浣撲腑鏂?/option>
+                                    <option value="zh-CN">简体中文</option>
                                     <option value="en-US">English</option>
                                 </select>
                             </div>
@@ -509,7 +509,7 @@
 
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">鎸姩鍙嶉</span>
+                            <span class="setting-label">振动反馈</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="vibration">
                                 <span class="slider"></span>
@@ -517,7 +517,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">澹伴煶鎻愮ず</span>
+                            <span class="setting-label">声音提示</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="sound">
                                 <span class="slider"></span>
@@ -527,273 +527,308 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">馃敡 绯荤粺璁剧疆</div>
+                    <div class="section-title">🔧 系统设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">鑷姩鍒锋柊闂撮殧</span>
+                            <span class="setting-label">自动刷新间隔</span>
                             <div class="select-wrapper">
                                 <select id="refresh-interval">
-                                    <option value="3">3绉?/option>
-                                    <option value="5">5绉?/option>
-                                    <option value="10">10绉?/option>
-                                    <option value="30">30绉?/option>
+                                    <option value="3">3秒</option>
+                                    <option value="5">5秒</option>
+                                    <option value="10">10秒</option>
+                                    <option value="30">30秒</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">鏁版嵁淇濆瓨鍛ㄦ湡</span>
+                            <span class="setting-label">数据保存周期</span>
                             <div class="select-wrapper">
                                 <select id="data-retention">
-                                    <option value="7">7澶?/option>
-                                    <option value="30">30澶?/option>
-                                    <option value="90">90澶?/option>
-                                    <option value="365">1骞?/option>
+                                    <option value="7">7天</option>
+                                    <option value="30">30天</option>
+                                    <option value="90">90天</option>
+                                    <option value="365">1年</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-
+                    <div class="warning">
+                        ⚠️ 警告：以下操作可能会影响设备正常运行
+                    </div>
 
                     <div class="setting-item">
                         <button class="btn btn-secondary" onclick="restartDevice()">
-                            閲嶅惎璁惧
+                            重启设备
                         </button>
                         
                         <button class="btn btn-danger" onclick="showResetModal()">
-                            鎭㈠鍑哄巶璁剧疆
+                            恢复出厂设置
                         </button>
                     </div>
                 </div>
 
                 <button class="btn btn-primary" onclick="saveSettings()">
-                    淇濆瓨璁剧疆
+                    保存设置
                 </button>
             </div>
 
-            <!-- 甯姪鏍囩椤?-->
+            <!-- 帮助标签页 -->
             <div id="help" class="tab-content">
                 <div class="section">
-                    <div class="section-title">鉂?甯歌闂</div>
+                    <div class="section-title">❓ 常见问题</div>
                     
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>濡備綍杩炴帴璁惧锛?/span>
-                            <span class="expand-icon">鈻?/span>
+                            <span>如何连接设备？</span>
+                            <span class="expand-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            1. 纭繚璁惧宸查€氱數骞跺惎鍔?br>
-                            2. 鍦ㄦ墜鏈篧iFi璁剧疆涓繛鎺ュ埌璁惧鐑偣<br>
-                            3. 鎵撳紑娴忚鍣ㄨ闂澶嘔P鍦板潃<br>
-                            4. 鍦╓iFi閰嶇疆椤甸潰璁剧疆瀹跺涵WiFi杩炴帴
+                            1. 确保设备已通电并启动<br>
+                            2. 在手机WiFi设置中连接到设备热点<br>
+                            3. 打开浏览器访问设备IP地址<br>
+                            4. 在WiFi配置页面设置家庭WiFi连接
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>娓╁害鎺у埗涓嶅噯纭€庝箞鍔烇紵</span>
-                            <span class="expand-icon">鈻?/span>
+                            <span>温度控制不准确怎么办？</span>
+                            <span class="expand-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            1. 妫€鏌ユ俯搴︿紶鎰熷櫒杩炴帴鏄惁姝ｅ父<br>
-                            2. 纭繚璁惧鏀剧疆鍦ㄩ€氶鑹ソ鐨勪綅缃?br>
-                            3. 灏濊瘯鏍″噯娓╁害浼犳劅鍣?br>
-                            4. 濡傛灉闂鎸佺画锛岃鑱旂郴鎶€鏈敮鎸?                        </div>
-                    </div>
-
-                    <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
-                            <span>璁惧鏃犳硶杩炴帴WiFi锛?/span>
-                            <span class="expand-icon">鈻?/span>
-                        </div>
-                        <div class="help-answer">
-                            1. 妫€鏌iFi瀵嗙爜鏄惁姝ｇ‘<br>
-                            2. 纭繚璺敱鍣ㄤ俊鍙峰己搴﹁冻澶?br>
-                            3. 灏濊瘯閲嶅惎璁惧鍜岃矾鐢卞櫒<br>
-                            4. 妫€鏌ヨ澶囨槸鍚︽敮鎸?.4GHz棰戞
+                            1. 检查温度传感器连接是否正常<br>
+                            2. 确保设备放置在通风良好的位置<br>
+                            3. 尝试校准温度传感器<br>
+                            4. 如果问题持续，请联系技术支持
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>濡備綍鏇存柊鍥轰欢锛?/span>
-                            <span class="expand-icon">鈻?/span>
+                            <span>设备无法连接WiFi？</span>
+                            <span class="expand-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            1. 鍦ㄨ缃〉闈㈡鏌ュ綋鍓嶅浐浠剁増鏈?br>
-                            2. 璁块棶瀹樻柟缃戠珯涓嬭浇鏈€鏂板浐浠?br>
-                            3. 閫氳繃OTA鎴朥SB鏂瑰紡鏇存柊<br>
-                            4. 鏇存柊杩囩▼涓鍕挎柇鐢?                        </div>
+                            1. 检查WiFi密码是否正确<br>
+                            2. 确保路由器信号强度足够<br>
+                            3. 尝试重启设备和路由器<br>
+                            4. 检查设备是否支持2.4GHz频段
+                        </div>
+                    </div>
+
+                    <div class="help-item">
+                        <div class="help-question" onclick="toggleHelp(this)">
+                            <span>如何更新固件？</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="help-answer">
+                            1. 在设置页面检查当前固件版本<br>
+                            2. 访问官方网站下载最新固件<br>
+                            3. 通过OTA或USB方式更新<br>
+                            4. 更新过程中请勿断电
+                        </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">馃摉 浣跨敤鎸囧崡</div>
+                    <div class="section-title">📖 使用指南</div>
                     
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>鍩烘湰鎿嶄綔娴佺▼</span>
-                            <span class="expand-icon">鈻?/span>
+                            <span>基本操作流程</span>
+                            <span class="expand-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            1. 杩炴帴璁惧鐢垫簮骞跺惎鍔?br>
-                            2. 閫氳繃鎵嬫満杩炴帴璁惧WiFi<br>
-                            3. 璁剧疆鐩爣娓╁害鍜屾椂闂?br>
-                            4. 寮€濮嬪姞鐑苟鐩戞帶鐘舵€?br>
-                            5. 瀹屾垚鍚庡叧闂澶?                        </div>
+                            1. 连接设备电源并启动<br>
+                            2. 通过手机连接设备WiFi<br>
+                            3. 设置目标温度和时间<br>
+                            4. 开始加热并监控状态<br>
+                            5. 完成后关闭设备
+                        </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>瀹夊叏娉ㄦ剰浜嬮」</span>
-                            <span class="expand-icon">鈻?/span>
+                            <span>安全注意事项</span>
+                            <span class="expand-icon">▼</span>
                         </div>
                         <div class="help-answer">
-                            1. 璇峰嬁鍦ㄦ棤浜虹湅绠℃椂闀挎椂闂磋繍琛?br>
-                            2. 纭繚璁惧鍛ㄥ洿鏃犳槗鐕冪墿鍝?br>
-                            3. 瀹氭湡妫€鏌ヨ澶囩嚎璺畨鍏?br>
-                            4. 鍎跨浣跨敤鏃堕渶鎴愪汉闄悓<br>
-                            5. 寮傚父鎯呭喌绔嬪嵆鏂數妫€鏌?                        </div>
+                            1. 请勿在无人看管时长时间运行<br>
+                            2. 确保设备周围无易燃物品<br>
+                            3. 定期检查设备线路安全<br>
+                            4. 儿童使用时需成人陪同<br>
+                            5. 异常情况立即断电检查
+                        </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">馃摓 鎶€鏈敮鎸?/div>
+                    <div class="section-title">📞 技术支持</div>
                     
                     <div class="help-item">
                         <div class="setting-row">
-                            <span class="setting-label">瀹㈡湇鐢佃瘽</span>
+                            <span class="setting-label">客服电话</span>
                             <span class="setting-value">400-123-4567</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">鎶€鏈敮鎸侀偖绠?/span>
+                            <span class="setting-label">技术支持邮箱</span>
                             <span class="setting-value">support@smartoven.com</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">瀹樻柟缃戠珯</span>
+                            <span class="setting-label">官方网站</span>
                             <span class="setting-value">www.smartoven.com</span>
                         </div>
                     </div>
 
                     <button class="btn btn-primary" onclick="contactSupport()">
-                        鑱旂郴鎶€鏈敮鎸?                    </button>
+                        联系技术支持
+                    </button>
                 </div>
             </div>
 
-            <!-- 鍏充簬鏍囩椤?-->
+            <!-- 关于标签页 -->
             <div id="about" class="tab-content">
                 <div class="section">
-                    <div class="section-title">鈩癸笍 璁惧淇℃伅</div>
+                    <div class="section-title">ℹ️ 设备信息</div>
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">璁惧鍨嬪彿</div>
+                            <div class="info-label">设备型号</div>
                             <div class="info-value" id="device-model">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">鍥轰欢鐗堟湰</div>
+                            <div class="info-label">固件版本</div>
                             <div class="info-value" id="firmware-version">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">纭欢鐗堟湰</div>
+                            <div class="info-label">硬件版本</div>
                             <div class="info-value" id="hardware-version">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">搴忓垪鍙?/div>
+                            <div class="info-label">序列号</div>
                             <div class="info-value" id="serial-number">--</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">馃搳 绯荤粺鐘舵€?/div>
+                    <div class="section-title">📊 系统状态</div>
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">杩愯鏃堕棿</div>
+                            <div class="info-label">运行时间</div>
                             <div class="info-value" id="uptime">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">鍐呭瓨浣跨敤</div>
+                            <div class="info-label">内存使用</div>
                             <div class="info-value" id="memory-usage">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">鏈€鍚庡惎鍔?/div>
+                            <div class="info-label">最后启动</div>
                             <div class="info-value" id="last-boot">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">缃戠粶鐘舵€?/div>
+                            <div class="info-label">网络状态</div>
                             <div class="info-value" id="network-status">--</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">馃搫 鐗堟湰淇℃伅</div>
+                    <div class="section-title">📄 版本信息</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">搴旂敤鐗堟湰</span>
+                            <span class="setting-label">应用版本</span>
                             <span class="setting-value">v1.0.0</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">鏋勫缓鏃ユ湡</span>
+                            <span class="setting-label">构建日期</span>
                             <span class="setting-value">2024-01-01</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">寮€鍙戣€?/span>
+                            <span class="setting-label">开发者</span>
                             <span class="setting-value">SmartOven Team</span>
                         </div>
                     </div>
 
                     <button class="btn btn-secondary" onclick="checkUpdate()">
-                        妫€鏌ユ洿鏂?                    </button>
+                        检查更新
+                    </button>
                     
                     <button class="btn btn-primary" onclick="exportLogs()">
-                        瀵煎嚭鏃ュ織
+                        导出日志
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-
+    <!-- 重置确认模态框 -->
+    <div class="modal" id="reset-modal">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ 确认恢复出厂设置</div>
+            <p>此操作将清除所有用户设置和数据，包括：</p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>WiFi连接配置</li>
+                <li>温度设置历史</li>
+                <li>用户偏好设置</li>
+                <li>设备运行数据</li>
+            </ul>
+            <p>操作不可逆转，请谨慎操作！</p>
+            
+            <div class="input-group">
+                <label class="input-label">请输入确认密码：</label>
+                <input type="password" class="input-field" id="reset-password" placeholder="输入管理员密码">
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="hideResetModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmReset()">确认重置</button>
+            </div>
+        </div>
+    </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        // 杩斿洖棣栭〉
+        // 返回首页
         function goBack() {
             window.location.href = 'mobile_home.html';
         }
 
-        // 鍒囨崲鏍囩椤?        function switchTab(tabName) {
-            // 闅愯棌鎵€鏈夋爣绛惧唴瀹?            document.querySelectorAll('.tab-content').forEach(tab => {
+        // 切换标签页
+        function switchTab(tabName) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // 绉婚櫎鎵€鏈夋爣绛炬寜閽殑婵€娲荤姸鎬?            document.querySelectorAll('.tab-btn').forEach(btn => {
+            // 移除所有标签按钮的激活状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // 鏄剧ず閫変腑鐨勬爣绛惧唴瀹?            document.getElementById(tabName).classList.add('active');
+            // 显示选中的标签内容
+            document.getElementById(tabName).classList.add('active');
             
-            // 婵€娲诲搴旂殑鏍囩鎸夐挳
+            // 激活对应的标签按钮
             document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
             
-            // 濡傛灉鏄叧浜庨〉闈紝鏇存柊璁惧淇℃伅
+            // 如果是关于页面，更新设备信息
             if (tabName === 'about') {
                 updateDeviceInfo();
             }
         }
 
-        // 鍒囨崲甯姪椤瑰睍寮€/鏀惰捣
+        // 切换帮助项展开/收起
         function toggleHelp(element) {
             const answer = element.nextElementSibling;
             const icon = element.querySelector('.expand-icon');
@@ -802,7 +837,7 @@
                 answer.classList.remove('show');
                 icon.classList.remove('expanded');
             } else {
-                // 鍏抽棴鍏朵粬灞曞紑鐨勫府鍔╅」
+                // 关闭其他展开的帮助项
                 document.querySelectorAll('.help-answer.show').forEach(item => {
                     item.classList.remove('show');
                 });
@@ -815,7 +850,7 @@
             }
         }
 
-        // 淇濆瓨璁剧疆
+        // 保存设置
         function saveSettings() {
             const settings = {
                 tempUnit: document.getElementById('temp-unit').value,
@@ -830,12 +865,13 @@
                 dataRetention: document.getElementById('data-retention').value
             };
             
-            // 淇濆瓨鍒版湰鍦板瓨鍌?            localStorage.setItem('ovenSettings', JSON.stringify(settings));
+            // 保存到本地存储
+            localStorage.setItem('ovenSettings', JSON.stringify(settings));
             
-            showToast('璁剧疆宸蹭繚瀛?);
+            showToast('设置已保存');
         }
 
-        // 鍔犺浇璁剧疆
+        // 加载设置
         function loadSettings() {
             const savedSettings = localStorage.getItem('ovenSettings');
             if (savedSettings) {
@@ -854,7 +890,7 @@
             }
         }
 
-        // 鏇存柊璁惧淇℃伅
+        // 更新设备信息
         async function updateDeviceInfo() {
             try {
                 const response = await fetch('/device-info');
@@ -868,86 +904,102 @@
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);
                     document.getElementById('memory-usage').textContent = (data.freeHeap || 0) + ' KB';
                     document.getElementById('last-boot').textContent = new Date(data.lastBoot || Date.now()).toLocaleString();
-                    document.getElementById('network-status').textContent = data.wifiConnected ? '宸茶繛鎺? : '鏈繛鎺?;
+                    document.getElementById('network-status').textContent = data.wifiConnected ? '已连接' : '未连接';
                 }
             } catch (error) {
-                console.error('鑾峰彇璁惧淇℃伅澶辫触:', error);
+                console.error('获取设备信息失败:', error);
             }
         }
 
-        // 鏍煎紡鍖栬繍琛屾椂闂?        function formatUptime(seconds) {
+        // 格式化运行时间
+        function formatUptime(seconds) {
             const days = Math.floor(seconds / 86400);
             const hours = Math.floor((seconds % 86400) / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             
             if (days > 0) {
-                return `${days}澶?${hours}灏忔椂`;
+                return `${days}天 ${hours}小时`;
             } else if (hours > 0) {
-                return `${hours}灏忔椂 ${minutes}鍒嗛挓`;
+                return `${hours}小时 ${minutes}分钟`;
             } else {
-                return `${minutes}鍒嗛挓`;
+                return `${minutes}分钟`;
             }
         }
 
-        // 閲嶅惎璁惧
+        // 重启设备
         function restartDevice() {
-            if (confirm('纭畾瑕侀噸鍚澶囧悧锛熼噸鍚繃绋嬮渶瑕佺害30绉掋€?)) {
+            if (confirm('确定要重启设备吗？重启过程需要约30秒。')) {
                 fetch('/restart', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('璁惧姝ｅ湪閲嶅惎...');
+                            showToast('设备正在重启...');
                             setTimeout(() => {
-                                showToast('璁惧閲嶅惎瀹屾垚锛岃閲嶆柊杩炴帴');
+                                showToast('设备重启完成，请重新连接');
                             }, 35000);
                         }
                     })
                     .catch(error => {
-                        console.error('閲嶅惎璁惧澶辫触:', error);
-                        showToast('閲嶅惎澶辫触锛岃妫€鏌ヨ繛鎺?);
+                        console.error('重启设备失败:', error);
+                        showToast('重启失败，请检查连接');
                     });
             }
         }
 
-        // 鎭㈠鍑哄巶璁剧疆
+        // 显示重置确认模态框
         function showResetModal() {
-            if (confirm('纭畾瑕佹仮澶嶅嚭鍘傝缃悧锛熸鎿嶄綔灏嗘竻闄ゆ墍鏈塛iFi閰嶇疆鍜屾俯搴︽牎鍑嗗弬鏁般€?)) {
-                fetch('/factoryreset', { method: 'POST' })
+            document.getElementById('reset-modal').classList.add('show');
+        }
+
+        // 隐藏重置确认模态框
+        function hideResetModal() {
+            document.getElementById('reset-modal').classList.remove('show');
+            document.getElementById('reset-password').value = '';
+        }
+
+        // 确认重置
+        function confirmReset() {
+            const password = document.getElementById('reset-password').value;
+            if (password === 'admin123') { // 默认密码
+                fetch('/reset', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('璁惧宸叉仮澶嶅嚭鍘傝缃紝姝ｅ湪閲嶅惎...');
-                            // 娓呴櫎鏈湴璁剧疆
+                            showToast('设备已恢复出厂设置');
+                            hideResetModal();
+                            // 清除本地设置
                             localStorage.removeItem('ovenSettings');
-                            // 5绉掑悗閲嶅畾鍚戝埌涓婚〉
+                            // 重新加载页面
                             setTimeout(() => {
-                                window.location.href = 'mobile_home.html';
-                            }, 5000);
-                        } else {
-                            throw new Error('鎭㈠澶辫触');
+                                location.reload();
+                            }, 2000);
                         }
                     })
                     .catch(error => {
-                        console.error('鎭㈠鍑哄巶璁剧疆澶辫触:', error);
-                        showToast('鎭㈠鍑哄巶璁剧疆澶辫触锛岃閲嶈瘯');
+                        console.error('重置设备失败:', error);
+                        showToast('重置失败，请检查连接');
                     });
+            } else {
+                showToast('密码错误，请重试');
             }
         }
 
-        // 鑱旂郴鎶€鏈敮鎸?        function contactSupport() {
+        // 联系技术支持
+        function contactSupport() {
             const email = 'support@smartoven.com';
-            const subject = '鏅鸿兘鐢电儰绠辨妧鏈敮鎸佽姹?;
-            const body = `璁惧淇℃伅锛歕n- 璁惧鍨嬪彿锛?{document.getElementById('device-model').textContent}\n- 鍥轰欢鐗堟湰锛?{document.getElementById('firmware-version').textContent}\n- 闂鎻忚堪锛歚;
+            const subject = '智能电烤箱技术支持请求';
+            const body = `设备信息：\n- 设备型号：${document.getElementById('device-model').textContent}\n- 固件版本：${document.getElementById('firmware-version').textContent}\n- 问题描述：`;
             
             window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
         }
 
-        // 妫€鏌ユ洿鏂?        function checkUpdate() {
-            showToast('姝ｅ湪妫€鏌ユ洿鏂?..');
+        // 检查更新
+        function checkUpdate() {
+            showToast('正在检查更新...');
             setTimeout(() => {
-                showToast('褰撳墠宸叉槸鏈€鏂扮増鏈?);
+                showToast('当前已是最新版本');
             }, 2000);
         }
 
-        // 瀵煎嚭鏃ュ織
+        // 导出日志
         function exportLogs() {
             const logs = {
                 timestamp: new Date().toISOString(),
@@ -969,10 +1021,10 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showToast('鏃ュ織宸插鍑?);
+            showToast('日志已导出');
         }
 
-        // 鏄剧ず鎻愮ず淇℃伅
+        // 显示提示信息
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -983,9 +1035,24 @@
             }, 2000);
         }
 
-        // 椤甸潰鍔犺浇鏃跺垵濮嬪寲
+        // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 鍔犺浇淇濆瓨鐨勮缃?            loadSettings();
+            // 加载保存的设置
+            loadSettings();
+            
+            // 设置模态框点击外部关闭
+            document.getElementById('reset-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideResetModal();
+                }
+            });
+            
+            // 设置输入框回车确认
+            document.getElementById('reset-password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    confirmReset();
+                }
+            });
         });
     </script>
 </body>

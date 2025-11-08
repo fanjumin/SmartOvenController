@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 智能烤箱温度校准服务器
 提供Web API接口，支持前端温度校准功能
