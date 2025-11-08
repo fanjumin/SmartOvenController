@@ -42,15 +42,17 @@ def main():
             return
         
         # 更新版本信息
-        content = content.replace('v0.6.1', 'v0.6.5')
-        content = content.replace('版本: 0.6.1', '版本: 0.6.5')
+        content = content.replace('v0.6.1', 'v0.6.6')
+        content = content.replace('版本: 0.6.1', '版本: 0.6.6')
+        content = content.replace('v0.6.5', 'v0.6.6')
+        content = content.replace('版本: 0.6.5', '版本: 0.6.6')
         
         # 用UTF-8编码重新写入文件
         with open(ino_file, 'w', encoding='utf-8') as f:
             f.write(content)
         
         print("文件修复完成！")
-        print("- 版本号已更新为 v0.6.5")
+        print("- 版本号已更新为 v0.6.6")
         print("- 文件已保存为 UTF-8 编码")
         print("- 备份文件已创建")
         
