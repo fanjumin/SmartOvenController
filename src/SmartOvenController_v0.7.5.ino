@@ -1,7 +1,7 @@
 // =========================================
 // 智能烤箱控制器固件 v0.7.5 - 正式版
 // =========================================
-// 固件版本: 0.7.5
+// 固件版本: 0.7.6
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -52,7 +52,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.7.5";
+const String FIRMWARE_VERSION = "0.7.6";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -622,6 +622,12 @@ void checkCaptivePortalTimeout() {
 String scanWiFiNetworks() {
     Serial.println("开始快速WiFi扫描...");
     
+    // 添加安全检查和内存保护
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("设备已连接到WiFi，跳过扫描以避免系统不稳定");
+        return "{\"status\":\"error\",\"message\":\"设备已连接到WiFi，无法扫描\"}";
+    }
+    
     // 设置WiFi模式为STA以进行扫描
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
@@ -632,24 +638,33 @@ String scanWiFiNetworks() {
     
     if (n == 0) {
         Serial.println("未发现可用WiFi网络");
-        return "[]";
-    } else {
-        Serial.print("发现 ");
-        Serial.print(n);
-        Serial.println(" 个WiFi网络");
-        
-        // 构建JSON格式的网络列表
-        String networks = "[";
-        for (int i = 0; i < n; ++i) {
-            if (i > 0) networks += ",";
-            networks += "{\"ssid\":\"" + WiFi.SSID(i) + "\",";
-            networks += "\"rssi\":" + String(WiFi.RSSI(i)) + ",";
-            networks += "\"encrypted\":" + String(WiFi.encryptionType(i) != ENC_TYPE_NONE ? "true" : "false") + "}";
-        }
-        networks += "]";
-        
-        return networks;
+        return "{\"status\":\"success\",\"networks\":[]}";
+    } else if (n > 20) {
+        Serial.println("发现太多网络，限制显示数量以避免内存问题");
+        n = 20; // 限制最大网络数量
     }
+    
+    Serial.print("发现 ");
+    Serial.print(n);
+    Serial.println(" 个WiFi网络");
+    
+    // 构建JSON格式的网络列表
+    String networks = "{\"status\":\"success\",\"networks\":[";
+    for (int i = 0; i < n; ++i) {
+        if (i > 0) networks += ",";
+        networks += "{\"ssid\":\"" + WiFi.SSID(i) + "\",";
+        networks += "\"rssi\":" + String(WiFi.RSSI(i)) + ",";
+        networks += "\"encrypted\":" + String(WiFi.encryptionType(i) != ENC_TYPE_NONE ? "true" : "false") + "}";
+        
+        // 添加内存保护，防止字符串过长
+        if (networks.length() > 2000) {
+            Serial.println("WiFi网络列表过长，已截断");
+            break;
+        }
+    }
+    networks += "]}";
+    
+    return networks;
 }
 
 // =========================================
@@ -957,8 +972,7 @@ void handleControl() {
 
 void handleScanWiFi() {
     // 使用快速WiFi扫描功能（快速配网优化）
-    String networks = scanWiFiNetworks();
-    String json = "{\"status\":\"success\",\"networks\":" + networks + "}";
+    String json = scanWiFiNetworks();
     webServer.send(200, "application/json", json);
     Serial.println("WiFi扫描完成，返回网络列表");
 }
