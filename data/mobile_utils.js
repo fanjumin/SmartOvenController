@@ -166,7 +166,7 @@ class MobileOvenController {
     // 格式化设备状态
     formatDeviceStatus(data) {
         // 解析设备返回的实际数据格式
-        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.7.5","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.7.7","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
         
         const currentTemp = data.temperature || data.currentTemp || 0;
         const targetTemp = data.target_temperature || data.targetTemp || 0;
@@ -274,30 +274,28 @@ class MobileOvenController {
         }
     }
 
-    // 扫描WiFi网络
-    async scanWiFi() {
-        try {
-            const response = await this.apiCall('/scanwifi');
-            return response.networks || [];
-        } catch (error) {
-            console.error('扫描WiFi失败:', error);
-            throw error;
-        }
-    }
+
 
     // 连接WiFi
     async connectWiFi(ssid, password) {
         try {
-            const response = await this.apiCall('/wificonfig', {
+            const formData = new URLSearchParams();
+            formData.append('ssid', ssid);
+            formData.append('password', password);
+            
+            const response = await this.apiCall('/savewifi', {
                 method: 'POST',
-                body: JSON.stringify({ ssid: ssid, password: password })
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
             });
             
-            if (response.success) {
+            if (response.status === 'success') {
                 this.onWiFiConnected(ssid);
                 return true;
             } else {
-                throw new Error('WiFi连接失败');
+                throw new Error('WiFi连接失败: ' + (response.message || '未知错误'));
             }
         } catch (error) {
             console.error('WiFi连接失败:', error);

@@ -177,17 +177,9 @@
             <div class="form-row">
                 <span class="form-label">选择WiFi</span>
                 <div style="position: relative; width: 100%;">
-                    <input type="text" class="form-input" id="wifi-search" placeholder="选择WiFi" oninput="filterWiFiNetworks()">
+                    <input type="text" class="form-input" id="wifi-search" placeholder="搜索WiFi网络..." oninput="filterWiFiNetworks()">
                     <select class="wifi-select" id="wifi-select" style="display: none;">
                         <option value="">请选择网络</option>
-                        <option value="WiFi网络1">WiFi网络1</option>
-                        <option value="WiFi网络2">WiFi网络2</option>
-                        <option value="WiFi网络3">WiFi网络3</option>
-                        <option value="WiFi网络4">WiFi网络4</option>
-                        <option value="WiFi网络5">WiFi网络5</option>
-                        <option value="WiFi网络6">WiFi网络6</option>
-                        <option value="WiFi网络7">WiFi网络7</option>
-                        <option value="WiFi网络8">WiFi网络8</option>
                     </select>
                     <div id="wifi-results" style="position: absolute; top: 100%; left: 0; right: 0; background: rgba(255,255,255,0.95); border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-height: 200px; overflow-y: auto; display: none; z-index: 1000;"></div>
                 </div>
@@ -260,12 +252,43 @@
                     resultsContainer.appendChild(resultItem);
                 });
                 resultsContainer.style.display = 'block';
+            } else if (searchTerm === '') {
+                // 搜索框为空时显示所有网络
+                resultsContainer.innerHTML = '';
+                options.filter(option => option.value !== '').forEach(option => {
+                    const resultItem = document.createElement('div');
+                    resultItem.style.padding = '10px 15px';
+                    resultItem.style.cursor = 'pointer';
+                    resultItem.style.borderBottom = '1px solid rgba(0,0,0,0.1)';
+                    resultItem.style.color = '#333';
+                    resultItem.textContent = option.text;
+                    
+                    resultItem.addEventListener('click', () => {
+                        searchInput.value = option.text;
+                        wifiSelect.value = option.value;
+                        resultsContainer.style.display = 'none';
+                        showToast(`已选择网络: ${option.text}`);
+                    });
+                    
+                    resultItem.addEventListener('mouseenter', () => {
+                        resultItem.style.background = 'rgba(102, 126, 234, 0.1)';
+                    });
+                    
+                    resultItem.addEventListener('mouseleave', () => {
+                        resultItem.style.background = 'transparent';
+                    });
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+                if (options.filter(option => option.value !== '').length > 0) {
+                    resultsContainer.style.display = 'block';
+                }
             } else {
                 resultsContainer.style.display = 'none';
             }
         }
         
-        // 连接WiFi函数 - 调用真实设备API
+        // 连接WiFi函数
         function connectWiFi() {
             const wifiSelect = document.getElementById('wifi-select');
             const passwordInput = document.getElementById('password-input');
@@ -293,7 +316,7 @@
             formData.append('password', password);
             
             // 发送WiFi配置到设备
-            fetch('/wificonfig', {
+            fetch('/savewifi', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -325,46 +348,72 @@
             });
         }
         
-        // 从设备获取WiFi网络列表
-        function loadWiFiNetworks() {
+        // 扫描WiFi网络
+        function scanWiFiNetworks() {
             showToast('正在扫描WiFi网络...');
             
+            // 调用设备API获取WiFi列表
             fetch('/scanwifi')
                 .then(response => response.json())
                 .then(data => {
-                    const wifiSelect = document.getElementById('wifi-select');
-                    
-                    // 清空现有选项（保留第一个"请选择网络"选项）
-                    while (wifiSelect.options.length > 1) {
-                        wifiSelect.remove(1);
-                    }
-                    
-                    // 检查响应格式并添加扫描到的WiFi网络
-                    if (data.status === 'success' && data.networks) {
-                        data.networks.forEach(network => {
-                            const option = document.createElement('option');
-                            option.value = network.ssid;
-                            option.textContent = network.ssid + (network.encrypted ? ' 🔒' : '');
-                            wifiSelect.appendChild(option);
-                        });
-                        
+                    if (data.networks) {
+                        populateWiFiList(data.networks);
                         showToast(`发现 ${data.networks.length} 个WiFi网络`);
                     } else {
-                        showToast('未发现可用WiFi网络');
+                        showToast('扫描失败: 未找到网络数据');
+                        // 如果扫描失败，使用模拟数据作为备用
+                        populateWiFiList(getMockWiFiNetworks());
                     }
                 })
                 .catch(error => {
-                    console.error('获取WiFi网络列表失败:', error);
-                    showToast('WiFi扫描失败，请检查设备连接');
+                    console.error('WiFi扫描错误:', error);
+                    showToast('扫描失败，使用模拟数据');
+                    // 网络错误时使用模拟数据作为备用
+                    populateWiFiList(getMockWiFiNetworks());
                 });
+        }
+        
+        // 填充WiFi网络列表
+        function populateWiFiList(networks) {
+            const wifiSelect = document.getElementById('wifi-select');
+            const searchInput = document.getElementById('wifi-search');
+            
+            // 清空现有选项（保留第一个"请选择网络"选项）
+            while (wifiSelect.options.length > 1) {
+                wifiSelect.remove(1);
+            }
+            
+            // 添加扫描到的网络
+            networks.forEach(network => {
+                const option = document.createElement('option');
+                option.value = network.ssid;
+                option.text = network.ssid + (network.signal ? ` (${network.signal}dBm)` : '');
+                wifiSelect.appendChild(option);
+            });
+            
+            // 如果搜索框有内容，触发过滤
+            if (searchInput.value) {
+                filterWiFiNetworks();
+            }
+        }
+        
+        // 获取模拟WiFi网络数据（用于测试）
+        function getMockWiFiNetworks() {
+            return [
+                { ssid: 'Home_WiFi_5G', signal: -45 },
+                { ssid: 'TP-LINK_2.4G', signal: -55 },
+                { ssid: 'ChinaNet-XXXX', signal: -65 },
+                { ssid: 'CMCC-XXXX', signal: -70 },
+                { ssid: 'Guest_WiFi', signal: -75 }
+            ];
         }
         
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            showToast('配网界面已就绪');
+            showToast('配网界面已就绪，正在扫描WiFi网络...');
             
-            // 加载WiFi网络列表
-            loadWiFiNetworks();
+            // 自动扫描WiFi网络
+            scanWiFiNetworks();
             
             // 点击页面其他地方时隐藏搜索结果
             document.addEventListener('click', (e) => {
