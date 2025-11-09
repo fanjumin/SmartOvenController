@@ -1,7 +1,7 @@
 // =========================================
-// 智能烤箱控制器固件 v0.7.7 - 正式版
+// 智能烤箱控制器固件 v0.7.8 - 正式版
 // =========================================
-// 固件版本: 0.7.7
+// 固件版本: 0.7.8
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -52,7 +52,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.7.7";
+const String FIRMWARE_VERSION = "0.7.8";
 
 // WiFi配置参数
 String wifiSSID = "";

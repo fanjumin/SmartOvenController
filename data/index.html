@@ -8,7 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>智能电烤箱 - 管理员控制面板</title>
+    <title>智能烤箱 - 管理员控制面板</title>
 
     <script>
 
@@ -947,16 +947,86 @@
 
 
         .ota-message.warning {
-
             background: rgba(245, 158, 11, 0.2);
-
             border: 1px solid rgba(245, 158, 11, 0.5);
-
         }
 
+        /* 双入口OTA升级标签页样式 */
+        .ota-tabs {
+            margin-bottom: 15px;
+        }
 
+        .ota-tab-header {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 5px;
+        }
 
+        .ota-tab-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+        }
 
+        .ota-tab-btn.active {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+        }
+
+        .ota-tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .ota-tab-content {
+            display: none;
+        }
+
+        .ota-tab-content.active {
+            display: block;
+        }
+
+        .ota-description {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .ota-description p {
+            margin: 5px 0;
+        }
+
+        .filesystem-file-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin: 5px 0;
+            font-size: 12px;
+            border-left: 3px solid #3b82f6;
+        }
 
 
 
@@ -1110,93 +1180,813 @@
 
 
 
-        .footer {
-
-            text-align: center;
-
-            margin-top: 30px;
-
-            padding: 20px;
-
-            font-size: 12px;
-
-            opacity: 0.7;
-
+        /* 页面头部样式 - 现代设计 */
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
         }
 
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
 
-
-        .admin-controls {
-
+        .header-content {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
 
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
             gap: 15px;
-
-            align-items: center;
-
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
+        .title-icon {
+            font-size: 42px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+        }
 
-
-        .logout-btn, .change-password-btn {
-
-            padding: 12px 20px;
-
-            border: 1px solid rgba(255, 255, 255, 0.3);
-
-            border-radius: 12px;
-
-            background: rgba(255, 255, 255, 0.1);
-
+        .title-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
-
-            cursor: pointer;
-
-            transition: all 0.3s ease;
-
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 14px;
-
-            font-weight: 600;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            backdrop-filter: blur(10px);
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
         }
 
+        .subtitle {
+            font-size: 16px;
+            color: #cbd5e1;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            opacity: 0.9;
+        }
 
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .status-dot.live {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 设备状态卡片样式 - 现代设计 */
+        .status-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .status-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .status-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .temperature {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 加热控制区域样式 - 现代设计 */
+        .heating-control-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .heating-control-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .heating-control-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .heating-control-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #ef4444, #dc2626, #ef4444);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
+        }
+
+        .temp-time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .temp-time-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .temp-time-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .temp-time-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .temp-time-input:focus {
+            outline: none;
+            border-color: rgba(239, 68, 68, 0.6);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .baking-mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .mode-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .mode-select:focus {
+            outline: none;
+            border-color: rgba(239, 68, 68, 0.6);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .heating-action {
+            text-align: center;
+        }
+
+        .heating-toggle-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 20px;
+            padding: 18px 40px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .heating-toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .heating-toggle-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 32px rgba(239, 68, 68, 0.6);
+        }
+
+        .heating-toggle-btn:hover::before {
+            left: 100%;
+        }
+
+        .heating-toggle-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .heating-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .heating-text {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* 按钮样式优化 */
+        .logout-btn, .change-password-btn {
+            padding: 14px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            color: white;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout-btn::before, .change-password-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.6s ease;
+        }
 
         .logout-btn:hover, .change-password-btn:hover {
-
-            background: rgba(255, 255, 255, 0.2);
-
-            transform: translateY(-2px);
-
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
-
+        .logout-btn:hover::before, .change-password-btn:hover::before {
+            left: 100%;
+        }
 
         .logout-btn:active, .change-password-btn:active {
-
-            transform: translateY(0);
-
+            transform: translateY(-1px);
         }
 
-
-
         .btn-icon {
+            font-size: 18px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
 
-            font-size: 16px;
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            font-size: 14px;
+            opacity: 0.8;
+            color: #94a3b8;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+        /* 系统管理功能区样式 - 现代设计 */
+        .system-management-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-management-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .system-management-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            letter-spacing: 0.8px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .system-management-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+        }
+
+        .system-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .system-management-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .system-management-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.8s ease;
+            transform: skewX(-15deg);
+        }
+
+        .system-management-card:hover {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .system-management-card:hover::before {
+            left: 150%;
+        }
+
+        .system-management-icon {
+            font-size: 42px;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+            transition: all 0.4s ease;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .system-management-card:hover .system-management-icon {
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+        }
+
+        .system-management-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: 0.4px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .system-management-description {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* 高级管理功能区样式 - 现代设计 */
+        .advanced-management-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .advanced-management-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .advanced-management-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            letter-spacing: 0.8px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .advanced-management-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #d97706, #f59e0b);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);
+        }
+
+        .advanced-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .advanced-management-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .advanced-management-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.8s ease;
+            transform: skewX(-15deg);
+        }
+
+        .advanced-management-card:hover {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .advanced-management-card:hover::before {
+            left: 150%;
+        }
+
+        .advanced-management-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .advanced-management-icon {
+            font-size: 32px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+            transition: all 0.4s ease;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .advanced-management-card:hover .advanced-management-icon {
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+        }
+
+        .advanced-management-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        .advanced-management-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .system-btn {
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .system-btn:hover {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .system-btn:hover::before {
+            left: 100%;
+        }
+
+        .system-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .system-management-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+            }
+            
+            .advanced-management-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .system-management-card {
+                padding: 15px;
+            }
+            
+            .advanced-management-card {
+                padding: 15px;
+            }
+            
+            .system-btn {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .system-management-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .system-management-card {
+                padding: 12px;
+            }
+            
+            .advanced-management-card {
+                padding: 12px;
+            }
+            
+            .system-management-icon {
+                font-size: 28px;
+            }
+            
+            .advanced-management-icon {
+                font-size: 20px;
+            }
+        }
 
         }
 
@@ -2128,60 +2918,84 @@
 
         
 
-        /* 系统管理响应式优化 */
-
-        @media (max-width: 768px) {
-
-            .management-grid {
-
-                grid-template-columns: repeat(2, 1fr);
-
-            }
-
+        /* 功能区域样式 */
+        .function-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         
-
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .function-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .function-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .function-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .function-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* 功能区域响应式优化 */
+        @media (max-width: 1024px) {
+            .function-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .function-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
         @media (max-width: 480px) {
-
-            .management-grid {
-
+            .function-grid {
                 grid-template-columns: 1fr;
-
             }
-
             
-
-            .management-card {
-
-                padding: 15px;
-
+            .function-card {
+                padding: 20px 15px;
+                min-height: 100px;
             }
-
             
-
-            .management-icon {
-
+            .function-icon {
                 font-size: 28px;
-
             }
-
             
-
-            .management-title {
-
+            .function-title {
                 font-size: 14px;
-
             }
-
-            
-
-            .management-description {
-
-                font-size: 11px;
-
-            }
-
         }
 
     </style>
@@ -2195,11 +3009,10 @@
             <div class="header-content">
                 <div class="title-section">
                     <h1 class="main-title">
-                        <span class="title-icon">🔥</span>
-                        智能电烤箱
-                        <span class="title-badge">Pro</span>
+                        <span class="title-icon">🍞</span>智能烤箱
+                        <span class="title-badge">专业版</span>
                     </h1>
-                    <p class="subtitle">智能烘焙控制系统 - 专业版</p>
+                    <p class="subtitle">高级烘焙控制器 - 专业版</p>
                 </div>
                 <div class="status-indicator">
                     <div class="status-dot live"></div>
@@ -2228,11 +3041,11 @@
                     <div class="status-value heating-status">--</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">WiFi</div>
+                    <div class="status-label">WiFi SSID</div>
                     <div class="status-value wifi-status">--</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">设备ID</div>
+                    <div class="status-label">IP地址</div>
                     <div class="status-value device-id">--</div>
                 </div>
             </div>
@@ -2280,49 +3093,57 @@
             </div>
         </div>
         
-        <!-- 导航卡片区域 -->
-        <div class="navigation-section">
-            <div class="nav-grid">
-
-                
-                <a href="wifi_config.html" class="nav-card">
-                    <div class="nav-icon">📶</div>
-                    <div class="nav-title">WiFi配置</div>
-                    <div class="nav-desc">网络连接设置</div>
+        <!-- 功能区域 -->
+        <div class="function-section">
+            <h3>系统管理</h3>
+            <div class="function-grid">
+                <!-- 设备状态 -->
+                <a href="device_status.html" class="function-card">
+                    <div class="function-icon">📊</div>
+                    <div class="function-title">设备状态</div>
                 </a>
                 
-                <a href="device_status.html" class="nav-card">
-                    <div class="nav-icon">📊</div>
-                    <div class="nav-title">设备状态</div>
-                    <div class="nav-desc">详细运行信息</div>
+                <!-- 设置与帮助 -->
+                <a href="settings_help.html" class="function-card">
+                    <div class="function-icon">⚙️</div>
+                    <div class="function-title">设置与帮助</div>
                 </a>
                 
-                <a href="temperature_calibration.html" class="nav-card">
-                    <div class="nav-icon">🌡️</div>
-                    <div class="nav-title">温度校准</div>
-                    <div class="nav-desc">温度传感器校准</div>
+                <!-- 修改密码 -->
+                <div class="function-card" onclick="changePassword()">
+                    <div class="function-icon">🔒</div>
+                    <div class="function-title">修改密码</div>
+                </div>
+                
+                <!-- 退出登录 -->
+                <div class="function-card" onclick="logout()">
+                    <div class="function-icon">🚪</div>
+                    <div class="function-title">退出登录</div>
+                </div>
+                
+                <!-- 温度校准 -->
+                <a href="temperature_calibration.html" class="function-card">
+                    <div class="function-icon">🌡️</div>
+                    <div class="function-title">温度校准</div>
                 </a>
                 
-                <a href="settings_help.html" class="nav-card">
-                    <div class="nav-icon">⚙️</div>
-                    <div class="nav-title">设置与帮助</div>
-                    <div class="nav-desc">系统配置</div>
+                <!-- WiFi配置 -->
+                <a href="wifi_config.html" class="function-card">
+                    <div class="function-icon">📶</div>
+                    <div class="function-title">WiFi配置</div>
                 </a>
-            </div>
-        </div>
-
-        <!-- 管理员控制区域 -->
-        <div class="admin-section">
-            <h3>管理员控制</h3>
-            <div class="admin-buttons">
-                <button class="logout-btn" onclick="logout()">
-                    <span class="btn-icon">🚪</span>
-                    退出登录
-                </button>
-                <button class="change-password-btn" onclick="changePassword()">
-                    <span class="btn-icon">🔒</span>
-                    修改密码
-                </button>
+                
+                <!-- 重启设备 -->
+                <div class="function-card" onclick="restartDevice()">
+                    <div class="function-icon">🔄</div>
+                    <div class="function-title">重启设备</div>
+                </div>
+                
+                <!-- 恢复出厂设置 -->
+                <div class="function-card" onclick="factoryReset()">
+                    <div class="function-icon">⚠️</div>
+                    <div class="function-title">恢复出厂设置</div>
+                </div>
             </div>
         </div>
 
@@ -2343,59 +3164,11 @@
 
 
 
-
-
-
-
-        <!-- 系统管理 -->
-
-        <div class="system-management">
-
-            <div class="section-title">系统管理</div>
-
-            <div class="management-grid">
-
-                <div class="management-card" onclick="openWifiConfig()">
-
-                    <div class="management-icon">📶</div>
-
-                    <div class="management-title">WiFi配置</div>
-
-                    <div class="management-description">配置设备WiFi网络连接，修改SSID和密码</div>
-
-                </div>
-
-                <div class="management-card" onclick="restartDevice()">
-
-                    <div class="management-icon">🔄</div>
-
-                    <div class="management-title">重启设备</div>
-
-                    <div class="management-description">重启智能电烤箱设备，应用新的设置</div>
-
-                </div>
-
-                <div class="management-card" onclick="factoryReset()">
-
-                    <div class="management-icon">⚠️</div>
-
-                    <div class="management-title">恢复出厂设置</div>
-
-                    <div class="management-description">清除所有设置，恢复设备到出厂状态</div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
         <!-- OTA固件升级 -->
 
         <div class="admin-section">
 
-            <div class="admin-title">固件升级 (OTA)</div>
+            <div class="admin-title">OTA升级管理</div>
 
             <div class="ota-section">
 
@@ -2418,47 +3191,70 @@
                     </div>
 
                 </div>
-
                 
-
-                <div class="ota-upload">
-
-                    <input type="file" id="firmware-file" accept=".bin,.hex,.ino" style="display: none;">
-
-                    <button class="ota-btn" onclick="document.getElementById('firmware-file').click()">
-
-                        <span>📁</span>
-
-                        <span>选择固件文件</span>
-
-                    </button>
-
-                    <button class="ota-btn upload" id="upload-btn" onclick="uploadFirmware()" disabled>
-
-                        <span>⬆️</span>
-
-                        <span>开始升级</span>
-
-                    </button>
-
-                </div>
-
-                
-
-                <div class="ota-progress" id="ota-progress" style="display: none;">
-
-                    <div class="progress-bar">
-
-                        <div class="progress-fill" id="progress-fill"></div>
-
+                <!-- 双入口OTA升级界面 -->
+                <div class="ota-tabs">
+                    <div class="ota-tab-header">
+                        <button class="ota-tab-btn active" onclick="showOtaTab('firmware')">
+                            <span>🔧</span>
+                            <span>固件升级</span>
+                        </button>
+                        <button class="ota-tab-btn" onclick="showOtaTab('filesystem')">
+                            <span>📄</span>
+                            <span>文件系统升级</span>
+                        </button>
                     </div>
-
-                    <div class="progress-text" id="progress-text">0%</div>
-
+                    
+                    <!-- 固件升级标签页 -->
+                    <div class="ota-tab-content active" id="firmware-tab">
+                        <div class="ota-description">
+                            <p><strong>固件升级 (.bin/.hex/.ino 文件)</strong></p>
+                            <p>更新设备主程序，包含功能改进和错误修复。升级后设备将自动重启。</p>
+                        </div>
+                        
+                        <div class="ota-upload">
+                            <input type="file" id="firmware-file" accept=".bin,.hex,.ino" style="display: none;">
+                            <button class="ota-btn" onclick="document.getElementById('firmware-file').click()">
+                                <span>📁</span>
+                                <span>选择固件文件</span>
+                            </button>
+                            <button class="ota-btn upload" id="upload-btn" onclick="uploadFirmware()" disabled>
+                                <span>⬆️</span>
+                                <span>开始升级</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 文件系统升级标签页 -->
+                    <div class="ota-tab-content" id="filesystem-tab">
+                        <div class="ota-description">
+                            <p><strong>文件系统升级 (.html/.js/.css 文件)</strong></p>
+                            <p>更新设备Web界面文件，支持多文件批量上传，不影响设备运行。</p>
+                        </div>
+                        
+                        <div class="ota-upload">
+                            <input type="file" id="filesystem-file" accept=".html,.js,.css" multiple style="display: none;">
+                            <button class="ota-btn" onclick="document.getElementById('filesystem-file').click()">
+                                <span>📁</span>
+                                <span>选择网页文件</span>
+                            </button>
+                            <button class="ota-btn upload" id="upload-filesystem-btn" onclick="uploadFilesystem()" disabled>
+                                <span>⬆️</span>
+                                <span>开始上传</span>
+                            </button>
+                        </div>
+                        
+                        <div class="filesystem-file-list" id="filesystem-file-list"></div>
+                    </div>
                 </div>
-
                 
-
+                <div class="ota-progress" id="ota-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text">0%</div>
+                </div>
+                
                 <div class="ota-message" id="ota-message"></div>
 
             </div>
@@ -2520,7 +3316,7 @@
 
         <div class="footer">
 
-            <p>智能电烤箱控制器 v0.7.7</p>
+            <p>智能电烤箱控制器 v0.7.8</p>
 
             <p>© 2025 智能电烤箱项目</p>
 
@@ -2571,13 +3367,15 @@
             
 
             // 初始化文件选择事件
-
             const firmwareFileInput = document.getElementById('firmware-file');
-
             if (firmwareFileInput) {
-
                 firmwareFileInput.addEventListener('change', handleFileSelect);
-
+            }
+            
+            // 初始化文件系统文件选择事件
+            const filesystemFileInput = document.getElementById('filesystem-file');
+            if (filesystemFileInput) {
+                filesystemFileInput.addEventListener('change', handleFilesystemFileSelect);
             }
 
         });
@@ -2698,7 +3496,7 @@
                 wifiSSID: 'SmartOven_AP',
                 ip_address: '192.168.4.1',
                 device_id: 'SmartOven_001',
-                firmware_version: '0.7.7'
+                firmware_version: '0.7.8'
             };
 
             
@@ -2977,30 +3775,152 @@
 
 
 
-        // 上传固件文件
-
-        async function uploadFirmware() {
-
-            if (!selectedFirmwareFile) {
-
-                showOtaMessage('请先选择固件文件', 'error');
-
-                return;
-
-            }
-
+        // 显示OTA标签页
+        function showOtaTab(tabName) {
+            // 更新标签按钮状态
+            document.querySelectorAll('.ota-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.ota-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
             
-
-            if (!confirm('确定要上传固件吗？设备将在升级过程中重启，请确保设备连接稳定。')) {
-
-                return;
-
-            }
-
+            // 激活选中的标签
+            document.querySelector(`.ota-tab-btn:nth-child(${tabName === 'firmware' ? '1' : '2'})`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
             
+            // 重置消息和状态
+            showOtaMessage('', '');
+            updateOtaStatus('就绪');
+        }
 
+        // 文件系统文件选择处理
+        let selectedFilesystemFiles = [];
+        
+        function handleFilesystemFileSelect(event) {
+            const files = Array.from(event.target.files);
+            if (files.length > 0) {
+                // 检查文件类型
+                const allowedTypes = ['.html', '.js', '.css'];
+                const invalidFiles = files.filter(file => {
+                    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                    return !allowedTypes.includes(fileExtension);
+                });
+                
+                if (invalidFiles.length > 0) {
+                    showOtaMessage('请选择有效的网页文件 (.html, .js, .css)', 'error');
+                    resetFilesystemFileInput();
+                    return;
+                }
+                
+                // 检查文件大小（最大5MB每个文件）
+                const oversizedFiles = files.filter(file => file.size > 5 * 1024 * 1024);
+                if (oversizedFiles.length > 0) {
+                    showOtaMessage('单个文件大小不能超过5MB', 'error');
+                    resetFilesystemFileInput();
+                    return;
+                }
+                
+                selectedFilesystemFiles = files;
+                document.getElementById('upload-filesystem-btn').disabled = false;
+                
+                // 显示文件列表
+                const fileList = document.getElementById('filesystem-file-list');
+                fileList.innerHTML = '';
+                files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                    fileList.appendChild(fileItem);
+                });
+                
+                showOtaMessage(`已选择 ${files.length} 个文件，准备上传`, 'success');
+                updateOtaStatus('文件已选择，准备上传');
+            }
+        }
+
+        // 重置文件系统文件输入
+        function resetFilesystemFileInput() {
+            const fileInput = document.getElementById('filesystem-file');
+            fileInput.value = '';
+            selectedFilesystemFiles = [];
+            document.getElementById('upload-filesystem-btn').disabled = true;
+            document.getElementById('filesystem-file-list').innerHTML = '';
+        }
+
+        // 上传文件系统文件
+        async function uploadFilesystem() {
+            if (selectedFilesystemFiles.length === 0) {
+                showOtaMessage('请先选择网页文件', 'error');
+                return;
+            }
+            
+            if (!confirm(`确定要上传 ${selectedFilesystemFiles.length} 个文件吗？文件将直接更新到设备文件系统。`)) {
+                return;
+            }
+            
             try {
+                updateOtaStatus('正在上传文件...');
+                
+                // 显示进度条
+                const progressBar = document.getElementById('ota-progress');
+                const progressFill = document.getElementById('progress-fill');
+                const progressText = document.getElementById('progress-text');
+                progressBar.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = '0%';
+                
+                // 创建FormData对象
+                const formData = new FormData();
+                selectedFilesystemFiles.forEach(file => {
+                    formData.append('files', file);
+                });
+                
+                // 发送上传请求
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    showOtaMessage('✅ 文件上传成功！界面已更新。', 'success');
+                    updateOtaStatus('上传完成');
+                    
+                    // 延迟刷新页面以显示新界面
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    const errorText = await response.text();
+                    showOtaMessage(`❌ 上传失败: ${errorText}`, 'error');
+                    updateOtaStatus('上传失败');
+                }
+                
+            } catch (error) {
+                console.error('文件上传失败:', error);
+                showOtaMessage('❌ 网络连接失败，请检查设备连接', 'error');
+                updateOtaStatus('网络错误');
+            }
+            
+            // 隐藏进度条
+            setTimeout(() => {
+                document.getElementById('ota-progress').style.display = 'none';
+            }, 3000);
+        }
 
+        // 上传固件文件
+        async function uploadFirmware() {
+            if (!selectedFirmwareFile) {
+                showOtaMessage('请先选择固件文件', 'error');
+                return;
+            }
+            
+            if (!confirm('确定要上传固件吗？设备将在升级过程中重启，请确保设备连接稳定。')) {
+                return;
+            }
+            
+            try {
                 updateOtaStatus('正在上传固件...');
 
                 showOtaMessage('开始上传固件文件，请勿关闭页面', 'warning');
@@ -3481,15 +4401,18 @@
                 statusItems[1].querySelector('.status-value').style.color = 
                     deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
                 
-                // 更新WiFi状态
-                const wifiStatus = deviceStatus.wifiConnected ? '已连接' : '未连接';
-                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+                // 更新WiFi状态 - 显示SSID名称
+                let wifiStatusText = '未连接';
+                if (deviceStatus.wifiConnected) {
+                    wifiStatusText = deviceStatus.wifiSSID ? `WiFi ${deviceStatus.wifiSSID}` : 'WiFi 已连接';
+                }
+                statusItems[2].querySelector('.status-value').textContent = wifiStatusText;
                 statusItems[2].querySelector('.status-value').style.color = 
                     deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
                 
-                // 更新设备ID
+                // 更新IP地址
                 statusItems[3].querySelector('.status-value').textContent = 
-                    deviceStatus.deviceId || '--';
+                    deviceStatus.ipAddress || '--';
             }
 
             
