@@ -61,6 +61,9 @@ String wifiPassword = "";
 // captive portal模式配置
 bool isCaptivePortalMode = false;
 unsigned long captivePortalStartTime = 0;
+
+// 文件系统状态
+bool isFileSystemAvailable = false;
 const unsigned long CAPTIVE_PORTAL_TIMEOUT = 300000; // 5分钟后自动退出门户模式
 const String AP_SSID = "SmartOven-" + String(ESP.getChipId());
 const String AP_PASSWORD = "12345678";
@@ -105,10 +108,20 @@ struct Config {
     char signature[16];  // 配置文件签名，用于验证配置有效性
 };
 
-void saveConfig() {
+bool saveConfig() {
     Config config;
     // 初始化配置结构体，清空内存空间
     memset(&config, 0, sizeof(config));
+    
+    // 验证WiFi配置参数有效性
+    if (wifiSSID.length() == 0 || wifiSSID.length() > 31) {
+        Serial.println("错误：SSID无效，无法保存配置");
+        return false;
+    }
+    if (wifiPassword.length() > 63) {
+        Serial.println("错误：密码过长，无法保存配置");
+        return false;
+    }
     
     // 将WiFi配置参数复制到配置结构体
     strncpy(config.ssid, wifiSSID.c_str(), sizeof(config.ssid) - 1);
@@ -124,33 +137,67 @@ void saveConfig() {
     config.password[sizeof(config.password) - 1] = '\0';
     config.signature[sizeof(config.signature) - 1] = '\0';
     
-    EEPROM.begin(512);
-    EEPROM.put(0, config);
-    EEPROM.commit();
-    EEPROM.end();
+    // 保存配置到EEPROM，增加重试机制
+    bool saveSuccess = false;
+    for (int attempt = 0; attempt < 3 && !saveSuccess; attempt++) {
+        EEPROM.begin(512);
+        EEPROM.put(0, config);
+        saveSuccess = EEPROM.commit();
+        EEPROM.end();
+        
+        if (!saveSuccess) {
+            Serial.println("EEPROM保存失败，重试 " + String(attempt + 1));
+            delay(100);
+        }
+    }
     
-    Serial.println("配置已保存到EEPROM");
-    Serial.print("SSID: ");
-    Serial.println(config.ssid);
-    Serial.print("密码长度: ");
-    Serial.println(strlen(config.password));
-    Serial.print("温度校准偏移量: ");
-    Serial.print(config.temperatureOffset);
-    Serial.println("°C");
-    Serial.print("温度校准缩放系数: ");
-    Serial.println(config.temperatureScale);
-    Serial.print("配置签名: ");
-    Serial.println(config.signature);
-    
-    // 配置保存成功提示音 - 短鸣提示
-    beepConfigSaved();
+    if (saveSuccess) {
+        Serial.println("配置已成功保存到EEPROM");
+        Serial.print("SSID: ");
+        Serial.println(config.ssid);
+        Serial.print("密码长度: ");
+        Serial.println(strlen(config.password));
+        Serial.print("温度校准偏移量: ");
+        Serial.print(config.temperatureOffset);
+        Serial.println("°C");
+        Serial.print("温度校准缩放系数: ");
+        Serial.println(config.temperatureScale);
+        Serial.print("配置签名: ");
+        Serial.println(config.signature);
+        
+        // 配置保存成功提示音
+        beepConfigSaved();
+        return true;
+    } else {
+        Serial.println("错误：EEPROM保存失败，配置未保存");
+        return false;
+    }
 }
 
 bool loadConfig() {
     Config config;
-    EEPROM.begin(512);
-    EEPROM.get(0, config);
-    EEPROM.end();
+    
+    // 读取EEPROM配置，增加重试机制
+    bool readSuccess = false;
+    for (int attempt = 0; attempt < 3 && !readSuccess; attempt++) {
+        EEPROM.begin(512);
+        EEPROM.get(0, config);
+        EEPROM.end();
+        
+        // 验证读取的数据是否有效
+        if (config.signature[0] != '\0') {
+            readSuccess = true;
+        } else {
+            Serial.println("EEPROM读取失败，重试 " + String(attempt + 1));
+            delay(100);
+        }
+    }
+    
+    if (!readSuccess) {
+        Serial.println("错误：EEPROM读取失败，使用默认配置");
+        resetToDefaultConfig();
+        return false;
+    }
     
     Serial.println("从EEPROM加载配置参数...");
     Serial.print("配置签名: ");
@@ -165,13 +212,42 @@ bool loadConfig() {
     Serial.print("温度校准缩放系数: ");
     Serial.println(config.temperatureScale);
     
+    // 严格的配置验证
     if (strcmp(config.signature, "SMARTOVEN") == 0) {
-        wifiSSID = String(config.ssid);
-        wifiPassword = String(config.password);
+        // 验证SSID和密码的有效性
+        String loadedSSID = String(config.ssid);
+        String loadedPassword = String(config.password);
+        
+        if (loadedSSID.length() == 0 || loadedSSID.length() > 31) {
+            Serial.println("警告：加载的SSID无效，使用默认配置");
+            resetToDefaultConfig();
+            return false;
+        }
+        
+        if (loadedPassword.length() > 63) {
+            Serial.println("警告：加载的密码过长，使用默认配置");
+            resetToDefaultConfig();
+            return false;
+        }
+        
+        // 配置验证通过，应用配置
+        wifiSSID = loadedSSID;
+        wifiPassword = loadedPassword;
         
         // 加载配置文件中的温度校准参数
         temperatureOffset = config.temperatureOffset;
         temperatureScale = config.temperatureScale;
+        
+        // 验证温度校准参数的合理性
+        if (temperatureOffset < -50.0 || temperatureOffset > 50.0) {
+            Serial.println("警告：温度校准偏移量超出合理范围，重置为0");
+            temperatureOffset = 0.0;
+        }
+        
+        if (temperatureScale < 0.5 || temperatureScale > 2.0) {
+            Serial.println("警告：温度校准缩放系数超出合理范围，重置为1");
+            temperatureScale = 1.0;
+        }
         
         Serial.println("配置文件加载成功，应用温度校准参数");
         Serial.print("温度校准偏移量: ");
@@ -182,14 +258,20 @@ bool loadConfig() {
         return true;
     } else {
         Serial.println("配置文件签名验证失败，使用默认配置参数");
-        // 初始化默认配置参数
-        wifiSSID = "";
-        wifiPassword = "";
-        // 重置温度校准参数为默认值 - 偏移量和比例系数
-        temperatureOffset = 0.0;
-        temperatureScale = 1.0;
+        resetToDefaultConfig();
         return false;
     }
+}
+
+// =========================================
+// 重置为默认配置
+// =========================================
+void resetToDefaultConfig() {
+    wifiSSID = "";
+    wifiPassword = "";
+    temperatureOffset = 0.0;
+    temperatureScale = 1.0;
+    Serial.println("已重置为默认配置参数");
 }
 
 // =========================================
@@ -240,49 +322,43 @@ uint16_t readMAX6675RawData() {
   return data;
 }
 
-// 硬件初始化验证
+// 硬件初始化验证（快速启动优化）
 bool verifyHardwareInitialization() {
-    Serial.println("验证硬件初始化状态...");
-    
-    // 初始化MAX6675引脚模式
+    // 快速初始化MAX6675引脚模式
     pinMode(THERMO_CLK, OUTPUT);
     pinMode(THERMO_CS, OUTPUT);
     pinMode(THERMO_DO, INPUT);
     
-    // 配置MAX6675初始状态
+    // 快速配置MAX6675初始状态
     digitalWrite(THERMO_CS, HIGH);
     digitalWrite(THERMO_CLK, LOW);
-    delay(100);  // 等待传感器稳定- 延迟100ms
+    delay(10);  // 快速等待传感器稳定- 延迟10ms（优化启动速度）
     
-    // 检查MAX6675传感器响应状态
+    // 快速检查MAX6675传感器响应状态
     if (digitalRead(THERMO_DO) == HIGH || digitalRead(THERMO_DO) == LOW) {
-        Serial.println("硬件初始化验证通过");
         return true;
     } else {
-        Serial.println("硬件初始化验证失败");
         return false;
     }
 }
 
-// 执行硬件恢复流程
+// 执行硬件恢复流程（快速启动优化）
 void performHardwareRecovery() {
-    Serial.println("执行硬件恢复流程...");
-    
     // 增加硬件故障计数
     hardwareFailureCount++;
     
-    // 重置MAX6675传感器 - 尝试恢复通信
-    for (int i = 0; i < 5; i++) {
+    // 快速重置MAX6675传感器 - 尝试恢复通信
+    for (int i = 0; i < 3; i++) {  // 减少重试次数
         digitalWrite(THERMO_CS, HIGH);
         digitalWrite(THERMO_CLK, LOW);
-        delay(200);  // 等待传感器稳定 - 延迟200ms
+        delay(50);  // 快速等待传感器稳定 - 延迟50ms（优化启动速度）
         digitalWrite(THERMO_CS, LOW);
-        delay(100);
+        delay(20);  // 快速延迟
         digitalWrite(THERMO_CS, HIGH);
-        delay(200);
+        delay(50);  // 快速延迟
     }
     
-    // 重新初始化MAX6675引脚配置
+    // 快速重新初始化MAX6675引脚配置
     pinMode(THERMO_CLK, OUTPUT);
     pinMode(THERMO_CS, OUTPUT);
     pinMode(THERMO_DO, INPUT);
@@ -290,7 +366,6 @@ void performHardwareRecovery() {
     digitalWrite(THERMO_CLK, LOW);
     
     lastHardwareReset = millis();
-    Serial.println("硬件恢复流程已执行，失败次数: " + String(hardwareFailureCount));
 }
 
 /**
@@ -403,11 +478,11 @@ void calibrateTemperature(float actualTemp, float measuredTemp) {
 void startCaptivePortal() {
     Serial.println("启动Captive Portal服务...");
     
-    // 断开现有WiFi连接，准备启动AP模式
+    // 快速断开现有WiFi连接（快速配网优化）
     WiFi.disconnect();
-    delay(100);
+    delay(50); // 减少等待时间
     
-    // 配置并启动WiFi接入点模式
+    // 快速配置并启动WiFi接入点模式
     WiFi.mode(WIFI_AP);
     WiFi.softAP(AP_SSID.c_str(), AP_PASSWORD.c_str());
     
@@ -416,10 +491,10 @@ void startCaptivePortal() {
     Serial.print("AP IP地址: ");
     Serial.println(WiFi.softAPIP());
     
-    // 配置DNS服务器参数
+    // 快速配置DNS服务器参数
     dnsServer.start(53, "*", WiFi.softAPIP());
     
-    // 启动Web服务器服务
+    // 快速启动Web服务器服务
     setupWebServer();
     webServer.begin();
     
@@ -429,7 +504,8 @@ void startCaptivePortal() {
     isCaptivePortalMode = true;
     captivePortalStartTime = millis();
     
-    Serial.println("Captive portal启动成功 - DNS服务器运行在端口53，Web服务器运行在端口80，UDP服务运行在端口888");
+    Serial.println("Captive portal启动成功 - 快速配网模式已启用");
+    Serial.println("用户可立即访问 http://192.168.4.1 进行WiFi配置");
 }
 
 /**
@@ -465,11 +541,11 @@ bool shouldStartCaptivePortal() {
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
     
-    // 设置WiFi连接超时处理机制，最多等待30秒连接成功
+    // 设置WiFi连接超时处理机制，最多等待15秒连接成功（快速配网优化）
     unsigned long startTime = millis();
     int connectionAttempts = 0;
     
-    while (WiFi.status() != WL_CONNECTED && millis() - startTime < 30000) {
+    while (WiFi.status() != WL_CONNECTED && millis() - startTime < 15000) {
         delay(500);
         Serial.print(".");
         connectionAttempts++;
@@ -532,6 +608,51 @@ void checkCaptivePortalTimeout() {
 }
 
 // =========================================
+// 智能WiFi扫描功能 - 快速配网优化
+// =========================================
+
+/**
+ * 智能WiFi扫描函数
+ * 
+ * 此函数负责快速扫描可用的WiFi网络，并返回网络列表
+ * 用于在Captive Portal中自动推荐可用网络
+ * 
+ * @return String 包含可用WiFi网络的JSON格式字符串
+ */
+String scanWiFiNetworks() {
+    Serial.println("开始快速WiFi扫描...");
+    
+    // 设置WiFi模式为STA以进行扫描
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
+    delay(100);
+    
+    // 快速扫描WiFi网络（5秒超时）
+    int n = WiFi.scanNetworks(false, true, 0, NULL);
+    
+    if (n == 0) {
+        Serial.println("未发现可用WiFi网络");
+        return "[]";
+    } else {
+        Serial.print("发现 ");
+        Serial.print(n);
+        Serial.println(" 个WiFi网络");
+        
+        // 构建JSON格式的网络列表
+        String networks = "[";
+        for (int i = 0; i < n; ++i) {
+            if (i > 0) networks += ",";
+            networks += "{\"ssid\":\"" + WiFi.SSID(i) + "\",";
+            networks += "\"rssi\":" + String(WiFi.RSSI(i)) + ",";
+            networks += "\"encrypted\":" + String(WiFi.encryptionType(i) != ENC_TYPE_NONE ? "true" : "false") + "}";
+        }
+        networks += "]";
+        
+        return networks;
+    }
+}
+
+// =========================================
 // WiFi连接管理函数 - 处理网络连接和重连逻辑
 // =========================================
 
@@ -539,22 +660,18 @@ void checkCaptivePortalTimeout() {
  * 连接到WiFi网络
  * 
  * 此函数负责使用保存的WiFi配置参数连接到指定的WiFi网络。
- * 如果连接失败，会自动启动强制门户服务进行网络配置。
+ * 如果连接失败，会返回false但不启动强制门户服务，让调用方决定后续操作。
  * 
  * @return bool 连接成功返回true，失败返回false
  */
 bool connectToWiFi() {
     if (wifiSSID.length() == 0 || wifiPassword.length() == 0) {
-        Serial.println("未配置WiFi信息，启动Captive Portal进行网络配置");
-        startCaptivePortal();
+        Serial.println("WiFi配置参数缺失，无法连接");
         return false;
     }
     
-    Serial.println("正在连接WiFi网络...");
-    Serial.print("SSID: ");
+    Serial.print("尝试连接到WiFi网络: ");
     Serial.println(wifiSSID);
-    Serial.print("密码长度: ");
-    Serial.println(wifiPassword.length());
     
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
@@ -562,25 +679,22 @@ bool connectToWiFi() {
     unsigned long startTime = millis();
     int connectionAttempts = 0;
     
-    // WiFi连接超时处理：最多尝试30秒，期间每500ms检查一次连接状态
-    while (WiFi.status() != WL_CONNECTED && millis() - startTime < 30000) {
+    // WiFi连接超时处理：最多尝试10秒，期间每500ms检查一次连接状态
+    while (WiFi.status() != WL_CONNECTED && millis() - startTime < 10000) {
         delay(500);
         Serial.print(".");
         connectionAttempts++;
         
-        // 定期输出连接状态，帮助调试连接问题
-        if (connectionAttempts % 10 == 0) {
+        if (connectionAttempts % 4 == 0) {
             Serial.println("");
-            Serial.print("连接状态: ");
+            Serial.print("WiFi连接状态: ");
             switch(WiFi.status()) {
                 case WL_IDLE_STATUS: Serial.println("闲置状态"); break;
                 case WL_NO_SSID_AVAIL: Serial.println("SSID不存在"); break;
-                case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
-                case WL_CONNECTED: Serial.println("连接成功"); break;
                 case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
                 case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
                 case WL_DISCONNECTED: Serial.println("已断开连接"); break;
-                default: Serial.println("未知状态"); break;
+                default: Serial.println("连接中..."); break;
             }
         }
     }
@@ -588,22 +702,28 @@ bool connectToWiFi() {
     // 检查WiFi连接结果
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("");
-        Serial.println("WiFi连接成功");
+        Serial.println("WiFi连接成功！");
         Serial.print("IP地址: ");
         Serial.println(WiFi.localIP());
-        Serial.print("连接耗时: ");
-        Serial.print((millis() - startTime) / 1000.0);
-        Serial.println("秒");
+        
         isCaptivePortalMode = false;
+        
+        // 快速启动Web服务器
+        setupWebServer();
+        webServer.begin();
+        
         return true;
     } else {
         Serial.println("");
-        Serial.println("WiFi连接失败，启动Captive Portal");
-        
-        // 检查是否需要启动强制门户模式
-        if (millis() - captivePortalStartTime > 60000) { // 1分钟后启动强制门户
-            Serial.println("WiFi连接超时，启动强制门户模式");
-            startCaptivePortal();
+        Serial.println("WiFi连接失败");
+        Serial.print("失败原因: ");
+        switch(WiFi.status()) {
+            case WL_IDLE_STATUS: Serial.println("闲置状态"); break;
+            case WL_NO_SSID_AVAIL: Serial.println("SSID不存在"); break;
+            case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
+            case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
+            case WL_DISCONNECTED: Serial.println("已断开连接"); break;
+            default: Serial.println("未知错误"); break;
         }
         
         return false;
@@ -692,8 +812,61 @@ void handleOTA() {
 // Web服务器处理函数
 // =========================================
 
+void handleNotFound() {
+    if (isCaptivePortalMode) {
+        // 在captive portal模式下重定向到配网页面
+        webServer.sendHeader("Location", "/", true);
+        webServer.send(302, "text/plain", "Redirect to configuration page");
+    } else {
+        // 正常模式下返回404错误
+        webServer.send(404, "text/plain", "Not found: " + webServer.uri());
+    }
+}
+
 void handleRoot() {
-    // 如果LittleFS文件系统已初始化且index.html文件存在，则从文件系统加载
+    // 如果处于强制门户模式，直接显示配网页面
+    if (isCaptivePortalMode) {
+        // 检查wifi_config.html文件是否存在
+        if (LittleFS.exists("/wifi_config.html")) {
+            File file = LittleFS.open("/wifi_config.html", "r");
+            if (file) {
+                webServer.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                webServer.sendHeader("Pragma", "no-cache");
+                webServer.sendHeader("Expires", "-1");
+                webServer.streamFile(file, "text/html", HTTP_GET);
+                file.close();
+                Serial.println("强制门户模式：直接显示wifi_config.html配网页面");
+                return;
+            }
+        }
+        
+        // 如果wifi_config.html文件不存在，返回简化的配网页面
+        String html = "<!DOCTYPE html><html><head><title>WiFi配置 - 智能电烤箱</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+        html += "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f0f0f0;}h1{color:#333;}.container{max-width:500px;margin:50px auto;background:white;padding:30px;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}.btn{display:block;width:100%;padding:15px;background:#007bff;color:white;text-align:center;text-decoration:none;border-radius:5px;margin:10px 0;font-size:16px;}.btn:hover{background:#0056b3;}.info{background:#e8f4fd;border-left:4px solid #007bff;padding:15px;margin:15px 0;border-radius:4px;}</style>";
+        html += "</head><body><div class=\"container\">";
+        html += "<h1>📶 WiFi配置</h1>";
+        html += "<div class=\"info\">";
+        html += "<strong>设备已进入配网模式</strong><br>";
+        html += "请选择您的WiFi网络并输入密码";
+        html += "</div>";
+        html += "<form id=\"wifiForm\">";
+        html += "<div><label>WiFi网络:</label><select id=\"ssid\" required><option value=\"\">请选择网络...</option></select></div>";
+        html += "<div><label>密码:</label><input type=\"password\" id=\"password\" required></div>";
+        html += "<button type=\"submit\" class=\"btn\">连接网络</button>";
+        html += "</form>";
+        html += "<p style=\"text-align:center;color:#666;\">固件版本：" + FIRMWARE_VERSION + "</p>";
+        html += "<script>";
+        html += "document.getElementById('wifiForm').onsubmit = function(e) { e.preventDefault(); saveWiFi(); }; ";
+        html += "function saveWiFi() { var ssid = document.getElementById('ssid').value; var password = document.getElementById('password').value; ";
+        html += "fetch('/save_wifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'ssid=' + encodeURIComponent(ssid) + '&password=' + encodeURIComponent(password) }).then(r => r.json()).then(data => { if(data.status === 'success') { alert('配置保存成功，设备将重启'); } else { alert('配置保存失败'); } }); }";
+        html += "</script>";
+        html += "</div></body></html>";
+        webServer.send(200, "text/html", html);
+        Serial.println("强制门户模式：返回简化配网页面");
+        return;
+    }
+    
+    // 正常模式：如果LittleFS文件系统已初始化且index.html文件存在，则从文件系统加载
     if (LittleFS.exists("/index.html")) {
         File file = LittleFS.open("/index.html", "r");
         if (file) {
@@ -703,30 +876,69 @@ void handleRoot() {
             webServer.streamFile(file, "text/html", HTTP_GET);
             file.close();
         } else {
+            // 如果文件打开失败，返回简单的状态页面
+            String html = "<!DOCTYPE html><html><head><title>智能烤箱控制器</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+            html += "<style>body{font-family:Arial,sans-serif;margin:20px;}</style>";
+            html += "</head><body>";
+            html += "<h1>智能烤箱控制器 v" + FIRMWARE_VERSION + "</h1>";
+            html += "<p>当前温度: " + String(currentTemp) + "°C</p>";
+            html += "<p>目标温度: " + String(targetTemp) + "°C</p>";
+            html += "<p>加热状态: " + String(heatingEnabled ? "开启" : "关闭") + "</p>";
+            html += "<p>工作模式: " + String(ovenMode ? "烤箱模式" : "烤面包机模式") + "</p>";
+            html += "<p><small>注意：HTML文件未正确上传到设备，请检查LittleFS文件系统</small></p>";
+            html += "</body></html>";
+            webServer.send(200, "text/html", html);
+        }
+    } else {
         // 如果文件不存在，返回简单的状态页面
         String html = "<!DOCTYPE html><html><head><title>智能烤箱控制器</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
         html += "<style>body{font-family:Arial,sans-serif;margin:20px;}</style>";
-        html += "</head><body>";
-        html += "<h1>智能烤箱控制器 v" + FIRMWARE_VERSION + "</h1>";
-        html += "<p>当前温度: " + String(currentTemp) + "°C</p>";
-        html += "<p>目标温度: " + String(targetTemp) + "°C</p>";
-        html += "<p>加热状态: " + String(heatingEnabled ? "开启" : "关闭") + "</p>";
-        html += "<p>工作模式: " + String(ovenMode ? "烤箱模式" : "烤面包机模式") + "</p>";
-        html += "<p><small>注意：HTML文件未正确上传到设备，请检查LittleFS文件系统</small></p>";
-        html += "</body></html>";
-        webServer.send(200, "text/html", html);
-    }
+            html += "</head><body>";
+            html += "<h1>智能烤箱控制器 v" + FIRMWARE_VERSION + "</h1>";
+            html += "<p>当前温度: " + String(currentTemp) + "°C</p>";
+            html += "<p>目标温度: " + String(targetTemp) + "°C</p>";
+            html += "<p>加热状态: " + String(heatingEnabled ? "开启" : "关闭") + "</p>";
+            html += "<p>工作模式: " + String(ovenMode ? "烤箱模式" : "烤面包机模式") + "</p>";
+            html += "<p><small>注意：HTML文件未正确上传到设备，请检查LittleFS文件系统</small></p>";
+            html += "</body></html>";
+            webServer.send(200, "text/html", html);
     }
 }
 
 void handleStatus() {
+    String wifiStatus = "disconnected";
+    String wifiSSID = "";
+    String ipAddress = "";
+    int rssi = 0;
+    
+    // 获取WiFi连接状态（快速配网优化）
+    if (WiFi.status() == WL_CONNECTED) {
+        wifiStatus = "connected";
+        wifiSSID = WiFi.SSID();
+        ipAddress = WiFi.localIP().toString();
+        rssi = WiFi.RSSI();
+    } else if (isCaptivePortalMode) {
+        wifiStatus = "captive_portal";
+        wifiSSID = AP_SSID;
+        ipAddress = WiFi.softAPIP().toString();
+    }
+    
     String json = "{\"temperature\":" + String(currentTemp) + ",";
     json += "\"target_temperature\":" + String(targetTemp) + ",";
     json += "\"heating_enabled\":" + String(heatingEnabled ? "true" : "false") + ",";
     json += "\"oven_mode\":" + String(ovenMode ? "true" : "false") + ",";
     json += "\"device_id\":\"" + DEVICE_ID + "\",";
-    json += "\"firmware_version\":\"" + FIRMWARE_VERSION + "\"}";
+    json += "\"firmware_version\":\"" + FIRMWARE_VERSION + "\",";
+    json += "\"wifiStatus\":\"" + wifiStatus + "\",";
+    json += "\"wifiSSID\":\"" + wifiSSID + "\",";
+    json += "\"ipAddress\":\"" + ipAddress + "\",";
+    json += "\"rssi\":" + String(rssi) + ",";
+    json += "\"uptime\":" + String(millis() / 1000) + ",";
+    json += "\"freeMemory\":" + String(ESP.getFreeHeap()) + ",";
+    json += "\"captivePortalMode\":" + String(isCaptivePortalMode ? "true" : "false") + "}";
+    
     webServer.send(200, "application/json", json);
+    Serial.println("状态查询: WiFi状态=" + wifiStatus + ", SSID=" + wifiSSID);
 }
 
 void handleControl() {
@@ -744,18 +956,11 @@ void handleControl() {
 }
 
 void handleScanWiFi() {
-    int numNetworks = WiFi.scanNetworks();
-    String json = "{\"networks\":[";
-    if (numNetworks > 0) {
-        for (int i = 0; i < numNetworks; i++) {
-            if (i > 0) json += ",";
-            json += "{\"ssid\":\"" + WiFi.SSID(i) + "\",";
-            json += "\"rssi\":" + String(WiFi.RSSI(i)) + "}";
-        }
-    }
-    json += "]}";
+    // 使用快速WiFi扫描功能（快速配网优化）
+    String networks = scanWiFiNetworks();
+    String json = "{\"status\":\"success\",\"networks\":" + networks + "}";
     webServer.send(200, "application/json", json);
-    WiFi.scanDelete();
+    Serial.println("WiFi扫描完成，返回网络列表");
 }
 
 void handleSaveWiFi() {
@@ -810,8 +1015,31 @@ void handleWiFiConfig() {
         if (webServer.hasArg("ssid") && webServer.hasArg("password")) {
             wifiSSID = webServer.arg("ssid");
             wifiPassword = webServer.arg("password");
-            saveConfig();
-            webServer.send(200, "application/json", "{\"status\":\"success\"}");
+            
+            // 保存配置并检查保存结果
+            bool saveSuccess = saveConfig();
+            
+            if (saveSuccess) {
+                // 配置保存成功，返回成功响应
+                webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"WiFi配置已保存，设备将在3秒后重启\"}");
+                
+                // 等待1秒确保响应已发送给客户端
+                delay(1000);
+                
+                // 停止Captive Portal服务，确保WiFi状态正确
+                if (isCaptivePortalMode) {
+                    stopCaptivePortal();
+                }
+                
+                // 再等待2秒确保EEPROM保存完全完成
+                delay(2000);
+                
+                Serial.println("WiFi配置保存完成，设备即将重启以应用新设置");
+                ESP.restart();
+            } else {
+                // 配置保存失败
+                webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"WiFi配置保存失败，请重试\"}");
+            }
         } else {
             webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"缺少必要参数\"}");
         }
@@ -1089,14 +1317,59 @@ bool isValidFileType(String filename) {
 }
 
 void setupWebServer() {
-    // 初始化LittleFS文件系统
+    // 初始化LittleFS文件系统（从备份文件恢复完整初始化逻辑）
     if (!LittleFS.begin()) {
-        Serial.println("LittleFS文件系统初始化失败");
+        Serial.println("LittleFS文件系统初始化失败，尝试格式化...");
+        if (LittleFS.format()) {
+            Serial.println("LittleFS格式化成功，重新初始化...");
+            if (!LittleFS.begin()) {
+                Serial.println("LittleFS重新初始化失败，Web服务器将以受限模式运行");
+                isFileSystemAvailable = false;
+            } else {
+                Serial.println("LittleFS文件系统初始化成功");
+                isFileSystemAvailable = true;
+            }
+        } else {
+            Serial.println("LittleFS格式化失败，Web服务器将以受限模式运行");
+            isFileSystemAvailable = false;
+        }
     } else {
         Serial.println("LittleFS文件系统初始化成功");
+        isFileSystemAvailable = true;
         
-        // 如果不是Captive Portal模式，则设置静态文件服务
-        if (!isCaptivePortalMode) {
+        // 检查关键文件是否存在
+        bool loginExists = LittleFS.exists("/login.html");
+        bool indexExists = LittleFS.exists("/index.html");
+        bool wifiConfigExists = LittleFS.exists("/wifi_config.html");
+        bool deviceStatusExists = LittleFS.exists("/device_status.html");
+        bool tempCalibrationExists = LittleFS.exists("/temperature_calibration.html");
+        bool settingsHelpExists = LittleFS.exists("/settings_help.html");
+        
+        Serial.print("文件检查结果: ");
+        Serial.print("login.html:"); Serial.print(loginExists ? "存在" : "缺失");
+        Serial.print(", index.html:"); Serial.print(indexExists ? "存在" : "缺失");
+        Serial.print(", wifi_config.html:"); Serial.print(wifiConfigExists ? "存在" : "缺失");
+        Serial.print(", device_status.html:"); Serial.print(deviceStatusExists ? "存在" : "缺失");
+        Serial.print(", temperature_calibration.html:"); Serial.print(tempCalibrationExists ? "存在" : "缺失");
+        Serial.print(", settings_help.html:"); Serial.println(settingsHelpExists ? "存在" : "缺失");
+        
+        if (loginExists && indexExists && wifiConfigExists && deviceStatusExists && 
+            tempCalibrationExists && settingsHelpExists) {
+            Serial.println("关键HTML文件存在");
+        } else {
+            Serial.println("警告：关键HTML文件缺失，Web界面可能无法正常工作");
+        }
+    }
+    
+    // 设置静态文件服务（强制门户模式也需要访问wifi_config.html）
+    if (isFileSystemAvailable) {
+        // 强制门户模式下只提供必要的配网相关文件
+        if (isCaptivePortalMode) {
+            webServer.serveStatic("/wifi_config.html", LittleFS, "/wifi_config.html");
+            webServer.serveStatic("/mobile_utils.js", LittleFS, "/mobile_utils.js");
+            Serial.println("强制门户模式：配网相关文件静态服务配置完成");
+        } else {
+            // 正常模式下的完整静态文件服务配置
             webServer.serveStatic("/login.html", LittleFS, "/login.html");
             webServer.serveStatic("/index.html", LittleFS, "/index.html");
             webServer.serveStatic("/device_status.html", LittleFS, "/device_status.html");
@@ -1104,8 +1377,16 @@ void setupWebServer() {
             webServer.serveStatic("/wifi_config.html", LittleFS, "/wifi_config.html");
             webServer.serveStatic("/temperature_calibration.html", LittleFS, "/temperature_calibration.html");
             webServer.serveStatic("/mobile_utils.js", LittleFS, "/mobile_utils.js");
-            Serial.println("HTML文件静态服务配置完成");
+            
+            // 恢复目录服务支持
+            webServer.serveStatic("/css/", LittleFS, "/css/");
+            webServer.serveStatic("/js/", LittleFS, "/js/");
+            webServer.serveStatic("/images/", LittleFS, "/images/");
+            
+            Serial.println("正常模式：HTML文件静态服务配置完成（支持目录访问）");
         }
+    } else {
+        Serial.println("文件系统不可用，仅提供基本API服务");
     }
     
     // 设置Web服务器路由
@@ -1132,7 +1413,10 @@ void setupWebServer() {
         webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"文件上传成功\"}");
     }, handleFileUpload);
     
-    Serial.println("Web服务器路由配置完成");
+    // 添加DNS重定向处理 - 强制门户模式下的关键配置
+    webServer.onNotFound(handleNotFound);
+    
+    Serial.println("Web服务器路由配置完成（包含DNS重定向）");
 }
 
 // =========================================
@@ -1309,58 +1593,56 @@ void handleBakingComplete() {
 // =========================================
 
 void setup() {
-    // 初始化串口通信
+    // 快速初始化串口通信
     Serial.begin(115200);
-    Serial.println("");
-    Serial.println("=== 智能烤箱控制器启动 ===");
-    Serial.println("固件版本: " + FIRMWARE_VERSION);
-    Serial.println("设备ID: " + DEVICE_ID);
-    Serial.println("设备名称: " + DEVICE_NAME);
     
-    // 初始化硬件引脚
+    // 快速初始化硬件引脚
     pinMode(HEATER_PIN, OUTPUT);
     pinMode(BUZZER_PIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
     
-    // 初始化加热器状态 - 默认关闭
+    // 快速初始化加热器状态 - 默认关闭
     digitalWrite(HEATER_PIN, LOW);
     digitalWrite(BUZZER_PIN, LOW);
     digitalWrite(LED_PIN, HIGH); // LED默认熄灭
     
-    // 验证硬件初始化状态
+    // 快速验证硬件初始化状态
     if (!verifyHardwareInitialization()) {
-        Serial.println("硬件初始化失败，执行硬件恢复流程");
         performHardwareRecovery();
     }
     
-    // 加载EEPROM配置
-    if (!loadConfig()) {
-        Serial.println("未找到有效配置，启动Captive Portal进行初始配置");
-        startCaptivePortal();
-    } else {
-        Serial.println("配置加载成功，尝试连接WiFi");
-        if (!connectToWiFi()) {
-            Serial.println("WiFi连接失败，启动Captive Portal");
-            startCaptivePortal();
+    // 优化WiFi启动逻辑：先检查配置，再尝试连接
+    if (loadConfig()) {
+        Serial.println("WiFi配置加载成功，尝试连接网络...");
+        Serial.print("SSID: ");
+        Serial.println(wifiSSID);
+        
+        // 尝试连接WiFi，如果连接失败，不立即启动Captive Portal
+        if (connectToWiFi()) {
+            Serial.println("WiFi连接成功，设备进入正常模式");
+        } else {
+            Serial.println("WiFi连接失败，但配置有效，设备将保持STA模式");
+            // 不启动Captive Portal，让设备继续尝试连接
+            isCaptivePortalMode = false;
         }
+    } else {
+        Serial.println("未找到有效WiFi配置，启动Captive Portal配网模式");
+        startCaptivePortal();
     }
     
-    // 启动TCP服务器
+    // 快速启动TCP服务器
     tcpServer.begin();
-    Serial.println("TCP服务器已启动，监听端口: " + String(DEFAULT_PORT));
     
-    // 启动OTA更新服务
+    // 快速启动OTA更新服务
     if (!isCaptivePortalMode) {
         setupOTA();
     }
     
-    // 初始化温度读取计数器和平均时间
+    // 快速初始化温度读取计数器和平均时间
     temperatureReadCount = 0;
     temperatureReadAvgTime = 0;
     
-    Serial.println("初始化完成，系统开始运行");
-    
-    // 播放启动提示音
+    // 快速播放启动提示音
     beepConfigSaved();
 }
 
