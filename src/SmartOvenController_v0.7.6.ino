@@ -14,6 +14,7 @@
 #include <EEPROM.h>
 #include <SPI.h>
 #include <LittleFS.h>
+#include <ArduinoJson.h>
 
 // =========================================
 // 硬件引脚定义
@@ -1300,6 +1301,12 @@ void handleFileUpload() {
             Serial.print(", 大小: ");
             Serial.println(upload.totalSize);
             
+            // 强制刷新文件系统缓存
+            LittleFS.end();
+            delay(100);
+            LittleFS.begin();
+            Serial.println("文件系统缓存已刷新");
+            
             // 如果是固件文件，提示用户使用OTA升级
             if (currentFilename.endsWith(".bin")) {
                 Serial.println("固件文件上传完成，请使用OTA升级功能进行升级");
@@ -1328,6 +1335,71 @@ bool isValidFileType(String filename) {
     }
     
     return false;
+}
+
+void handleUploadHTML() {
+    // 处理JSON格式的HTML文件上传
+    if (webServer.hasArg("plain")) {
+        String jsonData = webServer.arg("plain");
+        
+        // 解析JSON数据
+        DynamicJsonDocument doc(2048);
+        DeserializationError error = deserializeJson(doc, jsonData);
+        
+        if (error) {
+            webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"JSON解析失败\"}");
+            Serial.println("JSON解析失败");
+            return;
+        }
+        
+        String filename = doc["filename"];
+        String content = doc["content"];
+        
+        if (filename.isEmpty() || content.isEmpty()) {
+            webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"文件名或内容为空\"}");
+            Serial.println("文件名或内容为空");
+            return;
+        }
+        
+        // 确保文件名以/开头
+        if (!filename.startsWith("/")) {
+            filename = "/" + filename;
+        }
+        
+        // 验证文件类型
+        if (!isValidFileType(filename)) {
+            webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"不支持的文件类型\"}");
+            Serial.print("不支持的文件类型: ");
+            Serial.println(filename);
+            return;
+        }
+        
+        // 写入文件
+        File file = LittleFS.open(filename, "w");
+        if (!file) {
+            webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"文件创建失败\"}");
+            Serial.println("文件创建失败");
+            return;
+        }
+        
+        file.print(content);
+        file.close();
+        
+        // 强制刷新文件系统缓存
+        LittleFS.end();
+        delay(100);
+        LittleFS.begin();
+        
+        Serial.print("HTML文件上传成功: ");
+        Serial.print(filename);
+        Serial.print(", 大小: ");
+        Serial.println(content.length());
+        
+        webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"文件上传成功\"}");
+    } else {
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"缺少JSON数据\"}");
+        Serial.println("缺少JSON数据");
+    }
 }
 
 void setupWebServer() {
@@ -1426,6 +1498,9 @@ void setupWebServer() {
     webServer.on("/upload", HTTP_POST, []() {
         webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"文件上传成功\"}");
     }, handleFileUpload);
+    
+    // 添加专门的HTML文件上传接口
+    webServer.on("/upload_html", HTTP_POST, handleUploadHTML);
     
     // 添加DNS重定向处理 - 强制门户模式下的关键配置
     webServer.onNotFound(handleNotFound);
