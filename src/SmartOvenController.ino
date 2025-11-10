@@ -52,7 +52,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.7.8";
+const String FIRMWARE_VERSION = "0.7.9";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -1146,6 +1146,19 @@ void handleReset() {
     ESP.restart();
 }
 
+void handleResetCalibration() {
+    temperatureOffset = 0.0;
+    temperatureScale = 1.0;
+    saveConfig(); // 保存重置后的配置
+    
+    String json = "{\"message\":\"温度校准参数已重置\",";
+    json += "\"offset\":" + String(temperatureOffset) + ",";
+    json += "\"scale\":" + String(temperatureScale) + "}";
+    webServer.send(200, "application/json", json);
+    
+    Serial.println("温度校准参数已重置: offset=" + String(temperatureOffset) + ", scale=" + String(temperatureScale));
+}
+
 void handleFileUpload() {
     // 文件上传处理函数
     HTTPUpload& upload = webServer.upload();
@@ -1323,6 +1336,7 @@ void setupWebServer() {
     webServer.on("/savewifi", HTTP_POST, handleSaveWiFi);
     webServer.on("/factoryreset", HTTP_POST, handleFactoryReset);
     webServer.on("/restart", HTTP_POST, handleRestart);
+    webServer.on("/reset_calibration", HTTP_POST, handleResetCalibration);
     webServer.on("/ota_update", HTTP_GET, handleOTAUpdate);
     webServer.on("/update", HTTP_POST, []() {
         webServer.send(200, "text/plain", "OTA update endpoint");
