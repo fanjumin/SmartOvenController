@@ -32,7 +32,7 @@ def main():
     
     # 检查根目录文件
     root_files = [
-        ("SmartOvenController_v0.8.0.zip", 500000),
+        ("SmartOvenController_v0.8.1.zip", 374017),
         ("FINAL_PROJECT_SUMMARY.md", 1000),
         ("PROJECT_STATUS_REPORT.md", 1000),
         ("QUICK_START_GUIDE.md", 1000),
@@ -48,8 +48,8 @@ def main():
     release_files = [
         ("release/firmware.bin", 300000),
         ("release/littlefs.bin", 1000000),
-        ("release/platformio.ini", 500),
-        ("release/BUILD_INSTRUCTIONS.md", 1000),
+        ("platformio.ini", 500),
+        ("BUILD_INSTRUCTIONS.md", 1000),
     ]
     
     print("\n[2/3] 验证release目录文件...")

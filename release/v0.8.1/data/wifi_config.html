@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备配网</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .device-info {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .config-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-label {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            min-width: 80px;
+        }
+        
+        .form-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 8px 12px;
+            outline: none;
+            border-radius: 5px;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .wifi-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            color: white;
+            padding: 8px 12px;
+            font-size: 16px;
+            outline: none;
+            width: 100%;
+        }
+        
+        .wifi-select option {
+            background: #667eea;
+            color: white;
+        }
+        
+        .connect-btn {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(81, 207, 102, 0.3);
+        }
+        
+        .connect-btn:active {
+            transform: translateY(0);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .form-label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>设备配网</h1>
+            <div class="device-info">WiFi网络配置</div>
+        </div>
+        
+        <div class="config-form">
+            <div class="form-row">
+                <span class="form-label">选择WiFi</span>
+                <div style="position: relative; width: 100%;">
+                    <input type="text" class="form-input" id="wifi-search" placeholder="搜索WiFi网络..." oninput="filterWiFiNetworks()">
+                    <select class="wifi-select" id="wifi-select" style="display: none;">
+                        <option value="">请选择网络</option>
+                    </select>
+                    <div id="wifi-results" style="position: absolute; top: 100%; left: 0; right: 0; background: rgba(255,255,255,0.95); border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-height: 200px; overflow-y: auto; display: none; z-index: 1000;"></div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <span class="form-label">输入密码</span>
+                <input type="password" class="form-input" id="password-input" placeholder="请输入WiFi密码">
+            </div>
+            
+            <button class="connect-btn" onclick="connectWiFi()">连接网络</button>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 过滤WiFi网络
+        function filterWiFiNetworks() {
+            const searchInput = document.getElementById('wifi-search');
+            const wifiSelect = document.getElementById('wifi-select');
+            const resultsContainer = document.getElementById('wifi-results');
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            const options = Array.from(wifiSelect.options);
+            
+            // 过滤匹配的网络
+            const matchedNetworks = options.filter(option => 
+                option.text.toLowerCase().includes(searchTerm) && option.value !== ''
+            );
+            
+            // 显示或隐藏结果容器
+            if (searchTerm && matchedNetworks.length > 0) {
+                // 显示匹配结果
+                resultsContainer.innerHTML = '';
+                matchedNetworks.forEach(option => {
+                    const resultItem = document.createElement('div');
+                    resultItem.style.padding = '10px 15px';
+                    resultItem.style.cursor = 'pointer';
+                    resultItem.style.borderBottom = '1px solid rgba(0,0,0,0.1)';
+                    resultItem.style.color = '#333';
+                    resultItem.textContent = option.text;
+                    
+                    resultItem.addEventListener('click', () => {
+                        searchInput.value = option.text;
+                        wifiSelect.value = option.value;
+                        resultsContainer.style.display = 'none';
+                        showToast(`已选择网络: ${option.text}`);
+                    });
+                    
+                    resultItem.addEventListener('mouseenter', () => {
+                        resultItem.style.background = 'rgba(102, 126, 234, 0.1)';
+                    });
+                    
+                    resultItem.addEventListener('mouseleave', () => {
+                        resultItem.style.background = 'transparent';
+                    });
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+                resultsContainer.style.display = 'block';
+            } else if (searchTerm === '') {
+                // 搜索框为空时显示所有网络
+                resultsContainer.innerHTML = '';
+                options.filter(option => option.value !== '').forEach(option => {
+                    const resultItem = document.createElement('div');
+                    resultItem.style.padding = '10px 15px';
+                    resultItem.style.cursor = 'pointer';
+                    resultItem.style.borderBottom = '1px solid rgba(0,0,0,0.1)';
+                    resultItem.style.color = '#333';
+                    resultItem.textContent = option.text;
+                    
+                    resultItem.addEventListener('click', () => {
+                        searchInput.value = option.text;
+                        wifiSelect.value = option.value;
+                        resultsContainer.style.display = 'none';
+                        showToast(`已选择网络: ${option.text}`);
+                    });
+                    
+                    resultItem.addEventListener('mouseenter', () => {
+                        resultItem.style.background = 'rgba(102, 126, 234, 0.1)';
+                    });
+                    
+                    resultItem.addEventListener('mouseleave', () => {
+                        resultItem.style.background = 'transparent';
+                    });
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+                if (options.filter(option => option.value !== '').length > 0) {
+                    resultsContainer.style.display = 'block';
+                }
+            } else {
+                resultsContainer.style.display = 'none';
+            }
+        }
+        
+        // 连接WiFi函数
+        function connectWiFi() {
+            const wifiSelect = document.getElementById('wifi-select');
+            const passwordInput = document.getElementById('password-input');
+            const resultsContainer = document.getElementById('wifi-results');
+            
+            const selectedWifi = wifiSelect.value;
+            const password = passwordInput.value;
+            
+            if (!selectedWifi) {
+                showToast('请选择WiFi网络');
+                return;
+            }
+            
+            if (!password) {
+                showToast('请输入WiFi密码');
+                return;
+            }
+            
+            // 调用真实设备API保存WiFi配置
+            showToast('正在保存WiFi配置...');
+            
+            // 构建POST请求数据
+            const formData = new URLSearchParams();
+            formData.append('ssid', selectedWifi);
+            formData.append('password', password);
+            
+            // 发送WiFi配置到设备
+            fetch('/savewifi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('WiFi配置保存成功！设备将在3秒后重启...');
+                    
+                    // 清空输入框
+                    passwordInput.value = '';
+                    wifiSelect.value = '';
+                    document.getElementById('wifi-search').value = '';
+                    resultsContainer.style.display = 'none';
+                    
+                    // 等待设备重启
+                    setTimeout(() => {
+                        showToast('设备重启中，请稍后检查连接状态...');
+                    }, 3000);
+                } else {
+                    showToast('配置保存失败: ' + (data.message || '未知错误'));
+                }
+            })
+            .catch(error => {
+                console.error('WiFi配置保存错误:', error);
+                showToast('网络错误，请检查设备连接状态');
+            });
+        }
+        
+        // 扫描WiFi网络
+        function scanWiFiNetworks() {
+            showToast('正在扫描WiFi网络...');
+            
+            // 调用设备API获取WiFi列表
+            fetch('/scanwifi')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.networks) {
+                        populateWiFiList(data.networks);
+                        showToast(`发现 ${data.networks.length} 个WiFi网络`);
+                    } else {
+                        showToast('扫描失败: 未找到网络数据');
+                        // 如果扫描失败，使用模拟数据作为备用
+                        populateWiFiList(getMockWiFiNetworks());
+                    }
+                })
+                .catch(error => {
+                    console.error('WiFi扫描错误:', error);
+                    showToast('扫描失败，使用模拟数据');
+                    // 网络错误时使用模拟数据作为备用
+                    populateWiFiList(getMockWiFiNetworks());
+                });
+        }
+        
+        // 填充WiFi网络列表
+        function populateWiFiList(networks) {
+            const wifiSelect = document.getElementById('wifi-select');
+            const searchInput = document.getElementById('wifi-search');
+            
+            // 清空现有选项（保留第一个"请选择网络"选项）
+            while (wifiSelect.options.length > 1) {
+                wifiSelect.remove(1);
+            }
+            
+            // 添加扫描到的网络
+            networks.forEach(network => {
+                const option = document.createElement('option');
+                option.value = network.ssid;
+                option.text = network.ssid + (network.signal ? ` (${network.signal}dBm)` : '');
+                wifiSelect.appendChild(option);
+            });
+            
+            // 如果搜索框有内容，触发过滤
+            if (searchInput.value) {
+                filterWiFiNetworks();
+            }
+        }
+        
+        // 获取模拟WiFi网络数据（用于测试）
+        function getMockWiFiNetworks() {
+            return [
+                { ssid: 'Home_WiFi_5G', signal: -45 },
+                { ssid: 'TP-LINK_2.4G', signal: -55 },
+                { ssid: 'ChinaNet-XXXX', signal: -65 },
+                { ssid: 'CMCC-XXXX', signal: -70 },
+                { ssid: 'Guest_WiFi', signal: -75 }
+            ];
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('配网界面已就绪，正在扫描WiFi网络...');
+            
+            // 自动扫描WiFi网络
+            scanWiFiNetworks();
+            
+            // 点击页面其他地方时隐藏搜索结果
+            document.addEventListener('click', (e) => {
+                const searchInput = document.getElementById('wifi-search');
+                const resultsContainer = document.getElementById('wifi-results');
+                
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+            
+            // 搜索框获得焦点时显示所有网络
+            document.getElementById('wifi-search').addEventListener('focus', () => {
+                filterWiFiNetworks();
+            });
+        });
+    </script>
+</body>
+</html>
