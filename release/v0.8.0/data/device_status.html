@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>设备状态 - 智能电烤箱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+            margin-right: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .status-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .temperature {
+            color: #e74c3c;
+        }
+
+        .connected {
+            color: #27ae60;
+        }
+
+        .disconnected {
+            color: #95a5a6;
+        }
+
+        .heating {
+            color: #f39c12;
+        }
+
+        .status-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .list-label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .list-value {
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .progress-container {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(236, 240, 241, 0.8);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .chart {
+            width: 100%;
+            height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: #3498db;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .chart-area {
+            fill: rgba(52, 152, 219, 0.1);
+        }
+
+        .indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .indicator-online {
+            background: #27ae60;
+            box-shadow: 0 0 10px #27ae60;
+        }
+
+        .indicator-offline {
+            background: #e74c3c;
+        }
+
+        .indicator-warning {
+            background: #f39c12;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .refresh-btn {
+            background: rgba(52, 152, 219, 0.8);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+        }
+
+        .refresh-btn:active {
+            background: rgba(41, 128, 185, 0.8);
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.5);
+            margin: 20px 0;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.6);
+            color: #2c3e50;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:active {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">←</button>
+            <h1>设备状态</h1>
+            <button class="refresh-btn" onclick="refreshStatus()">
+                🔄 刷新
+            </button>
+        </div>
+
+        <!-- 温度状态卡片 -->
+        <div class="status-card">
+            <div class="card-title">🌡️ 温度监控</div>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">当前温度</div>
+                    <div class="status-value temperature" id="current-temp">--°C</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">目标温度</div>
+                    <div class="status-value temperature" id="target-temp">--°C</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">温度差</div>
+                    <div class="status-value" id="temp-diff">--°C</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">加热状态</div>
+                    <div class="status-value heating" id="heating-status">--</div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="temp-progress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="temp-progress-text">温度进度: 0%</div>
+            </div>
+        </div>
+
+        <!-- 网络状态卡片 -->
+        <div class="status-card">
+            <div class="card-title">📶 网络状态</div>
+            
+            <div class="status-list">
+                <div class="list-item">
+                    <span class="list-label">连接状态</span>
+                    <span class="list-value" id="connection-status">
+                        <span class="indicator" id="connection-indicator"></span>
+                        --
+                    </span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">WiFi名称</span>
+                    <span class="list-value" id="wifi-ssid">--</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">IP地址</span>
+                    <span class="list-value" id="ip-address">--</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">信号强度</span>
+                    <span class="list-value" id="signal-strength">-- dBm</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">设备ID</span>
+                    <span class="list-value" id="device-id">--</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">固件版本</span>
+                    <span class="list-value" id="firmware-version">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统信息卡片 -->
+        <div class="status-card">
+            <div class="card-title">⚙️ 系统信息</div>
+            
+            <div class="status-list">
+                <div class="list-item">
+                    <span class="list-label">运行时间</span>
+                    <span class="list-value" id="uptime">--</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">内存使用</span>
+                    <span class="list-value" id="memory-usage">--</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">最后更新</span>
+                    <span class="list-value" id="last-update">--</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-label">设备类型</span>
+                    <span class="list-value" id="device-type">智能电烤箱控制器</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 温度趋势图 -->
+        <div class="status-card">
+            <div class="card-title">📊 温度趋势</div>
+            
+            <div class="chart-container">
+                <svg class="chart" viewBox="0 0 300 120" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(52, 152, 219, 0.3)" />
+                            <stop offset="100%" style="stop-color:rgba(52, 152, 219, 0)" />
+                        </linearGradient>
+                    </defs>
+                    <path class="chart-area" id="chart-area" d=""></path>
+                    <path class="chart-line" id="chart-line" d=""></path>
+                </svg>
+            </div>
+            
+            <div class="timestamp" id="chart-timestamp">数据更新时间: --</div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="exportData()">
+                导出数据
+            </button>
+            <button class="btn btn-secondary" onclick="resetStats()">
+                重置统计
+            </button>
+        </div>
+
+        <div class="timestamp" id="last-refresh">最后刷新: --</div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let temperatureHistory = [];
+        const maxHistoryPoints = 20;
+
+        // 返回首页
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // 刷新状态
+        function refreshStatus() {
+            updateDeviceStatus();
+            showToast('状态已刷新');
+        }
+
+        // 更新设备状态
+        async function updateDeviceStatus() {
+            try {
+                const response = await fetch('/status');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // 更新温度信息
+                    document.getElementById('current-temp').textContent = data.currentTemp + '°C';
+                    document.getElementById('target-temp').textContent = data.targetTemp + '°C';
+                    
+                    const tempDiff = data.targetTemp - data.currentTemp;
+                    document.getElementById('temp-diff').textContent = 
+                        (tempDiff > 0 ? '+' : '') + tempDiff + '°C';
+                    
+                    // 更新加热状态
+                    const heatingStatus = document.getElementById('heating-status');
+                    heatingStatus.textContent = data.heatingEnabled ? '加热中' : '关闭';
+                    heatingStatus.style.color = data.heatingEnabled ? '#f39c12' : '#95a5a6';
+                    
+                    // 更新温度进度条
+                    const progress = data.targetTemp > 0 ? 
+                        Math.min((data.currentTemp / data.targetTemp) * 100, 100) : 0;
+                    document.getElementById('temp-progress').style.width = progress + '%';
+                    document.getElementById('temp-progress-text').textContent = 
+                        '温度进度: ' + progress.toFixed(1) + '%';
+                    
+                    // 更新网络状态
+                    updateConnectionStatus(data);
+                    
+                    // 更新系统信息
+                    updateSystemInfo(data);
+                    
+                    // 更新温度历史
+                    updateTemperatureHistory(data.currentTemp);
+                    
+                    // 更新最后刷新时间
+                    document.getElementById('last-refresh').textContent = 
+                        '最后刷新: ' + new Date().toLocaleString();
+                }
+            } catch (error) {
+                console.error('获取设备状态失败:', error);
+                showToast('获取状态失败');
+            }
+        }
+
+        // 更新连接状态
+        function updateConnectionStatus(data) {
+            const indicator = document.getElementById('connection-indicator');
+            const statusElement = document.getElementById('connection-status');
+            
+            if (data.wifiConnected) {
+                indicator.className = 'indicator indicator-online';
+                statusElement.innerHTML = '<span class="indicator indicator-online"></span>已连接';
+                
+                document.getElementById('wifi-ssid').textContent = data.wifiSSID || '--';
+                document.getElementById('ip-address').textContent = data.ipAddress || '--';
+                document.getElementById('signal-strength').textContent = 
+                    (data.rssi || '--') + ' dBm';
+            } else {
+                indicator.className = 'indicator indicator-offline';
+                statusElement.innerHTML = '<span class="indicator indicator-offline"></span>未连接';
+                
+                document.getElementById('wifi-ssid').textContent = '--';
+                document.getElementById('ip-address').textContent = '--';
+                document.getElementById('signal-strength').textContent = '-- dBm';
+            }
+            
+            document.getElementById('device-id').textContent = data.deviceId || '--';
+            document.getElementById('firmware-version').textContent = data.firmwareVersion || '--';
+        }
+
+        // 更新系统信息
+        function updateSystemInfo(data) {
+            document.getElementById('uptime').textContent = 
+                formatUptime(data.uptime || 0);
+            document.getElementById('memory-usage').textContent = 
+                (data.freeHeap || 0) + ' KB';
+            document.getElementById('last-update').textContent = 
+                new Date().toLocaleString();
+        }
+
+        // 格式化运行时间
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            
+            if (days > 0) {
+                return `${days}天 ${hours}小时`;
+            } else if (hours > 0) {
+                return `${hours}小时 ${minutes}分钟`;
+            } else {
+                return `${minutes}分钟`;
+            }
+        }
+
+        // 更新温度历史
+        function updateTemperatureHistory(currentTemp) {
+            temperatureHistory.push({
+                temp: currentTemp,
+                time: new Date()
+            });
+            
+            // 保持最多20个数据点
+            if (temperatureHistory.length > maxHistoryPoints) {
+                temperatureHistory.shift();
+            }
+            
+            // 更新图表
+            updateTemperatureChart();
+        }
+
+        // 更新温度图表
+        function updateTemperatureChart() {
+            if (temperatureHistory.length < 2) return;
+            
+            const chartWidth = 300;
+            const chartHeight = 120;
+            const maxTemp = Math.max(...temperatureHistory.map(d => d.temp));
+            const minTemp = Math.min(...temperatureHistory.map(d => d.temp));
+            const tempRange = Math.max(maxTemp - minTemp, 10); // 最小范围10度
+            
+            // 生成折线路径
+            let linePath = '';
+            let areaPath = '';
+            
+            temperatureHistory.forEach((point, index) => {
+                const x = (index / (temperatureHistory.length - 1)) * chartWidth;
+                const y = chartHeight - ((point.temp - minTemp) / tempRange) * chartHeight;
+                
+                if (index === 0) {
+                    linePath = `M ${x} ${y}`;
+                    areaPath = `M ${x} ${chartHeight} L ${x} ${y}`;
+                } else {
+                    linePath += ` L ${x} ${y}`;
+                    areaPath += ` L ${x} ${y}`;
+                }
+                
+                if (index === temperatureHistory.length - 1) {
+                    areaPath += ` L ${x} ${chartHeight} Z`;
+                }
+            });
+            
+            document.getElementById('chart-line').setAttribute('d', linePath);
+            document.getElementById('chart-area').setAttribute('d', areaPath);
+            
+            document.getElementById('chart-timestamp').textContent = 
+                '数据更新时间: ' + new Date().toLocaleTimeString();
+        }
+
+        // 导出数据
+        function exportData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                temperatureHistory: temperatureHistory,
+                deviceInfo: {
+                    currentTemp: document.getElementById('current-temp').textContent,
+                    targetTemp: document.getElementById('target-temp').textContent,
+                    connectionStatus: document.getElementById('connection-status').textContent
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { 
+                type: 'application/json' 
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `oven_status_${new Date().getTime()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('数据已导出');
+        }
+
+        // 重置统计
+        function resetStats() {
+            temperatureHistory = [];
+            updateTemperatureChart();
+            showToast('统计已重置');
+        }
+
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 立即更新一次状态
+            updateDeviceStatus();
+            
+            // 每5秒更新一次状态
+            setInterval(updateDeviceStatus, 5000);
+        });
+    </script>
+</body>
+</html>

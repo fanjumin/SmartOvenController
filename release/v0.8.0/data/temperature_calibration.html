@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智能电烤箱 - 温度校准</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-icon {
+            font-size: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .title-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .calibration-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 32px;
+        }
+
+        .calibration-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input {
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .calibration-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .calibration-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 150px;
+            justify-content: center;
+        }
+
+        .calibration-btn.primary {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+
+        .calibration-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .calibration-btn.danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .calibration-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .calibration-btn:active {
+            transform: translateY(0);
+        }
+
+        .status-display {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .status-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .offset-value {
+            color: #ff6b6b;
+        }
+
+        .scale-value {
+            color: #51cf66;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .instructions-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .instructions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-item:last-child {
+            border-bottom: none;
+        }
+
+        .instructions-number {
+            background: #ff6b6b;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+
+        .message.warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            color: #f59e0b;
+        }
+
+        @media (max-width: 768px) {
+            .calibration-form {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .calibration-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .calibration-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="main-title">
+                        <span class="title-icon">🌡️</span>
+                        烤箱温度校准
+                        <span class="title-badge">v0.8.0</span>
+                    </h1>
+                    <p class="subtitle">精确调整温度传感器参数，提高测量精度</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="calibration-section">
+            <h2 class="section-title">
+                <span class="section-icon">⚙️</span>
+                温度校准设置
+            </h2>
+            
+            <div id="message" class="message"></div>
+            
+            <div class="calibration-form">
+                <div class="form-group">
+                    <label class="form-label" for="actual-temp">实际温度 (°C)</label>
+                    <input type="number" id="actual-temp" class="form-input" placeholder="输入已知的实际温度" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="measured-temp">测量温度 (°C)</label>
+                    <input type="number" id="measured-temp" class="form-input" placeholder="输入设备测量的温度" step="0.1">
+                </div>
+            </div>
+            
+            <div class="calibration-controls">
+                <button class="calibration-btn primary" onclick="performCalibration()">
+                    <span>🔧</span>
+                    执行校准
+                </button>
+                <button class="calibration-btn secondary" onclick="resetCalibration()">
+                    <span>🔄</span>
+                    重置校准
+                </button>
+                <button class="calibration-btn danger" onclick="clearForm()">
+                    <span>🗑️</span>
+                    清空表单
+                </button>
+            </div>
+        </div>
+
+        <div class="calibration-section">
+            <h2 class="section-title">
+                <span class="section-icon">📊</span>
+                当前校准状态
+            </h2>
+            
+            <div class="status-display">
+                <div class="status-title">校准参数</div>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-label">温度偏移量</div>
+                        <div id="offset-value" class="status-value offset-value">0.0°C</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">温度缩放系数</div>
+                        <div id="scale-value" class="status-value scale-value">1.000</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">校准状态</div>
+                        <div id="calibration-status" class="status-value">未校准</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">最后更新时间</div>
+                        <div id="last-update" class="status-value">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3 class="instructions-title">温度校准说明</h3>
+            <ul class="instructions-list">
+                <li class="instructions-item">
+                    <div class="instructions-number">1</div>
+                    <span>使用标准温度计测量烤箱内的实际温度</span>
+                </li>
+                <li class="instructions-item">
+                    <div class="instructions-number">2</div>
+                    <span>记录设备显示的测量温度</span>
+                </li>
+                <li class="instructions-item">
+                    <div class="instructions-number">3</div>
+                    <span>输入实际温度和测量温度，点击"执行校准"</span>
+                </li>
+                <li class="instructions-item">
+                    <div class="instructions-number">4</div>
+                    <span>系统将自动计算温度偏移量和缩放系数</span>
+                </li>
+                <li class="instructions-item">
+                    <div class="instructions-number">5</div>
+                    <span>校准参数将保存到设备EEPROM中</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="navigation">
+            <a href="index.html" class="nav-btn">
+                <span>🏠</span>
+                返回主控制台
+            </a>
+            <a href="device_status.html" class="nav-btn">
+                <span>📈</span>
+                查看设备状态
+            </a>
+            <a href="settings_help.html" class="nav-btn">
+                <span>❓</span>
+                获取帮助
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 显示消息
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // 执行温度校准
+        async function performCalibration() {
+            const actualTemp = document.getElementById('actual-temp').value;
+            const measuredTemp = document.getElementById('measured-temp').value;
+            
+            if (!actualTemp || !measuredTemp) {
+                showMessage('请输入实际温度和测量温度', 'error');
+                return;
+            }
+            
+            if (parseFloat(actualTemp) <= 0 || parseFloat(measuredTemp) <= 0) {
+                showMessage('温度值必须大于0°C', 'error');
+                return;
+            }
+            
+            try {
+                showMessage('正在执行温度校准...', 'warning');
+                
+                // 模拟API调用 - 实际使用时需要连接到设备
+                const response = await simulateCalibrationAPI(actualTemp, measuredTemp);
+                
+                if (response.success) {
+                    updateCalibrationStatus(response.offset, response.scale);
+                    showMessage('温度校准成功！', 'success');
+                } else {
+                    showMessage('校准失败：' + response.error, 'error');
+                }
+            } catch (error) {
+                showMessage('校准过程中发生错误：' + error.message, 'error');
+            }
+        }
+
+        // 重置校准
+        async function resetCalibration() {
+            if (!confirm('确定要重置温度校准参数吗？这将恢复默认设置。')) {
+                return;
+            }
+            
+            try {
+                showMessage('正在重置校准参数...', 'warning');
+                
+                // 调用真实的API
+                const response = await fetch('/reset_calibration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateCalibrationStatus(data.offset, data.scale);
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage('重置失败：' + response.statusText, 'error');
+                }
+            } catch (error) {
+                showMessage('重置过程中发生错误：' + error.message, 'error');
+            }
+        }
+
+        // 清空表单
+        function clearForm() {
+            document.getElementById('actual-temp').value = '';
+            document.getElementById('measured-temp').value = '';
+            showMessage('表单已清空', 'success');
+        }
+
+        // 更新校准状态显示
+        function updateCalibrationStatus(offset, scale) {
+            document.getElementById('offset-value').textContent = offset.toFixed(2) + '°C';
+            document.getElementById('scale-value').textContent = scale.toFixed(3);
+            document.getElementById('calibration-status').textContent = '已校准';
+            document.getElementById('last-update').textContent = new Date().toLocaleString('zh-CN');
+        }
+
+        // 模拟校准API调用
+        function simulateCalibrationAPI(actualTemp, measuredTemp) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const actual = parseFloat(actualTemp);
+                    const measured = parseFloat(measuredTemp);
+                    
+                    // 计算校准参数
+                    const offset = actual - measured;
+                    const scale = actual / measured;
+                    
+                    resolve({
+                        success: true,
+                        offset: offset,
+                        scale: scale,
+                        message: `校准完成：偏移量=${offset.toFixed(2)}°C，缩放系数=${scale.toFixed(3)}`
+                    });
+                }, 2000);
+            });
+        }
+
+        // 模拟重置校准API调用
+        function simulateResetCalibrationAPI() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        success: true,
+                        message: '校准参数已重置为默认值'
+                    });
+                }, 1000);
+            });
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载当前校准状态
+            updateCalibrationStatus(0, 1.0);
+            
+            // 添加输入验证
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value && parseFloat(this.value) <= 0) {
+                        this.style.borderColor = '#ef4444';
+                    } else {
+                        this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
