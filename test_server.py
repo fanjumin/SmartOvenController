@@ -13,7 +13,7 @@ class TestHandler(BaseHTTPRequestHandler):
                 "wifiSSID": "TestNetwork",
                 "ip_address": "192.168.1.100",
                 "device_id": "test-device-001",
-                "firmware_version": "0.8.0"
+                "firmware_version": "0.8.1"
             }
             
             self.send_response(200)

@@ -1,7 +1,7 @@
 // =========================================
-// 智能烤箱控制器固件 v0.8.0 - 正式版
+// 智能烤箱控制器固件 v0.8.1 - 正式版
 // =========================================
-// 固件版本: 0.8.0
+// 固件版本: 0.8.1
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -53,7 +53,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.8.0";
+const String FIRMWARE_VERSION = "0.8.1";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -1461,6 +1461,7 @@ void setupWebServer() {
     }, handleFileUpload);
     
     webServer.on("/fs_update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
+    webServer.on("/status", HTTP_GET, handleStatus);
     webServer.onNotFound(handleNotFound);
     webServer.begin();
 }
@@ -1601,6 +1602,22 @@ void handleSaveWiFi() {
         String json = "{\"status\":\"error\",\"message\":\"缺少必要的参数\"}";
         webServer.send(400, "application/json", json);
     }
+}
+
+void handleStatus() {
+    // 构建JSON响应，包含设备状态信息
+    String json = "{";
+    json += "\"device_id\":\"" + DEVICE_ID + "\",";
+    json += "\"firmware_version\":\"" + FIRMWARE_VERSION + "\",";
+    json += "\"temperature\":" + String(currentTemp) + ",";
+    json += "\"target_temperature\":" + String(targetTemp) + ",";
+    json += "\"heating_enabled\":" + String(heatingEnabled ? "true" : "false") + ",";
+    json += "\"wifi_connected\":" + String(WiFi.status() == WL_CONNECTED ? "true" : "false") + ",";
+    json += "\"wifi_ssid\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.SSID() : "") + "\",";
+    json += "\"ip_address\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.localIP().toString() : "0.0.0.0") + "\"";
+    json += "}";
+    
+    webServer.send(200, "application/json", json);
 }
 
 void handleNotFound() {

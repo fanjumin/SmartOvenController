@@ -166,7 +166,7 @@ class MobileOvenController {
     // 格式化设备状态
     formatDeviceStatus(data) {
         // 解析设备返回的实际数据格式
-        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.8.0","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.8.1","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
         
         const currentTemp = data.temperature || data.currentTemp || 0;
         const targetTemp = data.target_temperature || data.targetTemp || 0;
@@ -177,7 +177,7 @@ class MobileOvenController {
             tempDiff: this.formatTemperature(targetTemp - currentTemp),
             heatingEnabled: data.heating_enabled || data.heatingEnabled || false,
             wifiConnected: data.wifi_connected || data.wifiConnected || false,
-            wifiSSID: data.wifiSSID || '--',
+            wifiSSID: data.wifi_ssid || '--',
             ipAddress: data.ip_address || data.ipAddress || '--',
             rssi: data.rssi || '--',
             deviceId: data.device_id || data.deviceId || '--',

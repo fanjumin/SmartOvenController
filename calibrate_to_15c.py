@@ -79,7 +79,7 @@ def calibrate_to_15c():
             "target_temperature": 15.0,
             "calibration_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "device_id": "oven-8591756",
-            "firmware_version": "0.8.0",
+            "firmware_version": "0.8.1",
             "calibration_command": "CALIBRATE_TEMP 15",
             "response": response_text if response else "æ ååº"
         }
@@ -123,7 +123,7 @@ def check_web_temperature():
         print(f"Webé¡µé¢æ£æ¥å¤±è´¥: {e}")
 
 if __name__ == "__main__":
-    print("æ¸©åº¦ç²¾ç¡®æ ¡åèæ¬ v0.8.0")
+    print("æ¸©åº¦ç²¾ç¡®æ ¡åèæ¬ v0.8.1")
     print("=" * 50)
     
     # æ§è¡æ ¡å

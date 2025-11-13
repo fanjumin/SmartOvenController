@@ -599,25 +599,49 @@
             gap: 8px;
         }
 
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
         .mode-btn {
-            padding: 12px 8px;
+            padding: 14px 20px;
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            color: white;
-            font-size: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: #cbd5e1;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
             backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            color: white;
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
 
         .mode-btn:active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(0.95);
+            transform: scale(0.97);
+        }
+
+        .mode-icon {
+            font-size: 18px;
         }
 
         .mode-icon {
@@ -1079,6 +1103,7 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.15);
             position: relative;
             overflow: hidden;
+            transition: all 0.4s ease;
         }
 
         .heating-control-section::before {
@@ -1089,6 +1114,13 @@
             right: 0;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .heating-control-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .heating-control-section h3 {
@@ -1139,21 +1171,34 @@
 
         .temp-time-input {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 16px;
             color: #ffffff;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         .temp-time-input:focus {
             outline: none;
-            border-color: rgba(239, 68, 68, 0.6);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2);
             background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .temp-time-input::-webkit-outer-spin-button,
+        .temp-time-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .temp-time-input[type=number] {
+            -moz-appearance: textfield;
         }
 
         .baking-mode-select {
@@ -1172,22 +1217,35 @@
 
         .mode-select {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 16px;
             color: #ffffff;
             font-size: 16px;
             font-weight: 600;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
         }
 
         .mode-select:focus {
             outline: none;
-            border-color: rgba(239, 68, 68, 0.6);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2);
             background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .mode-select option {
+            background: #1e293b;
+            color: #ffffff;
+            font-weight: 600;
         }
 
         .heating-action {
@@ -1198,18 +1256,19 @@
             background: linear-gradient(135deg, #ef4444, #dc2626);
             border: none;
             border-radius: 20px;
-            padding: 18px 40px;
+            padding: 20px 45px;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.4s ease;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+            gap: 15px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5);
             position: relative;
             overflow: hidden;
+            letter-spacing: 1px;
         }
 
         .heating-toggle-btn::before {
@@ -1219,13 +1278,13 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.6s ease;
         }
 
         .heating-toggle-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 32px rgba(239, 68, 68, 0.6);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.7);
         }
 
         .heating-toggle-btn:hover::before {
@@ -1233,7 +1292,19 @@
         }
 
         .heating-toggle-btn:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .heating-icon {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .heating-icon {
@@ -1244,6 +1315,35 @@
         .heating-text {
             font-weight: 700;
             letter-spacing: 0.5px;
+        }
+
+        /* 自动模式和手动模式区域样式 */
+        .auto-mode-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .manual-mode-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mode-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* 按钮样式优化 */
@@ -2733,30 +2833,50 @@
         <div class="heating-control-section">
             <h3>烘焙控制</h3>
             <div class="heating-controls">
-                <!-- 温度和时间合并为一行 -->
-                <div class="temp-time-row">
-                    <div class="temp-time-control">
-                        <label class="temp-time-label">目标温度 (°C)</label>
-                        <input type="number" class="temp-time-input" id="target-temp" value="180" min="50" max="250" step="5" onblur="onTemperatureBlur()">
-                    </div>
-                    <div class="temp-time-control">
-                        <label class="temp-time-label">烘焙时间 (分钟)</label>
-                        <input type="number" class="temp-time-input" id="baking-time" value="30" min="1" max="120" step="1" onblur="onTimeBlur()">
+                <!-- 烘焙模式选择 -->
+                <div class="baking-mode-control">
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" id="auto-mode-btn" onclick="switchToAutoMode()">
+                            <span class="mode-icon">🤖</span>
+                            <span>自动模式</span>
+                        </button>
+                        <button class="mode-btn" id="manual-mode-btn" onclick="switchToManualMode()">
+                            <span class="mode-icon">✋</span>
+                            <span>手动模式</span>
+                        </button>
                     </div>
                 </div>
                 
-                <!-- 烘焙模式下拉选择框 -->
-                <div class="baking-mode-select">
-                    <label class="mode-label">烘焙模式</label>
-                    <select class="mode-select" id="baking-mode-select" onchange="onBakingModeChange()">
-                        <option value="bread">🍞 面包 (180°C, 30分钟)</option>
-                        <option value="cake">🎂 蛋糕 (160°C, 45分钟)</option>
-                        <option value="pizza">🍕 披萨 (220°C, 15分钟)</option>
-                        <option value="cookies">🍪 饼干 (170°C, 20分钟)</option>
-                        <option value="roast">🍗 烤肉 (200°C, 60分钟)</option>
-                        <option value="defrost">❄️ 解冻 (80°C, 10分钟)</option>
-                        <option value="custom">⚙️ 自定义模式</option>
-                    </select>
+                <!-- 自动模式 - 烘焙模式下拉选择框 -->
+                <div class="auto-mode-section" id="auto-mode-section">
+                    <div class="mode-section-title">自动模式设置</div>
+                    <div class="baking-mode-select">
+                        <label class="mode-label">预设模式</label>
+                        <select class="mode-select" id="baking-mode-select" onchange="onBakingModeChange()">
+                            <option value="bread">🍞 面包 (180°C, 30分钟)</option>
+                            <option value="cake">🎂 蛋糕 (160°C, 45分钟)</option>
+                            <option value="pizza">🍕 披萨 (220°C, 15分钟)</option>
+                            <option value="cookies">🍪 饼干 (170°C, 20分钟)</option>
+                            <option value="roast">🍗 烤肉 (200°C, 60分钟)</option>
+                            <option value="defrost">❄️ 解冻 (80°C, 10分钟)</option>
+                            <option value="custom">⚙️ 自定义模式</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- 手动模式 - 温度和时间设置 -->
+                <div class="manual-mode-section" id="manual-mode-section" style="display: none;">
+                    <div class="mode-section-title">手动模式设置</div>
+                    <div class="temp-time-row">
+                        <div class="temp-time-control">
+                            <label class="temp-time-label">目标温度 (°C)</label>
+                            <input type="number" class="temp-time-input" id="target-temp" value="180" min="0" max="250" step="5" oninput="onManualTemperatureChange(this)" onblur="validateTemperature()">
+                        </div>
+                        <div class="temp-time-control">
+                            <label class="temp-time-label">烘焙时间 (分钟)</label>
+                            <input type="number" class="temp-time-input" id="baking-time" value="30" min="0" max="120" step="1" oninput="onManualTimeChange(this)" onblur="validateTime()">
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- 启动加热按钮 -->
@@ -2899,7 +3019,7 @@
 
         <div class="footer">
 
-            <p>智能电烤箱控制器 v0.8.0</p>
+            <p>智能电烤箱控制器 v0.8.1</p>
 
             <p>© 2025 智能电烤箱项目</p>
 
@@ -2960,6 +3080,9 @@
             if (filesystemFileInput) {
                 filesystemFileInput.addEventListener('change', handleFilesystemFileSelect);
             }
+            
+            // 初始化烘焙控制模式
+            switchToAutoMode(); // 默认进入自动模式
 
         });
 
@@ -3015,7 +3138,7 @@
                 wifiSSID: 'SmartOven_AP',
                 ip_address: '192.168.4.1',
                 device_id: 'SmartOven_001',
-                firmware_version: '0.8.0'
+                firmware_version: '0.8.1'
             };
 
             
@@ -3260,7 +3383,7 @@
 
                 wifiConnected: data.wifi_connected || false,
 
-                wifiSSID: data.wifiSSID || '',
+                wifiSSID: data.wifi_ssid || '',
 
                 ipAddress: data.ip_address || '',
 
@@ -3302,7 +3425,7 @@
 
                 // 更新WiFi状态
 
-                const wifiStatus = deviceStatus.wifiConnected ? '已连接' : '未连接';
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连接') : '未连接';
 
                 statusItems[3].querySelector('.status-value').textContent = wifiStatus;
 
@@ -3519,7 +3642,7 @@
                 targetTemp: data.target_temperature || 180,
                 heatingEnabled: data.heating_enabled || false,
                 wifiConnected: data.wifi_connected || false,
-                wifiSSID: data.wifiSSID || '',
+                wifiSSID: data.wifi_ssid || '',
                 ipAddress: data.ip_address || '',
                 deviceId: data.device_id || '',
                 firmwareVersion: data.firmware_version || '',
@@ -3540,12 +3663,9 @@
                 statusItems[1].querySelector('.status-value').style.color = 
                     deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
                 
-                // 更新WiFi状态 - 显示连接状态
-                let wifiStatusText = '未连接';
-                if (deviceStatus.wifiConnected) {
-                    wifiStatusText = '已连接';
-                }
-                statusItems[2].querySelector('.status-value').textContent = wifiStatusText;
+                // 更新WiFi状态 - 显示实际WiFi名称
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连接') : '未连接';
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
                 statusItems[2].querySelector('.status-value').style.color = 
                     deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
                 
@@ -3831,6 +3951,7 @@
         let targetTemperature = 180;
         let bakingTime = 30;
         let bakingMode = 'standard';
+        let controlMode = 'auto'; // 'auto' or 'manual'
 
         // 烘焙模式预设参数
         const bakingPresets = {
@@ -3842,6 +3963,49 @@
             'defrost': { temperature: 80, time: 10, name: '解冻' },
             'custom': { temperature: 180, time: 30, name: '自定义' }
         };
+
+        // 切换到自动模式
+        function switchToAutoMode() {
+            controlMode = 'auto';
+            
+            // 更新按钮状态
+            document.getElementById('auto-mode-btn').classList.add('active');
+            document.getElementById('manual-mode-btn').classList.remove('active');
+            
+            // 显示自动模式部分，隐藏手动模式部分
+            document.getElementById('auto-mode-section').style.display = 'block';
+            document.getElementById('manual-mode-section').style.display = 'none';
+            
+            // 如果当前是自定义模式，切换回标准模式
+            const modeSelect = document.getElementById('baking-mode-select');
+            if (modeSelect.value === 'custom') {
+                modeSelect.value = 'bread';
+                onBakingModeChange();
+            }
+            
+            showToast('已切换到自动模式');
+        }
+
+        // 切换到手动模式
+        function switchToManualMode() {
+            controlMode = 'manual';
+            
+            // 更新按钮状态
+            document.getElementById('manual-mode-btn').classList.add('active');
+            document.getElementById('auto-mode-btn').classList.remove('active');
+            
+            // 显示手动模式部分，隐藏自动模式部分
+            document.getElementById('manual-mode-section').style.display = 'block';
+            document.getElementById('auto-mode-section').style.display = 'none';
+            
+            // 设置手动模式的默认值为0
+            document.getElementById('target-temp').value = 0;
+            document.getElementById('baking-time').value = 0;
+            targetTemperature = 0;
+            bakingTime = 0;
+            
+            showToast('已切换到手动模式，请设置温度和时间');
+        }
 
         // 烘焙模式选择变化处理
         function onBakingModeChange() {
@@ -3874,7 +4038,11 @@
             
             if (temp >= 50 && temp <= 250) {
                 targetTemperature = temp;
-                bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                // 只有在自动模式下手动调整时才切换到自定义模式
+                if (controlMode === 'auto') {
+                    bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                    document.getElementById('baking-mode-select').value = 'custom';
+                }
                 return true;
             } else {
                 showToast('温度范围应为 50-250°C');
@@ -3890,7 +4058,11 @@
             
             if (time >= 1 && time <= 120) {
                 bakingTime = time;
-                bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                // 只有在自动模式下手动调整时才切换到自定义模式
+                if (controlMode === 'auto') {
+                    bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                    document.getElementById('baking-mode-select').value = 'custom';
+                }
                 return true;
             } else {
                 showToast('时间范围应为 1-120 分钟');
@@ -3909,6 +4081,52 @@
             validateTime();
         }
 
+        // 当在手动模式下更改温度时的处理
+        function onManualTemperatureChange(element) {
+            // 只有在手动模式下才更新温度值
+            if (controlMode === 'manual') {
+                targetTemperature = parseInt(element.value) || 0;
+            } else if (controlMode === 'auto') {
+                // 在自动模式下，如果用户修改了预设值，则自动切换到自定义模式
+                const modeSelect = document.getElementById('baking-mode-select');
+                if (modeSelect.value !== 'custom') {
+                    modeSelect.value = 'custom';
+                    onBakingModeChange();
+                }
+                targetTemperature = parseInt(element.value) || 0;
+            }
+        }
+
+        // 当在手动模式下更改时间时的处理
+        function onManualTimeChange(element) {
+            // 只有在手动模式下才更新时间值
+            if (controlMode === 'manual') {
+                bakingTime = parseInt(element.value) || 0;
+            } else if (controlMode === 'auto') {
+                // 在自动模式下，如果用户修改了预设值，则自动切换到自定义模式
+                const modeSelect = document.getElementById('baking-mode-select');
+                if (modeSelect.value !== 'custom') {
+                    modeSelect.value = 'custom';
+                    onBakingModeChange();
+                }
+                bakingTime = parseInt(element.value) || 0;
+            }
+        }
+
+        // 手动模式下温度输入框失去焦点时的处理
+        function onManualTemperatureBlur() {
+            if (controlMode === 'manual') {
+                validateTemperature();
+            }
+        }
+
+        // 手动模式下时间输入框失去焦点时的处理
+        function onManualTimeBlur() {
+            if (controlMode === 'manual') {
+                validateTime();
+            }
+        }
+
         function toggleHeating() {
             const toggleBtn = document.getElementById('heating-toggle');
             const heatingIcon = toggleBtn.querySelector('.heating-icon');
@@ -3920,7 +4138,20 @@
                 toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                 heatingIcon.textContent = '❄️';
                 heatingText.textContent = '停止加热';
-                showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                
+                // 根据当前模式显示不同的提示信息
+                if (controlMode === 'manual') {
+                    showToast(`开始手动加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                } else {
+                    const modeSelect = document.getElementById('baking-mode-select');
+                    const selectedMode = modeSelect.value;
+                    const preset = bakingPresets[selectedMode];
+                    if (preset) {
+                        showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟 (${preset.name}模式)`);
+                    } else {
+                        showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                    }
+                }
                 // 这里应该发送启动加热的请求到设备
                 // startHeating(targetTemperature, bakingTime, bakingMode);
             } else {

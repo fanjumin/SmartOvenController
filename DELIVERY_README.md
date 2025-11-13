@@ -1,14 +1,14 @@
 # 智能烤箱控制器交付包
 
 ## 版本信息
-- 版本号: v0.8.0
+- 版本号: v0.8.1
 - 发布日期: 2025-11-10
 - 项目状态: 已完成并测试通过
 
 ## 交付内容
 
 ### 1. 主要交付文件
-- `SmartOvenController_v0.8.0.zip` - 完整项目发布包 (579,089字节)
+- `SmartOvenController_v0.8.1.zip` - 完整项目发布包 (579,089字节)
   包含固件、文件系统、配置文件和使用说明
 
 ### 2. 源代码
@@ -61,7 +61,7 @@
 ## 使用说明
 
 ### 烧录固件
-1. 解压 `SmartOvenController_v0.8.0.zip`
+1. 解压 `SmartOvenController_v0.8.1.zip`
 2. 使用esptool烧录固件和文件系统:
    ```bash
    esptool.exe --port COM11 write_flash 0x00000 firmware.bin
