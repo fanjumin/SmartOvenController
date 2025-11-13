@@ -8,11 +8,11 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>智能烤箱 - 管理员控制面板</title>
+    <title>智能烤箱 - 管理员控制面�?/title>
 
     <script>
 
-        // 页面加载时检查登录状态
+        // 页面加载时检查登录状�?
 
         window.addEventListener('load', function() {
 
@@ -20,7 +20,7 @@
 
             if (!isLoggedIn) {
 
-                // 未登录，跳转到登录页面
+                // 未登录，跳转到登录页�?
 
                 window.location.href = 'login.html';
 
@@ -46,17 +46,17 @@
 
         function changePassword() {
 
-            const newPassword = prompt('请输入新密码（至少8位）:');
+            const newPassword = prompt('请输入新密码（至�?位）:');
 
             if (newPassword && newPassword.length >= 8) {
 
                 localStorage.setItem('adminPassword', newPassword);
 
-                alert('密码修改成功！');
+                alert('密码修改成功�?);
 
             } else if (newPassword) {
 
-                alert('密码长度至少需要8位！');
+                alert('密码长度至少需�?位！');
 
             }
 
@@ -64,7 +64,6 @@
 
     </script>
 
-    <link rel="stylesheet" href="css/title-styles.css">
     <style>
 
         * {
@@ -128,6 +127,46 @@
             flex: 1;
         }
 
+        .main-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .title-icon {
+            font-size: 48px;
+            display: inline;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .title-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+        }
+
         .status-indicator {
             display: flex;
             align-items: center;
@@ -156,6 +195,8 @@
             font-weight: 600;
             color: #10b981;
         }
+
+
 
         @keyframes pulse {
 
@@ -790,7 +831,7 @@
             min-width: 0;
         }
 
-        /* API端点响应式优化 */
+        /* API端点响应式优�?*/
         @media (max-width: 768px) {
             .api-endpoints {
                 grid-template-columns: 1fr;
@@ -878,7 +919,47 @@
             flex: 1;
         }
 
+        .main-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
+        .title-icon {
+            font-size: 48px;
+            display: inline;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .title-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #cbd5e1;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            opacity: 0.9;
+        }
 
         .status-indicator {
             display: flex;
@@ -912,7 +993,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* 设备状态卡片样式 - 现代设计 */
+        /* 设备状态卡片样�?- 现代设计 */
         .status-card {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             backdrop-filter: blur(20px);
@@ -1236,7 +1317,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* 自动模式和手动模式区域样式 */
+        /* 自动模式和手动模式区域样�?*/
         .auto-mode-section {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
@@ -1326,7 +1407,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* 系统管理功能区样式 - 现代设计 */
+        /* 系统管理功能区样�?- 现代设计 */
         .system-management-section {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             backdrop-filter: blur(20px);
@@ -1462,7 +1543,7 @@
             font-weight: 400;
         }
 
-        /* 高级管理功能区样式 - 现代设计 */
+        /* 高级管理功能区样�?- 现代设计 */
         .advanced-management-section {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             backdrop-filter: blur(20px);
@@ -1640,7 +1721,7 @@
             transform: translateY(-1px);
         }
 
-        /* 响应式优化 */
+        /* 响应式优�?*/
         @media (max-width: 768px) {
             .system-management-grid {
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -2520,7 +2601,19 @@
 
         
 
+        .section-title {
 
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 15px;
+
+            text-align: center;
+
+            color: white;
+
+        }
 
         
 
@@ -2654,7 +2747,7 @@
             color: white;
         }
         
-        /* 功能区域响应式优化 */
+        /* 功能区域响应式优�?*/
         @media (max-width: 1024px) {
             .function-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -2699,18 +2792,18 @@
                     <h1 class="main-title">
                         <span class="title-icon">🍞</span> 智能烤箱
                     </h1>
-                    <p class="subtitle">高级烘焙控制器</p>
+                    <p class="subtitle">高级烘焙控制�?/p>
                 </div>
             </div>
         </div>
 
-        <!-- 设备状态卡片 -->
+        <!-- 设备状态卡�?-->
         <div class="status-card">
             <div class="status-header">
-                <h2 class="status-title">烤箱状态</h2>
+                <h2 class="status-title">烤箱状�?/h2>
                 <div class="connection-status">
                     <span class="status-dot"></span>
-                    <span class="status-text">未连接</span>
+                    <span class="status-text">未连�?/span>
                 </div>
             </div>
             
@@ -2720,16 +2813,16 @@
                     <div class="status-value temperature" id="current-temp-display">--°C</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">加热状态</div>
-                    <div class="status-value heating-status">未获取加热状态</div>
+                    <div class="status-label">加热状�?/div>
+                    <div class="status-value heating-status">--</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">WiFi状态</div>
-                    <div class="status-value wifi-status">未获取当前连接状态</div>
+                    <div class="status-label">WiFi状�?/div>
+                    <div class="status-value wifi-status">--</div>
                 </div>
                 <div class="status-item">
                     <div class="status-label">IP地址</div>
-                    <div class="status-value device-id">未获取真实IP</div>
+                    <div class="status-value device-id">--</div>
                 </div>
             </div>
         </div>
@@ -2748,13 +2841,13 @@
                             <span>自动模式</span>
                         </button>
                         <button class="mode-btn" id="manual-mode-btn" onclick="switchToManualMode()">
-                            <span class="mode-icon">✋</span>
+                            <span class="mode-icon">�?/span>
                             <span>手动模式</span>
                         </button>
                     </div>
                 </div>
                 
-                <!-- 自动模式 - 烘焙模式下拉选择框 -->
+                <!-- 自动模式 - 烘焙模式下拉选择�?-->
                 <div class="auto-mode-section" id="auto-mode-section">
                     <div class="mode-section-title">自动模式设置</div>
                     <div class="baking-mode-select">
@@ -2766,12 +2859,12 @@
                             <option value="cookies">🍪 饼干 (170°C, 20分钟)</option>
                             <option value="roast">🍗 烤肉 (200°C, 60分钟)</option>
                             <option value="defrost">❄️ 解冻 (80°C, 10分钟)</option>
-                            <option value="custom">⚙️ 自定义模式</option>
+                            <option value="custom">⚙️ 自定义模�?/option>
                         </select>
                     </div>
                 </div>
                 
-                <!-- 手动模式 - 温度和时间设置 -->
+                <!-- 手动模式 - 温度和时间设�?-->
                 <div class="manual-mode-section" id="manual-mode-section" style="display: none;">
                     <div class="mode-section-title">手动模式设置</div>
                     <div class="temp-time-row">
@@ -2790,7 +2883,7 @@
                 <div class="heating-action">
                     <button class="heating-toggle-btn" id="heating-toggle" onclick="toggleHeating()">
                         <span class="heating-icon">🔥</span>
-                        <span class="heating-text">开始</span>
+                        <span class="heating-text">开�?/span>
                     </button>
                 </div>
             </div>
@@ -2800,16 +2893,16 @@
         <div class="function-section">
             <h3>系统管理</h3>
             <div class="function-grid">
-                <!-- 设备状态 -->
+                <!-- 设备状�?-->
                 <a href="device_status.html" class="function-card">
                     <div class="function-icon">📊</div>
-                    <div class="function-title">设备状态</div>
+                    <div class="function-title">设备状�?/div>
                 </a>
                 
-                <!-- 设置与帮助 -->
+                <!-- 设置与帮�?-->
                 <a href="settings_help.html" class="function-card">
                     <div class="function-icon">⚙️</div>
-                    <div class="function-title">设置与帮助</div>
+                    <div class="function-title">设置与帮�?/div>
                 </a>
                 
                 <!-- 修改密码 -->
@@ -2818,15 +2911,15 @@
                     <div class="function-title">修改密码</div>
                 </div>
                 
-                <!-- 退出登录 -->
+                <!-- 退出登�?-->
                 <div class="function-card" onclick="logout()">
                     <div class="function-icon">🚪</div>
-                    <div class="function-title">退出登录</div>
+                    <div class="function-title">退出登�?/div>
                 </div>
                 
                 <!-- 温度校准 -->
                 <a href="temperature_calibration.html" class="function-card">
-                    <div class="function-icon">🌡️</div>
+                    <div class="function-icon">🌡�?/div>
                     <div class="function-title">温度校准</div>
                 </a>
                 
@@ -2881,14 +2974,14 @@
                     <span class="endpoint-method get">GET</span>
                     <div class="endpoint-info">
                         <div class="endpoint-path">/status</div>
-                        <div class="endpoint-description">获取设备状态信息</div>
+                        <div class="endpoint-description">获取设备状态信�?/div>
                     </div>
                 </div>
                 <div class="api-endpoint">
                     <span class="endpoint-method post">POST</span>
                     <div class="endpoint-info">
                         <div class="endpoint-path">/control</div>
-                        <div class="endpoint-description">控制加热器开关</div>
+                        <div class="endpoint-description">控制加热器开�?/div>
                     </div>
                 </div>
                 <div class="api-endpoint">
@@ -2936,7 +3029,7 @@
 
             <script>
 
-        // 设备状态变量
+        // 设备状态变�?
 
         let deviceStatus = {
 
@@ -2964,13 +3057,13 @@
 
         document.addEventListener('DOMContentLoaded', function() {
 
-            console.log('智能电烤箱管理员页面已加载');
+            console.log('智能电烤箱管理员页面已加�?);
 
             refreshData();
 
             
 
-            // 每5秒自动刷新数据
+            // �?秒自动刷新数�?
 
             setInterval(refreshData, 5000);
 
@@ -2988,7 +3081,7 @@
                 filesystemFileInput.addEventListener('change', handleFilesystemFileSelect);
             }
             
-            // 初始化烘焙控制模式
+            // 初始化烘焙控制模�?
             switchToAutoMode(); // 默认进入自动模式
 
         });
@@ -3011,7 +3104,7 @@
 
                 } else {
 
-                    console.error('获取设备状态失败');
+                    console.error('获取设备状态失�?);
 
                     showDemoData();
 
@@ -3029,13 +3122,13 @@
 
 
 
-        // 更新状态显示
+        // 更新状态显�?
 
 
 
 
 
-        // 显示演示数据（网络连接失败时）
+        // 显示演示数据（网络连接失败时�?
         function showDemoData() {
             const demoData = {
                 temperature: 25.0,
@@ -3045,7 +3138,7 @@
                 wifiSSID: 'SmartOven_AP',
                 ip_address: '192.168.4.1',
                 device_id: 'SmartOven_001',
-                firmware_version: '0.8.2'
+                firmware_version: '0.8.2''
             };
 
             
@@ -3064,7 +3157,7 @@
 
 
 
-        // 切换加热状态
+        // 切换加热状�?
 
         async function toggleHeating() {
 
@@ -3096,7 +3189,7 @@
 
                 } else {
 
-                    alert('控制命令发送失败');
+                    alert('控制命令发送失�?);
 
                 }
 
@@ -3112,7 +3205,7 @@
 
 
 
-        // 快速设置温度
+        // 快速设置温�?
 
         async function quickSetTemp(temp) {
 
@@ -3164,7 +3257,7 @@
 
         async function restartDevice() {
 
-            if (confirm('确定要重启设备吗？设备将在5秒后重启。')) {
+            if (confirm('确定要重启设备吗？设备将�?秒后重启�?)) {
 
                 try {
 
@@ -3182,7 +3275,7 @@
 
                     } else {
 
-                        alert('重启命令发送失败');
+                        alert('重启命令发送失�?);
 
                     }
 
@@ -3204,7 +3297,7 @@
 
         async function factoryReset() {
 
-            if (confirm('确定要恢复出厂设置吗？所有配置将被清除，设备将重启。')) {
+            if (confirm('确定要恢复出厂设置吗？所有配置将被清除，设备将重启�?)) {
 
                 try {
 
@@ -3222,7 +3315,7 @@
 
                     } else {
 
-                        alert('恢复出厂设置命令发送失败');
+                        alert('恢复出厂设置命令发送失�?);
 
                     }
 
@@ -3276,7 +3369,7 @@
 
 
 
-        // 在状态更新时也更新固件版本显示
+        // 在状态更新时也更新固件版本显�?
 
         function updateStatusDisplay(data) {
 
@@ -3302,7 +3395,7 @@
 
 
 
-            // 安全地更新温度显示
+            // 安全地更新温度显�?
 
             const statusItems = document.querySelectorAll('.status-item');
 
@@ -3318,9 +3411,9 @@
 
                 
 
-                // 更新加热状态
+                // 更新加热状�?
 
-                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
+                const heatingStatus = deviceStatus.heatingEnabled ? '加热�? : '已停�?;
 
                 statusItems[2].querySelector('.status-value').textContent = heatingStatus;
 
@@ -3330,9 +3423,9 @@
 
                 
 
-                // 更新WiFi状态
+                // 更新WiFi状�?
 
-                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连接') : '未连接';
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连�?) : '未连�?;
 
                 statusItems[3].querySelector('.status-value').textContent = wifiStatus;
 
@@ -3386,13 +3479,13 @@
 
             
 
-            // 更新加热按钮状态
+            // 更新加热按钮状�?
 
             const heatingBtn = document.getElementById('heating-btn');
 
             if (heatingBtn) {
 
-                heatingBtn.textContent = deviceStatus.heatingEnabled ? '关闭加热' : '开启加热';
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? '关闭加热' : '开启加�?;
 
                 heatingBtn.className = deviceStatus.heatingEnabled ? 
 
@@ -3410,7 +3503,7 @@
 
                 if (deviceStatus.heatingEnabled) {
 
-                    heatingStatus.textContent = '加热器正在工作';
+                    heatingStatus.textContent = '加热器正在工�?;
 
                     heatingStatus.className = 'status-indicator status-heating';
 
@@ -3440,7 +3533,7 @@
 
             } else {
 
-                alert('温度范围必须在 0°C 到 300°C 之间');
+                alert('温度范围必须�?0°C �?300°C 之间');
 
             }
 
@@ -3506,7 +3599,7 @@
 
 
 
-        // 应用直接输入的温度
+        // 应用直接输入的温�?
 
         function applyTemperature() {
 
@@ -3520,11 +3613,11 @@
 
                     setTargetTemp(temp);
 
-                    tempInput.value = ''; // 清空输入框
+                    tempInput.value = ''; // 清空输入�?
 
                 } else {
 
-                    alert('请输入 0°C 到 300°C 之间的温度值');
+                    alert('请输�?0°C �?300°C 之间的温度�?);
 
                 }
 
@@ -3542,7 +3635,7 @@
 
 
 
-        // 更新设备状态显示
+        // 更新设备状态显�?
         function updateStatusDisplay(data) {
             deviceStatus = {
                 currentTemp: data.temperature || 0,
@@ -3556,7 +3649,7 @@
                 calibration: data.calibration || { offset: 0, scale: 1.0 }
             };
 
-            // 安全地更新状态显示
+            // 安全地更新状态显�?
             const statusItems = document.querySelectorAll('.status-item');
 
             if (statusItems.length >= 4) {
@@ -3564,14 +3657,14 @@
                 statusItems[0].querySelector('.status-value').textContent = 
                     deviceStatus.currentTemp.toFixed(1) + '°C';
                 
-                // 更新加热状态
-                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
+                // 更新加热状�?
+                const heatingStatus = deviceStatus.heatingEnabled ? '加热�? : '已停�?;
                 statusItems[1].querySelector('.status-value').textContent = heatingStatus;
                 statusItems[1].querySelector('.status-value').style.color = 
                     deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
                 
-                // 更新WiFi状态 - 显示实际WiFi名称
-                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连接') : '未连接';
+                // 更新WiFi状�?- 显示实际WiFi名称
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连�?) : '未连�?;
                 statusItems[2].querySelector('.status-value').textContent = wifiStatus;
                 statusItems[2].querySelector('.status-value').style.color = 
                     deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
@@ -3581,18 +3674,18 @@
                     deviceStatus.ipAddress || '--';
             }
 
-            // 更新顶部连接状态显示
+            // 更新顶部连接状态显�?
             const connectionStatus = document.querySelector('.connection-status');
             const statusDot = connectionStatus.querySelector('.status-dot');
             const statusText = connectionStatus.querySelector('.status-text');
             
             if (deviceStatus.wifiConnected) {
                 statusDot.className = 'status-dot live';
-                statusText.textContent = '已连接';
+                statusText.textContent = '已连�?;
                 statusText.style.color = '#10b981';
             } else {
                 statusDot.className = 'status-dot';
-                statusText.textContent = '未连接';
+                statusText.textContent = '未连�?;
                 statusText.style.color = '#ef4444';
             }
 
@@ -3644,7 +3737,7 @@
 
         async function restartDevice() {
 
-            const confirmed = confirm('确定要重启设备吗？重启过程可能需要几分钟时间。');
+            const confirmed = confirm('确定要重启设备吗？重启过程可能需要几分钟时间�?);
 
             if (!confirmed) return;
 
@@ -3668,7 +3761,7 @@
 
                 if (response.ok) {
 
-                    alert('设备重启命令已发送，设备将在几秒钟后重启。');
+                    alert('设备重启命令已发送，设备将在几秒钟后重启�?);
 
                     // 显示重启提示
 
@@ -3676,7 +3769,7 @@
 
                 } else {
 
-                    alert('重启命令发送失败');
+                    alert('重启命令发送失�?);
 
                 }
 
@@ -3684,7 +3777,7 @@
 
                 console.error('重启设备失败:', error);
 
-                alert('网络连接失败，无法重启设备');
+                alert('网络连接失败，无法重启设�?);
 
             }
 
@@ -3734,7 +3827,7 @@
 
                 <div style="font-size: 14px; opacity: 0.8;">
 
-                    设备正在重启，请等待几分钟后重新连接。
+                    设备正在重启，请等待几分钟后重新连接�?
 
                 </div>
 
@@ -3760,13 +3853,13 @@
 
         async function factoryReset() {
 
-            const confirmed = confirm('⚠️ 警告：此操作将清除所有设置并恢复设备到出厂状态！\n\n确定要继续吗？');
+            const confirmed = confirm('⚠️ 警告：此操作将清除所有设置并恢复设备到出厂状态！\n\n确定要继续吗�?);
 
             if (!confirmed) return;
 
             
 
-            const password = prompt('请输入管理员密码确认操作：');
+            const password = prompt('请输入管理员密码确认操作�?);
 
             if (!password) return;
 
@@ -3796,7 +3889,7 @@
 
                 if (response.ok) {
 
-                    alert('设备已恢复出厂设置，系统将自动重启。');
+                    alert('设备已恢复出厂设置，系统将自动重启�?);
 
                     // 显示恢复出厂设置提示
 
@@ -3812,7 +3905,7 @@
 
                 console.error('恢复出厂设置失败:', error);
 
-                alert('网络连接失败，无法恢复出厂设置');
+                alert('网络连接失败，无法恢复出厂设�?);
 
             }
 
@@ -3841,7 +3934,7 @@
                 <div style="font-size: 24px; margin-bottom: 15px;">⚠️</div>
                 <div style="font-weight: 600; margin-bottom: 10px;">设备正在恢复出厂设置</div>
                 <div style="font-size: 14px; opacity: 0.8;">
-                    所有设置将被清除，设备将重启并恢复出厂状态。
+                    所有设置将被清除，设备将重启并恢复出厂状态�?
                 </div>
             `;
             document.body.appendChild(messageDiv);
@@ -3868,18 +3961,18 @@
             'cookies': { temperature: 170, time: 20, name: '饼干' },
             'roast': { temperature: 200, time: 60, name: '烤肉' },
             'defrost': { temperature: 80, time: 10, name: '解冻' },
-            'custom': { temperature: 180, time: 30, name: '自定义' }
+            'custom': { temperature: 180, time: 30, name: '自定�? }
         };
 
-        // 切换到自动模式
+        // 切换到自动模�?
         function switchToAutoMode() {
             controlMode = 'auto';
             
-            // 更新按钮状态
+            // 更新按钮状�?
             document.getElementById('auto-mode-btn').classList.add('active');
             document.getElementById('manual-mode-btn').classList.remove('active');
             
-            // 显示自动模式部分，隐藏手动模式部分
+            // 显示自动模式部分，隐藏手动模式部�?
             document.getElementById('auto-mode-section').style.display = 'block';
             document.getElementById('manual-mode-section').style.display = 'none';
             
@@ -3893,25 +3986,25 @@
             showToast('已切换到自动模式');
         }
 
-        // 切换到手动模式
+        // 切换到手动模�?
         function switchToManualMode() {
             controlMode = 'manual';
             
-            // 更新按钮状态
+            // 更新按钮状�?
             document.getElementById('manual-mode-btn').classList.add('active');
             document.getElementById('auto-mode-btn').classList.remove('active');
             
-            // 显示手动模式部分，隐藏自动模式部分
+            // 显示手动模式部分，隐藏自动模式部�?
             document.getElementById('manual-mode-section').style.display = 'block';
             document.getElementById('auto-mode-section').style.display = 'none';
             
-            // 设置手动模式的默认值（非零值）
-            document.getElementById('target-temp').value = 180;
-            document.getElementById('baking-time').value = 30;
-            targetTemperature = 180;
-            bakingTime = 30;
+            // 设置手动模式的默认值为0
+            document.getElementById('target-temp').value = 0;
+            document.getElementById('baking-time').value = 0;
+            targetTemperature = 0;
+            bakingTime = 0;
             
-            showToast('已切换到手动模式，请设置温度和时间');
+            showToast('已切换到手动模式，请设置温度和时�?);
         }
 
         // 烘焙模式选择变化处理
@@ -3933,7 +4026,7 @@
                 if (selectedMode === 'custom') {
                     showToast('已切换到自定义模式，您可以手动调整温度和时间');
                 } else {
-                    showToast(`已切换到${preset.name}模式：${preset.temperature}°C，${preset.time}分钟`);
+                    showToast(`已切换到${preset.name}模式�?{preset.temperature}°C�?{preset.time}分钟`);
                 }
             }
         }
@@ -3947,13 +4040,13 @@
                 targetTemperature = temp;
                 // 只有在自动模式下手动调整时才切换到自定义模式
                 if (controlMode === 'auto') {
-                    bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                    bakingMode = 'custom'; // 手动调整时切换到自定义模�?
                     document.getElementById('baking-mode-select').value = 'custom';
                 }
                 return true;
             } else {
                 showToast('温度范围应为 50-250°C');
-                tempInput.value = targetTemperature; // 恢复原值
+                tempInput.value = targetTemperature; // 恢复原�?
                 return false;
             }
         }
@@ -3967,13 +4060,13 @@
                 bakingTime = time;
                 // 只有在自动模式下手动调整时才切换到自定义模式
                 if (controlMode === 'auto') {
-                    bakingMode = 'custom'; // 手动调整时切换到自定义模式
+                    bakingMode = 'custom'; // 手动调整时切换到自定义模�?
                     document.getElementById('baking-mode-select').value = 'custom';
                 }
                 return true;
             } else {
                 showToast('时间范围应为 1-120 分钟');
-                timeInput.value = bakingTime; // 恢复原值
+                timeInput.value = bakingTime; // 恢复原�?
                 return false;
             }
         }
@@ -3988,13 +4081,13 @@
             validateTime();
         }
 
-        // 当在手动模式下更改温度时的处理
+        // 当在手动模式下更改温度时的处�?
         function onManualTemperatureChange(element) {
-            // 只有在手动模式下才更新温度值
+            // 只有在手动模式下才更新温度�?
             if (controlMode === 'manual') {
                 targetTemperature = parseInt(element.value) || 0;
             } else if (controlMode === 'auto') {
-                // 在自动模式下，如果用户修改了预设值，则自动切换到自定义模式
+                // 在自动模式下，如果用户修改了预设值，则自动切换到自定义模�?
                 const modeSelect = document.getElementById('baking-mode-select');
                 if (modeSelect.value !== 'custom') {
                     modeSelect.value = 'custom';
@@ -4004,13 +4097,13 @@
             }
         }
 
-        // 当在手动模式下更改时间时的处理
+        // 当在手动模式下更改时间时的处�?
         function onManualTimeChange(element) {
-            // 只有在手动模式下才更新时间值
+            // 只有在手动模式下才更新时间�?
             if (controlMode === 'manual') {
                 bakingTime = parseInt(element.value) || 0;
             } else if (controlMode === 'auto') {
-                // 在自动模式下，如果用户修改了预设值，则自动切换到自定义模式
+                // 在自动模式下，如果用户修改了预设值，则自动切换到自定义模�?
                 const modeSelect = document.getElementById('baking-mode-select');
                 if (modeSelect.value !== 'custom') {
                     modeSelect.value = 'custom';
@@ -4046,36 +4139,36 @@
                 heatingIcon.textContent = '❄️';
                 heatingText.textContent = '停止加热';
                 
-                // 根据当前模式显示不同的提示信息
+                // 根据当前模式显示不同的提示信�?
                 if (controlMode === 'manual') {
-                    showToast(`开始手动加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                    showToast(`开始手动加热到 ${targetTemperature}°C，持�?${bakingTime} 分钟`);
                 } else {
                     const modeSelect = document.getElementById('baking-mode-select');
                     const selectedMode = modeSelect.value;
                     const preset = bakingPresets[selectedMode];
                     if (preset) {
-                        showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟 (${preset.name}模式)`);
+                        showToast(`开始加热到 ${targetTemperature}°C，持�?${bakingTime} 分钟 (${preset.name}模式)`);
                     } else {
-                        showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                        showToast(`开始加热到 ${targetTemperature}°C，持�?${bakingTime} 分钟`);
                     }
                 }
-                // 这里应该发送启动加热的请求到设备
+                // 这里应该发送启动加热的请求到设�?
                 // startHeating(targetTemperature, bakingTime, bakingMode);
             } else {
                 toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
                 heatingIcon.textContent = '🔥';
                 heatingText.textContent = '启动加热';
-                showToast('加热已停止');
-                // 这里应该发送停止加热的请求到设备
+                showToast('加热已停�?);
+                // 这里应该发送停止加热的请求到设�?
                 // stopHeating();
             }
         }
 
-        // 移动端优化功能
+        // 移动端优化功�?
         
-        // 退出登录
+        // 退出登�?
         async function logout() {
-            if (confirm('确定要退出登录吗？')) {
+            if (confirm('确定要退出登录吗�?)) {
                 try {
                     const response = await fetch('/logout', {
                         method: 'POST'
@@ -4084,10 +4177,10 @@
                     if (response.ok) {
                         window.location.href = '/login';
                     } else {
-                        alert('退出登录失败');
+                        alert('退出登录失�?);
                     }
                 } catch (error) {
-                    console.error('退出登录失败:', error);
+                    console.error('退出登录失�?', error);
                     alert('网络连接失败');
                 }
             }
@@ -4098,14 +4191,14 @@
             const oldPassword = prompt('请输入当前密码：');
             if (!oldPassword) return;
 
-            const newPassword = prompt('请输入新密码：');
+            const newPassword = prompt('请输入新密码�?);
             if (!newPassword) return;
 
-            const confirmPassword = prompt('请确认新密码：');
+            const confirmPassword = prompt('请确认新密码�?);
             if (!confirmPassword) return;
 
             if (newPassword !== confirmPassword) {
-                alert('新密码输入不一致');
+                alert('新密码输入不一�?);
                 return;
             }
 
@@ -4124,7 +4217,7 @@
                 if (response.ok) {
                     alert('密码修改成功');
                 } else {
-                    alert('密码修改失败，请检查当前密码是否正确');
+                    alert('密码修改失败，请检查当前密码是否正�?);
                 }
             } catch (error) {
                 console.error('修改密码失败:', error);
@@ -4134,7 +4227,7 @@
 
         
         
-        // 移动端触摸事件处理
+        // 移动端触摸事件处�?
         let touchStartX = 0;
         let touchStartY = 0;
         
@@ -4150,12 +4243,12 @@
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             
-            // 水平滑动超过50px且垂直滑动小于30px时触发刷新
+            // 水平滑动超过50px且垂直滑动小�?0px时触发刷�?
             if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 30) {
                 if (deltaX > 0) {
                     // 向右滑动 - 刷新数据
                     refreshData();
-                    showToast('数据已刷新');
+                    showToast('数据已刷�?);
                 }
             }
         }, { passive: true });
@@ -4204,13 +4297,13 @@
                 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
             }
             
-            /* 移动端按钮点击效果 */
+            /* 移动端按钮点击效�?*/
             .control-btn:active, .nav-card:active {
                 transform: scale(0.95);
                 transition: transform 0.1s;
             }
             
-            /* 移动端优化滚动 */
+            /* 移动端优化滚�?*/
             body {
                 -webkit-overflow-scrolling: touch;
             }

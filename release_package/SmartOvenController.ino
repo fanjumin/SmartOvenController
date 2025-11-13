@@ -1,9 +1,9 @@
 // =========================================
-// 智能烤箱控制器固件 v0.8.2 - 正式版
+// 智能烤箱控制器固?v0.8.1 - 正式?
 // =========================================
 // 固件版本: 0.8.2
-// 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能 + PID温控算法
-// 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
+// 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱?+ 多设备识别功?
+// 硬件支持: ESP8266系列芯片 + 继电器模?+ OLED显示?+ MAX6675热电偶传感器
 // =========================================
 
 #include <ESP8266WiFi.h>
@@ -20,11 +20,11 @@
 // 硬件引脚定义
 // =========================================
 #define THERMO_CLK   14  // MAX6675时钟引脚(D5/GPIO14)
-#define THERMO_CS    12  // MAX6675片选引脚(D6/GPIO12)
+#define THERMO_CS    12  // MAX6675片选引?D6/GPIO12)
 #define THERMO_DO    13  // MAX6675数据输出引脚(D7/GPIO13)
 #define HEATER_PIN   5   // 加热控制引脚
-#define BUZZER_PIN   4   // 蜂鸣器引脚(GPIO4/D2)
-#define LED_PIN      2   // LED指示灯引脚(GPIO2/D4)
+#define BUZZER_PIN   4   // 蜂鸣器引?GPIO4/D2)
+#define LED_PIN      2   // LED指示灯引?GPIO2/D4)
 
 // =========================================
 // 系统配置参数
@@ -38,16 +38,16 @@ ESP8266HTTPUpdateServer httpUpdater;
 WiFiServer tcpServer(8888);  // TCP服务器初始化，用于设备通信
 WiFiClient tcpClient;        // TCP客户端对象，用于连接管理
 
-// 系统运行状态变量
+// 系统运行状态变?
 unsigned long temperatureReadCount = 0;
 float temperatureReadAvgTime = 0;
 const unsigned long WEB_SERVER_HANDLE_INTERVAL = 100; // 100ms处理一次Web请求，避免阻塞主循环占用过多CPU资源
 bool updateFileSystemFlag = false; // 文件系统更新标志
 
-// 硬件状态监控
+// 硬件状态监?
 unsigned long hardwareFailureCount = 0;       // 硬件故障计数
 unsigned long lastHardwareReset = 0;         // 上次硬件重置时间
-bool hardwareInitialized = false;            // 硬件是否初始化完成标志
+bool hardwareInitialized = false;            // 硬件是否初始化完成标?
 
 // 设备信息定义
 const String DEVICE_TYPE = "oven";
@@ -63,7 +63,7 @@ String wifiPassword = "";
 bool isCaptivePortalMode = false;
 unsigned long captivePortalStartTime = 0;
 
-// 文件系统状态
+// 文件系统状?
 bool isFileSystemAvailable = false;
 const unsigned long CAPTIVE_PORTAL_TIMEOUT = 300000; // 5分钟后自动退door模式
 const String AP_SSID = "SmartOven-" + String(ESP.getChipId());
@@ -75,31 +75,16 @@ float targetTemp = 180.0;
 bool heatingEnabled = false;
 bool ovenMode = true; // 烤箱工作模式：true=自动模式，false=手动模式
 
-// PID控制变量
-bool usePID = false;  // 是否使用PID控制
-float Kp = 2.0;       // 比例系数
-float Ki = 0.1;       // 积分系数
-float Kd = 1.0;       // 微分系数
-
-// PID计算中间变量
-float previousError = 0.0;
-float integral = 0.0;
-unsigned long previousMillis = 0;
-
-// PWM控制变量
-unsigned long pwmPeriod = 1000;  // PWM周期，单位毫秒
-unsigned long pwmStartTime = 0;  // PWM周期开始时间
-
 // 网络通信配置
 const int DEFAULT_PORT = 8888;
 
 // 温度校准参数配置
-float temperatureOffset = 0.0;  // 温度补偿值 - 用于校准温度传感器读数偏差
-float temperatureScale = 1.0;    // 温度缩放系数 - 用于调整温度读数的比例关系
+float temperatureOffset = 0.0;  // 温度补偿?- 用于校准温度传感器读数偏?
+float temperatureScale = 1.0;    // 温度缩放系数 - 用于调整温度读数的比例关?
 
 // 设备发现配置
 bool discoveryEnabled = true;
-const unsigned long DISCOVERY_INTERVAL = 10000; // 10秒设备发现广播间隔
+const unsigned long DISCOVERY_INTERVAL = 10000; // 10秒设备发现广播间?
 unsigned long lastDiscoveryTime = 0;
 
 // LED状态控制与闪烁管理
@@ -119,23 +104,19 @@ const unsigned long BAKING_COMPLETE_DURATION = 10000; // 烘焙完成提示持�
 struct Config {
     char ssid[32];
     char password[64];
-    float temperatureOffset;  // 温度校准偏移量
+    float temperatureOffset;  // 温度校准偏移?
     float temperatureScale;    // 温度校准缩放系数
-    float Kp;                 // PID比例系数
-    float Ki;                 // PID积分系数
-    float Kd;                 // PID微分系数
-    bool usePID;              // 是否使用PID控制
-    char signature[16];  // 配置文件签名，用于验证配置有效性
+    char signature[16];  // 配置文件签名，用于验证配置有效?
 };
 
 bool saveConfig() {
     Config config;
-    // 初始化配置结构体，清空内存空间
+    // 初始化配置结构体，清空内存空?
     memset(&config, 0, sizeof(config));
     
-    // 验证WiFi配置参数有效性
+    // 验证WiFi配置参数有效?
     if (wifiSSID.length() == 0 || wifiSSID.length() > 31) {
-        Serial.println("错误：SSID无效，无法保存配置");
+        Serial.println("错误：SSID无效，无法保存配?);
         return false;
     }
     if (wifiPassword.length() > 63) {
@@ -152,18 +133,12 @@ bool saveConfig() {
     config.temperatureOffset = temperatureOffset;
     config.temperatureScale = temperatureScale;
     
-    // 应用PID参数到配置结构体
-    config.Kp = Kp;
-    config.Ki = Ki;
-    config.Kd = Kd;
-    config.usePID = usePID;
-    
-    // 确保字符串以null终止符结束
+    // 确保字符串以null终止符结?
     config.ssid[sizeof(config.ssid) - 1] = '\0';
     config.password[sizeof(config.password) - 1] = '\0';
     config.signature[sizeof(config.signature) - 1] = '\0';
     
-    // 保存配置到EEPROM，增加重试机制
+    // 保存配置到EEPROM，增加重试机?
     bool saveSuccess = false;
     for (int attempt = 0; attempt < 3 && !saveSuccess; attempt++) {
         EEPROM.begin(512);
@@ -172,7 +147,7 @@ bool saveConfig() {
         EEPROM.end();
         
         if (!saveSuccess) {
-            Serial.println("EEPROM保存失败，重试 " + String(attempt + 1));
+            Serial.println("EEPROM保存失败，重?" + String(attempt + 1));
             delay(100);
         }
     }
@@ -183,23 +158,15 @@ bool saveConfig() {
         Serial.println(config.ssid);
         Serial.print("密码长度: ");
         Serial.println(strlen(config.password));
-        Serial.print("温度校准偏移量: ");
+        Serial.print("温度校准偏移? ");
         Serial.print(config.temperatureOffset);
         Serial.println("°C");
         Serial.print("温度校准缩放系数: ");
         Serial.println(config.temperatureScale);
-        Serial.print("PID参数 - Kp: ");
-        Serial.print(config.Kp);
-        Serial.print(", Ki: ");
-        Serial.print(config.Ki);
-        Serial.print(", Kd: ");
-        Serial.println(config.Kd);
-        Serial.print("PID控制: ");
-        Serial.println(config.usePID ? "启用" : "禁用");
         Serial.print("配置签名: ");
         Serial.println(config.signature);
         
-        // 配置保存成功提示音
+        // 配置保存成功提示?
         beepConfigSaved();
         return true;
     } else {
@@ -211,24 +178,24 @@ bool saveConfig() {
 bool loadConfig() {
     Config config;
     
-    // 读取EEPROM配置，增加重试机制
+    // 读取EEPROM配置，增加重试机?
     bool readSuccess = false;
     for (int attempt = 0; attempt < 3 && !readSuccess; attempt++) {
         EEPROM.begin(512);
         EEPROM.get(0, config);
         EEPROM.end();
         
-        // 验证读取的数据是否有效
+        // 验证读取的数据是否有?
         if (config.signature[0] != '\0') {
             readSuccess = true;
         } else {
-            Serial.println("EEPROM读取失败，重试 " + String(attempt + 1));
+            Serial.println("EEPROM读取失败，重?" + String(attempt + 1));
             delay(100);
         }
     }
     
     if (!readSuccess) {
-        Serial.println("错误：EEPROM读取失败，使用默认配置");
+        Serial.println("错误：EEPROM读取失败，使用默认配?);
         resetToDefaultConfig();
         return false;
     }
@@ -240,39 +207,31 @@ bool loadConfig() {
     Serial.println(config.ssid);
     Serial.print("密码长度: ");
     Serial.println(strlen(config.password));
-    Serial.print("温度校准偏移量: ");
+    Serial.print("温度校准偏移? ");
     Serial.print(config.temperatureOffset);
     Serial.println("°C");
     Serial.print("温度校准缩放系数: ");
     Serial.println(config.temperatureScale);
-    Serial.print("PID参数 - Kp: ");
-    Serial.print(config.Kp);
-    Serial.print(", Ki: ");
-    Serial.print(config.Ki);
-    Serial.print(", Kd: ");
-    Serial.println(config.Kd);
-    Serial.print("PID控制: ");
-    Serial.println(config.usePID ? "启用" : "禁用");
     
-    // 严格的配置验证
+    // 严格的配置验?
     if (strcmp(config.signature, "SMARTOVEN") == 0) {
-        // 验证SSID和密码的有效性
+        // 验证SSID和密码的有效?
         String loadedSSID = String(config.ssid);
         String loadedPassword = String(config.password);
         
         if (loadedSSID.length() == 0 || loadedSSID.length() > 31) {
-            Serial.println("警告：加载的SSID无效，使用默认配置");
+            Serial.println("警告：加载的SSID无效，使用默认配?);
             resetToDefaultConfig();
             return false;
         }
         
         if (loadedPassword.length() > 63) {
-            Serial.println("警告：加载的密码过长，使用默认配置");
+            Serial.println("警告：加载的密码过长，使用默认配?);
             resetToDefaultConfig();
             return false;
         }
         
-        // 配置验证通过，应用配置
+        // 配置验证通过，应用配?
         wifiSSID = loadedSSID;
         wifiPassword = loadedPassword;
         
@@ -280,65 +239,44 @@ bool loadConfig() {
         temperatureOffset = config.temperatureOffset;
         temperatureScale = config.temperatureScale;
         
-        // 验证温度校准参数的合理性
+        // 验证温度校准参数的合理?
         if (temperatureOffset < -50.0 || temperatureOffset > 50.0) {
             Serial.println("警告：温度校准偏移量超出合理范围，重置为0");
             temperatureOffset = 0.0;
         }
         
         if (temperatureScale < 0.5 || temperatureScale > 2.0) {
-            Serial.println("警告：温度校准缩放系数超出合理范围，重置为1");
+            Serial.println("警告：温度校准缩放系数超出合理范围，重置?");
             temperatureScale = 1.0;
         }
         
-        // 加载PID参数
-        Kp = config.Kp;
-        Ki = config.Ki;
-        Kd = config.Kd;
-        usePID = config.usePID;
-        
-        Serial.println("配置文件加载成功，应用温度校准参数");
-        Serial.print("温度校准偏移量: ");
+        Serial.println("配置文件加载成功，应用温度校准参?);
+        Serial.print("温度校准偏移? ");
         Serial.print(temperatureOffset);
         Serial.println("°C");
         Serial.print("温度校准缩放系数: ");
         Serial.println(temperatureScale);
-        Serial.print("PID参数 - Kp: ");
-        Serial.print(Kp);
-        Serial.print(", Ki: ");
-        Serial.print(Ki);
-        Serial.print(", Kd: ");
-        Serial.println(Kd);
-        Serial.print("PID控制: ");
-        Serial.println(usePID ? "启用" : "禁用");
         return true;
     } else {
-        Serial.println("配置文件签名验证失败，使用默认配置参数");
+        Serial.println("配置文件签名验证失败，使用默认配置参?);
         resetToDefaultConfig();
         return false;
     }
 }
 
 // =========================================
-// 重置为默认配置
+// 重置为默认配?
 // =========================================
 void resetToDefaultConfig() {
     wifiSSID = "";
     wifiPassword = "";
     temperatureOffset = 0.0;
     temperatureScale = 1.0;
-    
-    // 重置PID参数为默认值
-    Kp = 2.0;
-    Ki = 0.1;
-    Kd = 1.0;
-    usePID = false;  // 默认使用开关控制
-    
     Serial.println("已重置为默认配置参数");
 }
 
 // =========================================
-// MAX6675温度传感器驱动
+// MAX6675温度传感器驱?
 // =========================================
 
 // 读取MAX6675原始数据 - 16位数据格式，包含温度信息和状态位
@@ -346,38 +284,38 @@ void resetToDefaultConfig() {
  * 读取MAX6675温度传感器的原始数据
  * 
  * 此函数通过手动SPI通信协议读取MAX6675传感器的16位原始数据，
- * 包括温度信息和传感器状态位。
+ * 包括温度信息和传感器状态位?
  * 
- * @return uint16_t 16位原始数据，包含温度值和状态信息
+ * @return uint16_t 16位原始数据，包含温度值和状态信?
  */
 uint16_t readMAX6675RawData() {
   uint16_t data = 0;
   
-  // 初始化MAX6675片选引脚 - 先置高电平禁用通信
+  // 初始化MAX6675片选引?- 先置高电平禁用通信
   digitalWrite(THERMO_CS, HIGH);
   digitalWrite(THERMO_CLK, LOW);
   delay(10);  // 等待芯片稳定 - 延迟10ms
   
-  // 开始数据读取
+  // 开始数据读?
   digitalWrite(THERMO_CS, LOW);
   delayMicroseconds(100);  // 等待转换完成 - 确保数据稳定
   
-  // 读取16位数据 - 从高位到低位
+  // 读取16位数?- 从高位到低位
   for (int i = 15; i >= 0; i--) {
-    digitalWrite(THERMO_CLK, HIGH);  // 时钟信号高电平 - 读取数据位
+    digitalWrite(THERMO_CLK, HIGH);  // 时钟信号高电?- 读取数据?
     delayMicroseconds(5);  // 短暂延迟确保数据稳定读取
-    if (digitalRead(THERMO_DO)) {   // 读取数据位 - 如果DO引脚为高电平则设置当前位
+    if (digitalRead(THERMO_DO)) {   // 读取数据?- 如果DO引脚为高电平则设置当前位
       data |= (1 << i);
     }
-    digitalWrite(THERMO_CLK, LOW);  // 时钟信号低电平 - 结束当前位读取
+    digitalWrite(THERMO_CLK, LOW);  // 时钟信号低电?- 结束当前位读?
     delayMicroseconds(5);  // 短暂延迟确保数据稳定
   }
   
   // 结束数据读取
   digitalWrite(THERMO_CS, HIGH);
-  delayMicroseconds(100);  // 等待通信完成 - 确保芯片进入空闲状态
+  delayMicroseconds(100);  // 等待通信完成 - 确保芯片进入空闲状?
   
-  // 检查传感器数据有效性 - 判断是否通信正常
+  // 检查传感器数据有效?- 判断是否通信正常
   if (data == 0x0000 || data == 0xFFFF) {
     Serial.println("传感器通信错误: MAX6675未连接或读取失败");
   }
@@ -392,12 +330,12 @@ bool verifyHardwareInitialization() {
     pinMode(THERMO_CS, OUTPUT);
     pinMode(THERMO_DO, INPUT);
     
-    // 快速配置MAX6675初始状态
+    // 快速配置MAX6675初始状?
     digitalWrite(THERMO_CS, HIGH);
     digitalWrite(THERMO_CLK, LOW);
-    delay(10);  // 快速等待传感器稳定- 延迟10ms（优化启动速度）
+    delay(10);  // 快速等待传感器稳定- 延迟10ms（优化启动速度?
     
-    // 快速检查MAX6675传感器响应状态
+    // 快速检查MAX6675传感器响应状?
     if (digitalRead(THERMO_DO) == HIGH || digitalRead(THERMO_DO) == LOW) {
         return true;
     } else {
@@ -410,15 +348,15 @@ void performHardwareRecovery() {
     // 增加硬件故障计数
     hardwareFailureCount++;
     
-    // 快速重置MAX6675传感器 - 尝试恢复通信
+    // 快速重置MAX6675传感?- 尝试恢复通信
     for (int i = 0; i < 3; i++) {  // 减少重试次数
         digitalWrite(THERMO_CS, HIGH);
         digitalWrite(THERMO_CLK, LOW);
-        delay(50);  // 快速等待传感器稳定 - 延迟50ms（优化启动速度）
+        delay(50);  // 快速等待传感器稳定 - 延迟50ms（优化启动速度?
         digitalWrite(THERMO_CS, LOW);
-        delay(20);  // 快速延迟
+        delay(20);  // 快速延?
         digitalWrite(THERMO_CS, HIGH);
-        delay(50);  // 快速延迟
+        delay(50);  // 快速延?
     }
     
     // 快速重新初始化MAX6675引脚配置
@@ -434,28 +372,28 @@ void performHardwareRecovery() {
 /**
  * 读取温度值（带重试机制）
  * 
- * 此函数通过MAX6675传感器读取当前温度值，包含重试机制和错误处理。
- * 最多尝试3次读取，如果所有尝试都失败，则返回默认温度值25.0°C。
+ * 此函数通过MAX6675传感器读取当前温度值，包含重试机制和错误处理?
+ * 最多尝?次读取，如果所有尝试都失败，则返回默认温度?5.0°C?
  * 
  * @return float 读取到的温度值（摄氏度），失败时返回25.0°C
  */
 float readTemperatureManual() {
-    // 温度读取带重试机制 - 最多尝试3次读取传感器数据
+    // 温度读取带重试机?- 最多尝?次读取传感器数据
     for (int retry = 0; retry < 3; retry++) {
         uint16_t rawData = readMAX6675RawData();
         
-        // 输出当前重试次数及原始数据
+        // 输出当前重试次数及原始数?
         Serial.print("读取尝试"); Serial.print(retry + 1); 
         Serial.print(": 原始数据: 0x"); Serial.println(rawData, HEX);
         
-        // 检查传感器数据有效性 - 排除无效数据（0x0000或0xFFFF）
+        // 检查传感器数据有效?- 排除无效数据?x0000?xFFFF?
         if (rawData == 0x0000 || rawData == 0xFFFF) {
             if (retry < 2) {
                 Serial.println("传感器数据无效，准备重试...");
-                delay(100);  // 重试前延迟100ms
+                delay(100);  // 重试前延?00ms
                 continue;
             } else {
-                Serial.println("传感器通信失败 - 已达最大重试次数，无法获取有效数据 - 将返回默认温度");
+                Serial.println("传感器通信失败 - 已达最大重试次数，无法获取有效数据 - 将返回默认温?);
                 // 传感器读取失败，增加硬件故障计数
                 hardwareFailureCount++;
                 // 传感器读取失败，已达最大重试次数，返回默认温度 25.0°C
@@ -464,48 +402,48 @@ float readTemperatureManual() {
             }
         }
         
-        // 检查传感器连接状态位 - 第3位为0表示连接正常
+        // 检查传感器连接状态位 - ?位为0表示连接正常
         if (!(rawData & 0x04)) {
-            uint16_t tempBits = rawData >> 3;  // 将原始数据右移3位以提取温度相关数据
-            float temperature = tempBits * 0.25;  // 每一位代表0.25°C，计算实际温度值
+            uint16_t tempBits = rawData >> 3;  // 将原始数据右?位以提取温度相关数据
+            float temperature = tempBits * 0.25;  // 每一位代?.25°C，计算实际温度?
             
-            // 应用温度校准参数（缩放和偏移）
+            // 应用温度校准参数（缩放和偏移?
             temperature = (temperature * temperatureScale) + temperatureOffset;
             
-            // 验证温度值是否在有效范围内（-50.0°C 到 400.0°C）
+            // 验证温度值是否在有效范围内（-50.0°C ?400.0°C?
             if (temperature >= -50.0 && temperature <= 400.0) {
                 Serial.print("读取到的温度: ");
                 Serial.print(temperature); Serial.println("°C");
                 
-                // 重置传感器错误计数器，更新最后成功读取时间
+                // 重置传感器错误计数器，更新最后成功读取时?
                 if (retry == 0) {
                     hardwareFailureCount = 0;
                 }
                 return temperature;
             } else {
-                Serial.println("温度值超出有效范围");
+                Serial.println("温度值超出有效范?);
                 return -1.0;
             }
         } else {
             if (retry < 2) {
-                Serial.println("传感器连接状态异常- 尝试重新连接...");
-                delay(100);  // 重试前延迟100ms
+                Serial.println("传感器连接状态异? 尝试重新连接...");
+                delay(100);  // 重试前延?00ms
                 continue;
             } else {
-                Serial.println("传感器连接状态异常- 已达最大重试次数");
+                Serial.println("传感器连接状态异? 已达最大重试次?);
                 return -1.0;
             }
         }
     }
     
-    // 所有读取尝试失败- 无法获取有效温度数据
-    Serial.println("所有读取尝试失败- 返回默认温度");
+    // 所有读取尝试失? 无法获取有效温度数据
+    Serial.println("所有读取尝试失? 返回默认温度");
     // 传感器读取失败，已达最大重试次数，返回默认温度 25.0°C
     Serial.println("传感器读取失败，返回默认温度: 25.0°C");
     return 25.0;
 }
 
-// 温度校准参数设置函数 - 用于调整传感器读数准确性
+// 温度校准参数设置函数 - 用于调整传感器读数准确?
 void calibrateTemperature(float actualTemp, float measuredTemp) {
     // 计算温度校准参数 - 实际温度与测量温度的比例关系
     if (measuredTemp != 0) {
@@ -518,8 +456,8 @@ void calibrateTemperature(float actualTemp, float measuredTemp) {
     
     Serial.println("温度校准参数计算完成");
     Serial.print("实际校准温度: "); Serial.print(actualTemp); Serial.println("°C");
-    Serial.print("传感器测量温度: "); Serial.print(measuredTemp); Serial.println("°C");
-    Serial.print("温度校准偏移量: "); Serial.print(temperatureOffset); Serial.println("°C");
+    Serial.print("传感器测量温? "); Serial.print(measuredTemp); Serial.println("°C");
+    Serial.print("温度校准偏移? "); Serial.print(temperatureOffset); Serial.println("°C");
     Serial.print("温度校准缩放系数: "); Serial.println(temperatureScale);
     
     // 保存温度校准参数到EEPROM
@@ -536,7 +474,7 @@ void calibrateTemperature(float actualTemp, float measuredTemp) {
  * 
  * 此函数负责配置并启动WiFi接入点模式，设置DNS服务器和Web服务器，
  * 为用户提供网络配置界面。当设备无法连接到保存的WiFi网络时，
- * 会自动启动此服务进行网络配置。
+ * 会自动启动此服务进行网络配置?
  */
 void startCaptivePortal() {
     Serial.println("启动Captive Portal服务...");
@@ -545,7 +483,7 @@ void startCaptivePortal() {
     WiFi.disconnect();
     delay(50); // 减少等待时间
     
-    // 快速配置并启动WiFi接入点模式
+    // 快速配置并启动WiFi接入点模?
     WiFi.mode(WIFI_AP);
     WiFi.softAP(AP_SSID.c_str(), AP_PASSWORD.c_str());
     
@@ -554,7 +492,7 @@ void startCaptivePortal() {
     Serial.print("AP IP地址: ");
     Serial.println(WiFi.softAPIP());
     
-    // 快速配置DNS服务器参数
+    // 快速配置DNS服务器参?
     dnsServer.start(53, "*", WiFi.softAPIP());
     
     // 启动UDP服务用于设备发现广播
@@ -569,11 +507,11 @@ void startCaptivePortal() {
 /**
  * 停止强制门户服务
  * 
- * 此函数负责关闭DNS服务器、断开WiFi接入点，并恢复系统到正常工作模式。
- * 通常在WiFi配置完成或超时后调用此函数。
+ * 此函数负责关闭DNS服务器、断开WiFi接入点，并恢复系统到正常工作模式?
+ * 通常在WiFi配置完成或超时后调用此函数?
  */
 void stopCaptivePortal() {
-    Serial.println("停止Captive Portal服务，关闭相关网络服务...");
+    Serial.println("停止Captive Portal服务，关闭相关网络服?..");
     dnsServer.stop();
     WiFi.softAPdisconnect(true);
     isCaptivePortalMode = false;
@@ -581,9 +519,9 @@ void stopCaptivePortal() {
 }
 
 bool shouldStartCaptivePortal() {
-    // 检查WiFi配置是否存在 - 若SSID或密码为空则返回true，启动配网界面
+    // 检查WiFi配置是否存在 - 若SSID或密码为空则返回true，启动配网界?
     if (wifiSSID.length() == 0 || wifiPassword.length() == 0) {
-        Serial.println("WiFi配置参数缺失，启动配网界面");
+        Serial.println("WiFi配置参数缺失，启动配网界?);
         return true;
     }
     
@@ -594,11 +532,11 @@ bool shouldStartCaptivePortal() {
     Serial.print("密码长度: ");
     Serial.println(wifiPassword.length());
     
-    // 配置WiFi为Station模式并尝试连接网络
+    // 配置WiFi为Station模式并尝试连接网?
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSSID.c_str(), wifiPassword.c_str());
     
-    // 设置WiFi连接超时处理机制，最多等待15秒连接成功（快速配网优化）
+    // 设置WiFi连接超时处理机制，最多等?5秒连接成功（快速配网优化）
     unsigned long startTime = millis();
     int connectionAttempts = 0;
     
@@ -607,24 +545,24 @@ bool shouldStartCaptivePortal() {
         Serial.print(".");
         connectionAttempts++;
         
-        // 定期检查WiFi连接状态并输出当前状态
+        // 定期检查WiFi连接状态并输出当前状?
         if (connectionAttempts % 10 == 0) {
             Serial.println("");
-            Serial.print("WiFi连接状态: ");
+            Serial.print("WiFi连接状? ");
             switch(WiFi.status()) {
-                case WL_IDLE_STATUS: Serial.println("闲置状态"); break;
-                case WL_NO_SSID_AVAIL: Serial.println("SSID不存在"); break;
+                case WL_IDLE_STATUS: Serial.println("闲置状?); break;
+                case WL_NO_SSID_AVAIL: Serial.println("SSID不存?); break;
                 case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
                 case WL_CONNECTED: Serial.println("连接成功"); break;
                 case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
                 case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
                 case WL_DISCONNECTED: Serial.println("已断开连接"); break;
-                default: Serial.println("未知状态"); break;
+                default: Serial.println("未知状?); break;
             }
         }
     }
     
-    // 检查WiFi连接结果并处理连接状态
+    // 检查WiFi连接结果并处理连接状?
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("");
         Serial.println("WiFi连接成功");
@@ -632,46 +570,46 @@ bool shouldStartCaptivePortal() {
         Serial.println(WiFi.localIP());
         Serial.print("连接耗时: ");
         Serial.print((millis() - startTime) / 1000.0);
-        Serial.println("秒");
+        Serial.println("?);
         return false; // WiFi连接成功，无需启动Captive Portal
     } else {
         Serial.println("");
-        Serial.println("WiFi连接失败，启动配网界面");
+        Serial.println("WiFi连接失败，启动配网界?);
         Serial.print("WiFi连接失败原因: ");
         switch(WiFi.status()) {
-            case WL_IDLE_STATUS: Serial.println("闲置状态"); break;
-            case WL_NO_SSID_AVAIL: Serial.println("SSID不存在"); break;
+            case WL_IDLE_STATUS: Serial.println("闲置状?); break;
+            case WL_NO_SSID_AVAIL: Serial.println("SSID不存?); break;
             case WL_SCAN_COMPLETED: Serial.println("扫描完成"); break;
             case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
             case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
             case WL_DISCONNECTED: Serial.println("已断开连接"); break;
-            default: Serial.println("未知状态"); break;
+            default: Serial.println("未知状?); break;
         }
         
-        // 连接失败，启动配网界面
+        // 连接失败，启动配网界?
         WiFi.disconnect();
         delay(100);
-        return true; // WiFi连接失败，启动配网界面
+        return true; // WiFi连接失败，启动配网界?
     }
 }
 
 void checkCaptivePortalTimeout() {
     if (isCaptivePortalMode && 
         millis() - captivePortalStartTime > CAPTIVE_PORTAL_TIMEOUT) {
-        Serial.println("Captive Portal超时，停止配网模式");
+        Serial.println("Captive Portal超时，停止配网模?);
         stopCaptivePortal();
     }
 }
 
 // =========================================
-// 智能WiFi扫描功能 - 快速配网优化
+// 智能WiFi扫描功能 - 快速配网优?
 // =========================================
 
 /**
  * 智能WiFi扫描函数
  * 
  * 此函数负责快速扫描可用的WiFi网络，并返回网络列表
- * 用于在Captive Portal中自动推荐可用网络
+ * 用于在Captive Portal中自动推荐可用网?
 // =========================================
 // WiFi连接管理函数 - 处理网络连接和重连逻辑
 // =========================================
@@ -679,14 +617,14 @@ void checkCaptivePortalTimeout() {
 /**
  * 连接到WiFi网络
  * 
- * 此函数负责使用保存的WiFi配置参数连接到指定的WiFi网络。
- * 如果连接失败，会返回false但不启动强制门户服务，让调用方决定后续操作。
+ * 此函数负责使用保存的WiFi配置参数连接到指定的WiFi网络?
+ * 如果连接失败，会返回false但不启动强制门户服务，让调用方决定后续操作?
  * 
  * @return bool 连接成功返回true，失败返回false
  */
 bool connectToWiFi() {
     if (wifiSSID.length() == 0 || wifiPassword.length() == 0) {
-        Serial.println("WiFi配置参数缺失，无法连接");
+        Serial.println("WiFi配置参数缺失，无法连?);
         return false;
     }
     
@@ -699,7 +637,7 @@ bool connectToWiFi() {
     unsigned long startTime = millis();
     int connectionAttempts = 0;
     
-    // WiFi连接超时处理：最多尝试10秒，期间每500ms检查一次连接状态
+    // WiFi连接超时处理：最多尝?0秒，期间?00ms检查一次连接状?
     while (WiFi.status() != WL_CONNECTED && millis() - startTime < 10000) {
         delay(500);
         Serial.print(".");
@@ -707,14 +645,14 @@ bool connectToWiFi() {
         
         if (connectionAttempts % 4 == 0) {
             Serial.println("");
-            Serial.print("WiFi连接状态: ");
+            Serial.print("WiFi连接状? ");
             switch(WiFi.status()) {
-                case WL_IDLE_STATUS: Serial.println("闲置状态"); break;
-                case WL_NO_SSID_AVAIL: Serial.println("SSID不存在"); break;
+                case WL_IDLE_STATUS: Serial.println("闲置状?); break;
+                case WL_NO_SSID_AVAIL: Serial.println("SSID不存?); break;
                 case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
                 case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
                 case WL_DISCONNECTED: Serial.println("已断开连接"); break;
-                default: Serial.println("连接中..."); break;
+                default: Serial.println("连接?.."); break;
             }
         }
     }
@@ -722,13 +660,13 @@ bool connectToWiFi() {
     // 检查WiFi连接结果
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("");
-        Serial.println("WiFi连接成功！");
+        Serial.println("WiFi连接成功?);
         Serial.print("IP地址: ");
         Serial.println(WiFi.localIP());
         
         isCaptivePortalMode = false;
         
-        // Web服务器配置已移除 - 配网界面功能已删除
+        // Web服务器配置已移除 - 配网界面功能已删?
         
         return true;
     } else {
@@ -736,8 +674,8 @@ bool connectToWiFi() {
         Serial.println("WiFi连接失败");
         Serial.print("失败原因: ");
         switch(WiFi.status()) {
-            case WL_IDLE_STATUS: Serial.println("闲置状态"); break;
-            case WL_NO_SSID_AVAIL: Serial.println("SSID不存在"); break;
+            case WL_IDLE_STATUS: Serial.println("闲置状?); break;
+            case WL_NO_SSID_AVAIL: Serial.println("SSID不存?); break;
             case WL_CONNECT_FAILED: Serial.println("连接失败"); break;
             case WL_CONNECTION_LOST: Serial.println("连接丢失"); break;
             case WL_DISCONNECTED: Serial.println("已断开连接"); break;
@@ -767,7 +705,7 @@ void handleDiscovery() {
             Serial.println(request);
             
             if (request.startsWith("DISCOVER_SMARTOVEN")) {
-                Serial.println("收到设备发现请求，正在发送响应");
+                Serial.println("收到设备发现请求，正在发送响?);
                 sendDiscoveryResponse();
             }
         }
@@ -806,7 +744,7 @@ void broadcastDiscovery() {
     udp.beginPacket("255.255.255.255", 8888);
     udp.write(broadcastMsg.c_str());
     udp.endPacket();
-    Serial.println("发送广播发现信息 " + broadcastMsg);
+    Serial.println("发送广播发现信?" + broadcastMsg);
 }
 
 // =========================================
@@ -816,7 +754,7 @@ void broadcastDiscovery() {
 void setupOTA() {
     // 将OTA更新服务器集成到主Web服务器中
     httpUpdater.setup(&webServer);
-    Serial.println("OTA升级功能已集成到主Web服务器");
+    Serial.println("OTA升级功能已集成到主Web服务?);
     Serial.println("OTA更新页面地址: http://" + WiFi.localIP().toString() + "/ota_update");
 }
 
@@ -826,26 +764,26 @@ void handleOTA() {
 }
 
 // =========================================
-// Web服务器处理函数 - 已删除
+// Web服务器处理函?- 已删?
 // =========================================
 
-// handleStatus()函数已删除 - 配网界面功能已移除
-// handleControl()函数已删除 - 配网界面功能已移除
-// handleFactoryReset()函数已删除 - 配网界面功能已移除
-// handleTemperatureCalibration()函数已删除 - 配网界面功能已移除
-// handleRestart()函数已删除 - 配网界面功能已移除
-// handleOTAUpdate()函数已删除 - 配网界面功能已移除
-// handleLogout()函数已删除 - 配网界面功能已移除
-// handleChangePassword()函数已删除 - 配网界面功能已移除
-// handleDeviceInfo()函数已删除 - 配网界面功能已移除
-// handleReset()函数已删除 - 配网界面功能已移除
-// handleFileUpload()函数已删除 - 配网界面功能已移除
-// handleUploadHTML()函数已删除 - 配网界面功能已移除
-// isValidFileType()函数已删除 - 配网界面功能已移除
+// handleStatus()函数已删?- 配网界面功能已移?
+// handleControl()函数已删?- 配网界面功能已移?
+// handleFactoryReset()函数已删?- 配网界面功能已移?
+// handleTemperatureCalibration()函数已删?- 配网界面功能已移?
+// handleRestart()函数已删?- 配网界面功能已移?
+// handleOTAUpdate()函数已删?- 配网界面功能已移?
+// handleLogout()函数已删?- 配网界面功能已移?
+// handleChangePassword()函数已删?- 配网界面功能已移?
+// handleDeviceInfo()函数已删?- 配网界面功能已移?
+// handleReset()函数已删?- 配网界面功能已移?
+// handleFileUpload()函数已删?- 配网界面功能已移?
+// handleUploadHTML()函数已删?- 配网界面功能已移?
+// isValidFileType()函数已删?- 配网界面功能已移?
 
 void handleRoot() {
     if (isCaptivePortalMode) {
-        // 如果是Captive Portal模式，则显示WiFi配置页面，否则显示设备控制页面
+        // 如果是Captive Portal模式，则显示WiFi配置页面，否则显示设备控制页?
         String html = "<!DOCTYPE html><html><head><title>智能烤箱设备WiFi配置页面</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
         html += "<style>";
         html += "* { margin: 0; padding: 0; box-sizing: border-box; }";
@@ -876,8 +814,8 @@ void handleRoot() {
         html += "  var wifiList = document.getElementById('ssid');";
         html += "  var scanBtn = document.getElementById('scanBtn');";
         html += "  scanBtn.disabled = true;";
-        html += "  scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>扫描WiFi网络中...';";
-        html += "  wifiList.innerHTML = '<option value=\"\">扫描WiFi网络中...</option>';";
+        html += "  scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>扫描WiFi网络?..';";
+        html += "  wifiList.innerHTML = '<option value=\"\">扫描WiFi网络?..</option>';";
         html += "  fetch('/scanwifi').then(response => response.json()).then(data => {";
         html += "    wifiList.innerHTML = '';";
         html += "    wifiList.innerHTML = '<option value=\"\">请选择WiFi网络</option>';";
@@ -888,7 +826,7 @@ void handleRoot() {
         html += "        option.textContent = network.ssid + ' (' + network.rssi + ' dBm)';";
         html += "        wifiList.appendChild(option);";
         html += "      });";
-        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-connected\"></span>扫描完成 (' + data.networks.length + '个网络)';";
+        html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-connected\"></span>扫描完成 (' + data.networks.length + '个网?';";
         html += "    } else {";
         html += "      wifiList.innerHTML = '<option value=\"\">未找到可用的WiFi网络</option>';";
         html += "      scanBtn.innerHTML = '<span class=\"status-indicator status-disconnected\"></span>扫描失败，请重试';";
@@ -929,7 +867,7 @@ void handleRoot() {
         html += "</head><body>";
         html += "<div class=\"container\">";
         html += "<div class=\"header\">";
-        html += "<h1>智能烤箱控制器 - WiFi配置页面</h1>";
+        html += "<h1>智能烤箱控制?- WiFi配置页面</h1>";
         html += "<p>WiFi网络连接设置</p>";
         html += "</div>";
         html += "<div class=\"device-info\">";
@@ -978,7 +916,7 @@ void handleControl() {
     webServer.send(200, "application/json", "{\"status\":\"success\"}");
 }
 
-// handleSaveWiFi()函数已删除 - 配网界面功能已移除
+// handleSaveWiFi()函数已删?- 配网界面功能已移?
 
 void handleFactoryReset() {
     EEPROM.begin(512);
@@ -1010,7 +948,7 @@ void handleTemperatureCalibration() {
 // 新增缺失的API端点处理函数
 // =========================================
 
-// handleWiFiConfig()函数已删除 - 配网界面功能已移除
+// handleWiFiConfig()函数已删?- 配网界面功能已移?
 
 void handleRestart() {
     webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"设备将在3秒后重启\"}");
@@ -1020,29 +958,29 @@ void handleRestart() {
 
 void handleOTAUpdate() {
     // 优化的OTA升级端点 - 提供更直观的升级界面
-    String html = "<!DOCTYPE html><html><head><title>智能烤箱控制器 - OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+    String html = "<!DOCTYPE html><html><head><title>智能烤箱控制?- OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
     html += "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}h1{color:#333;}.container{max-width:700px;margin:0 auto;background:white;padding:25px;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}.status-info{background:#e8f4fd;border-left:4px solid #007bff;padding:15px;margin:15px 0;border-radius:4px;}.tab{display:none;}.active{display:block;}.upgrade-option{display:flex;align-items:center;padding:20px;margin:15px 0;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;transition:all 0.3s;}.upgrade-option:hover{border-color:#007bff;background:#f8f9fa;}.upgrade-option.active{background:#e8f4fd;border-color:#007bff;}.option-icon{font-size:24px;margin-right:15px;width:40px;text-align:center;}.option-content{flex:1;}.option-title{font-size:18px;font-weight:bold;margin-bottom:5px;}.option-desc{color:#666;font-size:14px;}.option-badge{background:#28a745;color:white;padding:2px 8px;border-radius:12px;font-size:12px;margin-left:10px;}.firmware-option .option-icon{color:#dc3545;}.html-option .option-icon{color:#28a745;}button{background:#007bff;color:white;border:none;padding:12px 24px;border-radius:6px;cursor:pointer;margin:5px;font-size:14px;font-weight:bold;}button:hover{background:#0056b3;}.btn-secondary{background:#6c757d;}.btn-secondary:hover{background:#545b62;}.progress{width:100%;height:20px;background:#f0f0f0;border-radius:10px;margin:15px 0;}.progress-bar{height:100%;background:#007bff;border-radius:10px;width:0%;transition:width 0.3s;}.file-list{margin:10px 0;}.file-item{background:#f8f9fa;padding:8px 12px;margin:5px 0;border-radius:4px;border-left:3px solid #007bff;}</style>";
-    html += "</head><body><div class=\"container\"><h1>🚀 智能烤箱控制器 OTA升级</h1>";
+    html += "</head><body><div class=\"container\"><h1>🚀 智能烤箱控制?OTA升级</h1>";
     
-    // 显示设备状态信息
+    // 显示设备状态信?
     html += "<div class=\"status-info\">";
-    html += "<strong>设备状态:</strong><br>";
-    html += "• 固件版本: " + FIRMWARE_VERSION + "<br>";
-    html += "• 运行时间: " + String(millis() / 1000 / 60) + " 分钟<br>";
-    html += "• 可用内存: " + String(ESP.getFreeHeap() / 1024) + " KB<br>";
-    html += "• WiFi状态: " + String(WiFi.status() == WL_CONNECTED ? "已连接" : "未连接");
+    html += "<strong>设备状?</strong><br>";
+    html += "?固件版本: " + FIRMWARE_VERSION + "<br>";
+    html += "?运行时间: " + String(millis() / 1000 / 60) + " 分钟<br>";
+    html += "?可用内存: " + String(ESP.getFreeHeap() / 1024) + " KB<br>";
+    html += "?WiFi状? " + String(WiFi.status() == WL_CONNECTED ? "已连? : "未连?);
     html += "</div>";
     
     html += "<div class=\"tab active\" id=\"mainTab\">";
     html += "<h3>📋 选择升级类型</h3>";
-    html += "<p>请根据您的需求选择合适的升级方式：</p>";
+    html += "<p>请根据您的需求选择合适的升级方式?/p>";
     
     // 固件升级选项
     html += "<div class=\"upgrade-option firmware-option\" onclick=\"showTab('firmwareTab')\">";
     html += "<div class=\"option-icon\">🔧</div>";
     html += "<div class=\"option-content\">";
     html += "<div class=\"option-title\">固件升级 (.bin 文件)<span class=\"option-badge\">系统核心</span></div>";
-    html += "<div class=\"option-desc\">更新设备主程序，包含功能改进和错误修复。升级后设备将自动重启。</div>";
+    html += "<div class=\"option-desc\">更新设备主程序，包含功能改进和错误修复。升级后设备将自动重启?/div>";
     html += "</div>";
     html += "</div>";
     
@@ -1050,35 +988,35 @@ void handleOTAUpdate() {
     html += "<div class=\"upgrade-option fs-option\" onclick=\"showTab('fsTab')\">";
     html += "<div class=\"option-icon\">💾</div>";
     html += "<div class=\"option-content\">";
-    html += "<div class=\"option-title\">文件系统更新 (.bin 文件)<span class=\"option-badge\">界面与数据</span></div>";
-    html += "<div class=\"option-desc\">更新完整的文件系统镜像，包含所有HTML、JS、CSS等界面文件。</div>";
+    html += "<div class=\"option-title\">文件系统更新 (.bin 文件)<span class=\"option-badge\">界面与数?/span></div>";
+    html += "<div class=\"option-desc\">更新完整的文件系统镜像，包含所有HTML、JS、CSS等界面文件?/div>";
     html += "</div>";
     html += "</div>";
     
     html += "</div>";
     
-    // 固件升级标签页
+    // 固件升级标签?
     html += "<div class=\"tab\" id=\"firmwareTab\">";
     html += "<h3>🔧 固件升级</h3>";
-    html += "<p><strong>重要提示：</strong>固件升级将重启设备，请确保电源稳定。</p>";
+    html += "<p><strong>重要提示?/strong>固件升级将重启设备，请确保电源稳定?/p>";
     html += "<form action=\"/update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFirmware(this)\">";
     html += "<p><strong>选择固件文件 (.bin):</strong></p>";
     html += "<input type=\"file\" name=\"firmware\" accept=\".bin\" required style=\"margin:10px 0;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;\">";
-    html += "<br><button type=\"submit\">🚀 开始升级固件</button>";
+    html += "<br><button type=\"submit\">🚀 开始升级固?/button>";
     html += "</form>";
     html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"firmwareProgress\"></div></div>";
     html += "<p id=\"firmwareStatus\"></p>";
     html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">⬅️ 返回选择</button>";
     html += "</div>";
     
-    // 文件系统更新标签页
+    // 文件系统更新标签?
     html += "<div class=\"tab\" id=\"fsTab\">";
     html += "<h3>💾 文件系统更新</h3>";
-    html += "<p><strong>重要提示：</strong>文件系统更新将覆盖所有现有界面文件，请确保使用正确的.bin镜像文件。</p>";
+    html += "<p><strong>重要提示?/strong>文件系统更新将覆盖所有现有界面文件，请确保使用正确的.bin镜像文件?/p>";
     html += "<form action=\"/fs_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
     html += "<p><strong>选择文件系统镜像 (.bin):</strong></p>";
     html += "<input type=\"file\" name=\"littlefs\" accept=\".bin\" required style=\"margin:10px 0;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;\">";
-    html += "<br><button type=\"submit\">🚀 开始更新文件系统</button>";
+    html += "<br><button type=\"submit\">🚀 开始更新文件系?/button>";
     html += "</form>";
     html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fsProgress\"></div></div>";
     html += "<p id=\"fsStatus\"></p>";
@@ -1106,10 +1044,10 @@ void handleOTAUpdate() {
     html += "    };";
     html += "    xhr.onload=function(){";
     html += "        if(xhr.status==200){";
-    html += "            document.getElementById('firmwareStatus').innerHTML='✅ 固件升级成功！设备将在3秒后重启...';";
+    html += "            document.getElementById('firmwareStatus').innerHTML='?固件升级成功！设备将?秒后重启...';";
     html += "            setTimeout(function(){location.reload();},3000);";
     html += "        }else{";
-    html += "            document.getElementById('firmwareStatus').innerHTML='❌ 升级失败：'+xhr.responseText;";
+    html += "            document.getElementById('firmwareStatus').innerHTML='?升级失败?+xhr.responseText;";
     html += "        }";
     html += "    };";
     html += "    xhr.open('POST','/update');";
@@ -1127,10 +1065,10 @@ void handleOTAUpdate() {
     html += "    };";
     html += "    xhr.onload=function(){";
     html += "        if(xhr.status==200){";
-    html += "            document.getElementById('fsStatus').innerHTML='✅ 文件系统更新成功！设备将在3秒后重启...';";
+    html += "            document.getElementById('fsStatus').innerHTML='?文件系统更新成功！设备将?秒后重启...';";
     html += "            setTimeout(function(){location.reload();},3000);";
     html += "        }else{";
-    html += "            document.getElementById('fsStatus').innerHTML='❌ 更新失败：'+xhr.responseText;";
+    html += "            document.getElementById('fsStatus').innerHTML='?更新失败?+xhr.responseText;";
     html += "        }";
     html += "    };";
     html += "    xhr.open('POST','/fs_update');";
@@ -1154,7 +1092,7 @@ void handleChangePassword() {
             // 在实际应用中，这里应该安全地存储密码
             webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"密码修改成功\"}");
         } else {
-            webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"密码长度至少需要8位\"}");
+            webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"密码长度至少需?位\"}");
         }
     } else {
         webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"缺少新密码参数\"}");
@@ -1173,7 +1111,7 @@ void handleDeviceInfo() {
 }
 
 void handleReset() {
-    // 重置端点 - 软重置
+    // 重置端点 - 软重?
     webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"设备配置已重置\"}");
     // 执行软重置逻辑
     EEPROM.begin(512);
@@ -1196,18 +1134,18 @@ void handleResetCalibration() {
     json += "\"scale\":" + String(temperatureScale) + "}";
     webServer.send(200, "application/json", json);
     
-    Serial.println("温度校准参数已重置: offset=" + String(temperatureOffset) + ", scale=" + String(temperatureScale));
+    Serial.println("温度校准参数已重? offset=" + String(temperatureOffset) + ", scale=" + String(temperatureScale));
 }
 
 void handleFilesystemUpdate() {
     // 文件系统.bin更新处理函数
-    Serial.println("开始处理文件系统更新");
+    Serial.println("开始处理文件系统更?);
     
     // 检查是否存在上传的文件系统镜像
     if (!LittleFS.exists("/littlefs.bin")) {
         Serial.println("错误：未找到文件系统镜像文件");
         webServer.sendHeader("Connection", "close");
-        webServer.send(400, "text/plain; charset=utf-8", "未找到文件系统镜像文件");
+        webServer.send(400, "text/plain; charset=utf-8", "未找到文件系统镜像文?);
         return;
     }
     
@@ -1227,13 +1165,13 @@ void handleFilesystemUpdate() {
     Serial.print("文件系统镜像大小: ");
     Serial.println(imageSize);
     
-    // 记录更新标志到EEPROM，以便重启后知道需要处理更新
+    // 记录更新标志到EEPROM，以便重启后知道需要处理更?
     EEPROM.begin(512);
     EEPROM.write(500, 1); // 设置更新标志
     EEPROM.commit();
     EEPROM.end();
     
-    // 发送响应，使用Server-Sent Events格式，便于前端处理
+    // 发送响应，使用Server-Sent Events格式，便于前端处?
     webServer.sendHeader("Access-Control-Allow-Origin", "*");
     
     // 发送完成事件，使用正确的\r\n格式
@@ -1241,7 +1179,7 @@ void handleFilesystemUpdate() {
     webServer.setContentLength(completeData.length());
     webServer.send(200, "text/event-stream; charset=utf-8", completeData);
     
-    // 等待响应发送完成
+    // 等待响应发送完?
     delay(500);
     
     // 直接重启设备
@@ -1256,14 +1194,14 @@ void handleFileUpload() {
     static fs::File currentFile;
     static bool isFilesystemUpdate = false;
     static bool responseStarted = false;
-    static unsigned long receivedBytes = 0;    // 已接收的字节数
-    static unsigned long estimatedTotalSize = 0; // 预估的文件总大小
-    static unsigned int chunkNum = 0;         // 数据块计数
+    static unsigned long receivedBytes = 0;    // 已接收的字节?
+    static unsigned long estimatedTotalSize = 0; // 预估的文件总大?
+    static unsigned int chunkNum = 0;         // 数据块计?
     static unsigned long lastProgressUpdate = 0; // 上次更新进度的时间戳
     
     // 检查是否是文件系统更新
     if (upload.status == UPLOAD_FILE_START) {
-        // 完全重置所有状态
+        // 完全重置所有状?
         currentFilename = upload.filename;
         isFilesystemUpdate = (webServer.uri() == "/fs_update");
         receivedBytes = 0;
@@ -1276,8 +1214,8 @@ void handleFileUpload() {
         String contentLength = webServer.header("Content-Length");
         if (contentLength.length() > 0) {
             estimatedTotalSize = contentLength.toInt();
-            // 减去多部分表单数据的边界和头部信息（粗略估计）
-            // 根据观察，通常这部分大约占用几百字节，我们保守估计为500字节
+            // 减去多部分表单数据的边界和头部信息（粗略估计?
+            // 根据观察，通常这部分大约占用几百字节，我们保守估计?00字节
             if (estimatedTotalSize > 500) {
                 estimatedTotalSize -= 500;
             } else {
@@ -1295,7 +1233,7 @@ void handleFileUpload() {
             currentFilename = "/" + currentFilename;
         }
         
-        // 对于文件系统更新，固定使用/littlefs.bin作为文件名
+        // 对于文件系统更新，固定使?littlefs.bin作为文件?
         if (isFilesystemUpdate) {
             currentFilename = "/littlefs.bin";
         }
@@ -1307,36 +1245,36 @@ void handleFileUpload() {
             return;
         }
         
-        // 创建或覆盖文件
+        // 创建或覆盖文?
         currentFile = LittleFS.open(currentFilename, "w");
         if (!currentFile) {
             Serial.println("文件创建失败");
             return;
         }
         
-        // 初始化日志
-        Serial.println("\n===== 文件上传开始 =====");
-        Serial.print("文件名: ");
+        // 初始化日?
+        Serial.println("\n===== 文件上传开?=====");
+        Serial.print("文件? ");
         Serial.println(currentFilename);
         
     } else if (upload.status == UPLOAD_FILE_WRITE) {
         if (currentFile) {
-            // 写入数据并获取实际写入大小
+            // 写入数据并获取实际写入大?
             size_t bytesWritten = currentFile.write(upload.buf, upload.currentSize);
             
-            // 累加已上传大小
+            // 累加已上传大?
             receivedBytes += bytesWritten;
             chunkNum++;
             
             // 动态检查upload.totalSize，如果发现更准确的文件大小信息则更新estimatedTotalSize
-            // 这有助于提高进度计算的准确性
+            // 这有助于提高进度计算的准确?
             if (upload.totalSize > estimatedTotalSize && upload.totalSize > 0) {
                 estimatedTotalSize = upload.totalSize;
             }
             
             // 注意：Content-Length应在UPLOAD_FILE_START时获取一次，而不是每次写入时重复获取
             
-            // 如果还没有开始响应，立即开始
+            // 如果还没有开始响应，立即开?
             if (!responseStarted) {
                 // 开始Server-Sent Events响应
                 webServer.setContentLength(CONTENT_LENGTH_UNKNOWN);
@@ -1345,44 +1283,44 @@ void handleFileUpload() {
                 webServer.sendHeader("Content-Type", "text/event-stream; charset=utf-8");
                 webServer.send(200, "text/event-stream; charset=utf-8", "");  // 先发送空响应体开始流
                 responseStarted = true;
-                Serial.println("已启动SSE响应流");
-                Serial.print("响应头信息 - Content-Type: ");
+                Serial.println("已启动SSE响应?);
+                Serial.print("响应头信?- Content-Type: ");
                 Serial.println(webServer.header("Content-Type"));
             }
             
-            // 限制进度更新频率，避免过度发送事件
+            // 限制进度更新频率，避免过度发送事?
             unsigned long currentTime = millis();
-            if (currentTime - lastProgressUpdate > 100 || chunkNum % 10 == 0) { // 每100ms或每10个块更新一次
-                // 计算进度百分比
+            if (currentTime - lastProgressUpdate > 100 || chunkNum % 10 == 0) { // ?00ms或每10个块更新一?
+                // 计算进度百分?
                 int progress = 0;
                 if (estimatedTotalSize > 0) {
-                    // 使用浮点计算以提高精度
+                    // 使用浮点计算以提高精?
                     float progressFloat = (float)receivedBytes / estimatedTotalSize * 100.0;
                     progress = (int)progressFloat;
                     
-                    // 限制进度在1-100之间
+                    // 限制进度?-100之间
                     progress = max(1, progress);
                     progress = min(100, progress);
                 } else {
-                    // 如果没有总大小信息，使用块计数作为进度参考
+                    // 如果没有总大小信息，使用块计数作为进度参?
                     progress = min(100, (int)(chunkNum * 5));
-                    // 确保进度至少为1%
+                    // 确保进度至少?%
                     progress = max(1, progress);
                 }
                 
-                // 构建严格符合SSE规范的进度事件（使用\r\n）
+                // 构建严格符合SSE规范的进度事件（使用\r\n?
                 String progressEvent = "event: progress\r\ndata: {\"progress\":" + String(progress) + ",\"totalSize\":" + String(estimatedTotalSize) + ",\"currentSize\":" + String(receivedBytes) + "}\r\n\r\n";
                 webServer.sendContent(progressEvent);
-                // 立即刷新缓冲区确保事件发送
+                // 立即刷新缓冲区确保事件发?
                 webServer.client().flush();
                 lastProgressUpdate = currentTime;
                 
                 // 调试信息
-                Serial.print("发送进度事件: ");
+                Serial.print("发送进度事? ");
                 Serial.println(progressEvent);
                 
                 // 调试日志
-                Serial.print("块: ");
+                Serial.print("? ");
                 Serial.print(chunkNum);
                 Serial.print(" 写入: ");
                 Serial.print(bytesWritten);
@@ -1399,16 +1337,16 @@ void handleFileUpload() {
         if (currentFile) {
             currentFile.close();
             
-            // 文件已完成上传
+            // 文件已完成上?
             
-            // 发送完成事件
+            // 发送完成事?
             if (responseStarted) {
                 String completeEvent = "event: complete\r\ndata: {\"status\":\"success\",\"message\":\"文件上传完成\",\"filename\":\"" + currentFilename + "\",\"size\":" + String(receivedBytes) + "}\r\n\r\n";
                 webServer.sendContent(completeEvent);
-                // 立即刷新缓冲区确保事件发送
+                // 立即刷新缓冲区确保事件发?
                 webServer.client().flush();
                 responseStarted = false;
-                Serial.println("已发送完成事件");
+                Serial.println("已发送完成事?);
             }
             
             // 完成日志
@@ -1417,13 +1355,13 @@ void handleFileUpload() {
             Serial.print(currentFilename);
             Serial.print(" 大小: ");
             Serial.println(receivedBytes);
-            Serial.print("总块数: ");
+            Serial.print("总块? ");
             Serial.println(chunkNum);
             
             if (isFilesystemUpdate) {
-                Serial.println("文件系统镜像上传完成，等待更新");
+                Serial.println("文件系统镜像上传完成，等待更?);
             } else {
-                // 强制刷新文件系统缓存并验证文件
+                // 强制刷新文件系统缓存并验证文?
                 LittleFS.end();
                 delay(100);
                 LittleFS.begin();
@@ -1432,21 +1370,21 @@ void handleFileUpload() {
                 if (LittleFS.exists(currentFilename)) {
                     File verifyFile = LittleFS.open(currentFilename, "r");
                     if (verifyFile) {
-                        Serial.print("文件验证成功，实际大小: ");
+                        Serial.print("文件验证成功，实际大? ");
                         Serial.println(verifyFile.size());
                         verifyFile.close();
                     }
                 } else {
-                    Serial.println("警告：文件验证失败，文件不存在");
+                    Serial.println("警告：文件验证失败，文件不存?);
                 }
                 
-                // 如果是固件文件
+                // 如果是固件文?
                 if (currentFilename.endsWith(".bin")) {
                     Serial.println("固件文件上传完成，等待OTA升级");
                 }
             }
             
-            // 重置所有状态变量
+            // 重置所有状态变?
             receivedBytes = 0;
             estimatedTotalSize = 0;
             chunkNum = 0;
@@ -1460,18 +1398,18 @@ void handleFileUpload() {
             currentFile.close();
             LittleFS.remove(currentFilename);
             
-            // 发送错误事件
+            // 发送错误事?
             if (responseStarted) {
                 String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"文件上传被取消\"}\r\n\r\n";
                 webServer.sendContent(errorEvent);
-                // 立即刷新缓冲区确保事件发送
+                // 立即刷新缓冲区确保事件发?
                 webServer.client().flush();
                 responseStarted = false;
             }
             
             Serial.println("文件上传被取消，已删除不完整文件");
             
-            // 重置状态
+            // 重置状?
             receivedBytes = 0;
             estimatedTotalSize = 0;
             chunkNum = 0;
@@ -1524,23 +1462,16 @@ void setupWebServer() {
     
     webServer.on("/fs_update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
     webServer.on("/status", HTTP_GET, handleStatus);
-    
-    // PID控制API端点
-    webServer.on("/pid", HTTP_GET, handleGetPID);
-    webServer.on("/pid", HTTP_POST, handleSetPID);
-    webServer.on("/pid/enable", HTTP_POST, handleEnablePID);
-    webServer.on("/pid/disable", HTTP_POST, handleDisablePID);
-    
     webServer.onNotFound(handleNotFound);
     webServer.begin();
 }
 
 // =========================================
-// 蜂鸣器控制函数
+// 蜂鸣器控制函?
 // =========================================
 
 void beepConfigSaved() {
-    // 配置保存成功提示音 - 短鸣提示
+    // 配置保存成功提示?- 短鸣提示
     for (int i = 0; i < 2; i++) {
         digitalWrite(BUZZER_PIN, HIGH);
         delay(100);
@@ -1555,11 +1486,11 @@ void beepBakingStart() {
     digitalWrite(BUZZER_PIN, HIGH);
     delay(500);
     digitalWrite(BUZZER_PIN, LOW);
-    Serial.println("烘焙开始提示音已播放");
+    Serial.println("烘焙开始提示音已播?);
 }
 
 void beepBakingComplete() {
-    // 烘焙完成提示音 - 连续短鸣
+    // 烘焙完成提示?- 连续短鸣
     for (int i = 0; i < 5; i++) {
         digitalWrite(BUZZER_PIN, HIGH);
         delay(200);
@@ -1570,7 +1501,7 @@ void beepBakingComplete() {
 }
 
 void beepError() {
-    // 错误提示音 - 急促短鸣
+    // 错误提示?- 急促短鸣
     for (int i = 0; i < 3; i++) {
         digitalWrite(BUZZER_PIN, HIGH);
         delay(50);
@@ -1581,7 +1512,7 @@ void beepError() {
 }
 
 // =========================================
-// TCP服务器处理函数
+// TCP服务器处理函?
 // =========================================
 
 void handleTCPConnection() {
@@ -1621,7 +1552,7 @@ void handleTCPCommand() {
 }
 
 // =========================================
-// Web服务器处理函数
+// Web服务器处理函?
 // =========================================
 
 void handleScanWiFi() {
@@ -1637,7 +1568,7 @@ void handleScanWiFi() {
     }
     json += "]}";
     webServer.send(200, "application/json", json);
-    // 清理WiFi扫描结果，释放内存
+    // 清理WiFi扫描结果，释放内?
     WiFi.scanDelete();
 }
 
@@ -1647,15 +1578,15 @@ void handleSaveWiFi() {
         wifiPassword = webServer.arg("password");
         
         if (saveConfig()) {
-            // WiFi配置保存成功，显示成功页面
+            // WiFi配置保存成功，显示成功页?
             String html = "<!DOCTYPE html><html><head><title>WiFi配置保存成功</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
             html += "<meta http-equiv=\"refresh\" content=\"5;url=/\">";
             html += "<style>body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }</style>";
             html += "</head><body>";
             html += "<h1>WiFi配置保存成功</h1>";
             html += "<p>设备将在5秒后重启并尝试连接WiFi网络...</p>";
-            html += "<p>如果连接成功，将自动跳转到设备控制页面。</p>";
-            html += "<p>如果连接失败，设备将重新进入配网模式。</p>";
+            html += "<p>如果连接成功，将自动跳转到设备控制页面?/p>";
+            html += "<p>如果连接失败，设备将重新进入配网模式?/p>";
             html += "</body></html>";
             webServer.send(200, "text/html", html);
             
@@ -1674,7 +1605,7 @@ void handleSaveWiFi() {
 }
 
 void handleStatus() {
-    // 构建JSON响应，包含设备状态信息
+    // 构建JSON响应，包含设备状态信?
     String json = "{";
     json += "\"device_id\":\"" + DEVICE_ID + "\",";
     json += "\"firmware_version\":\"" + FIRMWARE_VERSION + "\",";
@@ -1683,11 +1614,7 @@ void handleStatus() {
     json += "\"heating_enabled\":" + String(heatingEnabled ? "true" : "false") + ",";
     json += "\"wifi_connected\":" + String(WiFi.status() == WL_CONNECTED ? "true" : "false") + ",";
     json += "\"wifi_ssid\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.SSID() : "") + "\",";
-    json += "\"ip_address\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.localIP().toString() : "0.0.0.0") + "\",";
-    json += "\"pid_enabled\":" + String(usePID ? "true" : "false") + ",";
-    json += "\"pid_kp\":" + String(Kp) + ",";
-    json += "\"pid_ki\":" + String(Ki) + ",";
-    json += "\"pid_kd\":" + String(Kd);
+    json += "\"ip_address\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.localIP().toString() : "0.0.0.0") + "\"";
     json += "}";
     
     webServer.send(200, "application/json", json);
@@ -1698,71 +1625,9 @@ void handleNotFound() {
         // 在captive portal模式下，直接显示配网界面而不是重定向
         handleRoot();
     } else {
-        // 正常模式下返回404错误
+        // 正常模式下返?04错误
         webServer.send(404, "text/plain", "Not found: " + webServer.uri());
     }
-}
-
-// =========================================
-// PID控制API处理函数
-// =========================================
-
-void handleGetPID() {
-    // 返回当前PID参数
-    String json = "{";
-    json += "\"kp\":" + String(Kp) + ",";
-    json += "\"ki\":" + String(Ki) + ",";
-    json += "\"kd\":" + String(Kd) + ",";
-    json += "\"enabled\":" + String(usePID ? "true" : "false");
-    json += "}";
-    
-    webServer.send(200, "application/json", json);
-}
-
-void handleSetPID() {
-    // 设置PID参数
-    if (webServer.hasArg("kp")) {
-        Kp = webServer.arg("kp").toFloat();
-    }
-    
-    if (webServer.hasArg("ki")) {
-        Ki = webServer.arg("ki").toFloat();
-    }
-    
-    if (webServer.hasArg("kd")) {
-        Kd = webServer.arg("kd").toFloat();
-    }
-    
-    // 保存配置到EEPROM
-    if (saveConfig()) {
-        String json = "{\"status\":\"success\",\"message\":\"PID参数已保存\"}";
-        webServer.send(200, "application/json", json);
-        
-        // 播放配置保存成功提示音
-        beepConfigSaved();
-    } else {
-        String json = "{\"status\":\"error\",\"message\":\"配置保存失败\"}";
-        webServer.send(500, "application/json", json);
-    }
-}
-
-void handleEnablePID() {
-    usePID = true;
-    // 重置PID计算变量
-    previousError = 0.0;
-    integral = 0.0;
-    previousMillis = millis();
-    
-    String json = "{\"status\":\"success\",\"message\":\"PID控制已启用\"}";
-    webServer.send(200, "application/json", json);
-}
-
-void handleDisablePID() {
-    usePID = false;
-    digitalWrite(HEATER_PIN, LOW); // 关闭加热器
-    
-    String json = "{\"status\":\"success\",\"message\":\"PID控制已禁用\"}";
-    webServer.send(200, "application/json", json);
 }
 
 // =========================================
@@ -1778,16 +1643,12 @@ void handleSerialCommands() {
         Serial.println(command);
         
         if (command == "status") {
-            Serial.println("=== 设备状态 ===");
+            Serial.println("=== 设备状?===");
             Serial.print("温度: "); Serial.print(currentTemp); Serial.println("°C");
             Serial.print("目标温度: "); Serial.print(targetTemp); Serial.println("°C");
-            Serial.print("加热状态: "); Serial.println(heatingEnabled ? "开启" : "关闭");
+            Serial.print("加热状? "); Serial.println(heatingEnabled ? "开? : "关闭");
             Serial.print("工作模式: "); Serial.println(ovenMode ? "烤箱模式" : "烤面包机模式");
-            Serial.print("WiFi状态: "); Serial.println(WiFi.status() == WL_CONNECTED ? "已连接" : "未连接");
-            Serial.print("PID控制: "); Serial.println(usePID ? "启用" : "禁用");
-            Serial.print("Kp: "); Serial.print(Kp);
-            Serial.print(", Ki: "); Serial.print(Ki);
-            Serial.print(", Kd: "); Serial.println(Kd);
+            Serial.print("WiFi状? "); Serial.println(WiFi.status() == WL_CONNECTED ? "已连? : "未连?);
             if (WiFi.status() == WL_CONNECTED) {
                 Serial.print("IP地址: "); Serial.println(WiFi.localIP());
             }
@@ -1800,150 +1661,33 @@ void handleSerialCommands() {
             Serial.print("目标温度已设置为: "); Serial.print(targetTemp); Serial.println("°C");
         } else if (command == "heat_on") {
             heatingEnabled = true;
-            Serial.println("加热已开启");
+            Serial.println("加热已开?);
         } else if (command == "heat_off") {
             heatingEnabled = false;
-            Serial.println("加热已关闭");
+            Serial.println("加热已关?);
         } else if (command == "calibrate") {
             Serial.println("温度校准模式");
-            Serial.println("请使用网页界面进行温度校准");
-        } else if (command == "pid_on") {
-            usePID = true;
-            // 重置PID计算变量
-            previousError = 0.0;
-            integral = 0.0;
-            previousMillis = millis();
-            Serial.println("PID控制已启用");
-        } else if (command == "pid_off") {
-            usePID = false;
-            digitalWrite(HEATER_PIN, LOW); // 关闭加热器
-            Serial.println("PID控制已禁用");
-        } else if (command.startsWith("set_kp ")) {
-            Kp = command.substring(7).toFloat();
-            Serial.print("Kp已设置为: "); Serial.println(Kp);
-        } else if (command.startsWith("set_ki ")) {
-            Ki = command.substring(7).toFloat();
-            Serial.print("Ki已设置为: "); Serial.println(Ki);
-        } else if (command.startsWith("set_kd ")) {
-            Kd = command.substring(7).toFloat();
-            Serial.print("Kd已设置为: "); Serial.println(Kd);
-        } else if (command == "save_config") {
-            if (saveConfig()) {
-                Serial.println("配置已保存到EEPROM");
-            } else {
-                Serial.println("配置保存失败");
-            }
-        } else if (command == "load_config") {
-            if (loadConfig()) {
-                Serial.println("配置已从EEPROM加载");
-            } else {
-                Serial.println("配置加载失败");
-            }
-        } else if (command == "reset_config") {
-            resetToDefaultConfig();
-            Serial.println("已重置为默认配置");
-        } else if (command == "autotune_pid") {
-            Serial.println("启动PID自动调优程序...");
-            autoTunePID();
+            Serial.println("请使用网页界面进行温度校?);
         } else {
-            Serial.println("未知命令，可用命令: status, reset, set_temp [温度], heat_on, heat_off, calibrate, pid_on, pid_off, set_kp [值], set_ki [值], set_kd [值], save_config, load_config, reset_config, autotune_pid");
+            Serial.println("未知命令，可用命? status, reset, set_temp [温度], heat_on, heat_off, calibrate");
         }
     }
 }
 
 // =========================================
-// PID计算函数
-// =========================================
-
-float computePID() {
-    // 计算时间间隔
-    unsigned long currentMillis = millis();
-    float deltaTime = (currentMillis - previousMillis) / 1000.0; // 转换为秒
-    
-    // 如果时间间隔为0，直接返回0
-    if (deltaTime <= 0) {
-        return 0.0;
-    }
-    
-    // 计算误差
-    float error = targetTemp - currentTemp;
-    
-    // 计算积分项
-    integral += error * deltaTime;
-    
-    // 计算微分项
-    float derivative = (error - previousError) / deltaTime;
-    
-    // 计算PID输出
-    float output = Kp * error + Ki * integral + Kd * derivative;
-    
-    // 保存当前误差供下次计算使用
-    previousError = error;
-    previousMillis = currentMillis;
-    
-    // 限制输出范围在0-100%
-    if (output > 100.0) {
-        output = 100.0;
-    } else if (output < 0.0) {
-        output = 0.0;
-    }
-    
-    return output;
-}
-
-// =========================================
-// 加热器控制函数
+// 加热器控制函?
 // =========================================
 
 void controlHeater() {
-    if (usePID) {
-        // 使用PID控制
-        if (heatingEnabled) {
-            float pidOutput = computePID();
-            
-            // PWM控制加热器
-            unsigned long currentMillis = millis();
-            
-            // 检查是否开始新的PWM周期
-            if (currentMillis - pwmStartTime >= pwmPeriod) {
-                pwmStartTime = currentMillis;
-            }
-            
-            // 计算PWM高电平时间
-            unsigned long pwmHighTime = (unsigned long)(pwmPeriod * pidOutput / 100.0);
-            
-            // 根据PWM控制加热器
-            if (currentMillis - pwmStartTime < pwmHighTime) {
-                digitalWrite(HEATER_PIN, HIGH);
-            } else {
-                digitalWrite(HEATER_PIN, LOW);
-            }
-            
-            // 串口输出PID信息用于调试
-            Serial.print("PID控制 - 温度: ");
-            Serial.print(currentTemp);
-            Serial.print("°C, 目标: ");
-            Serial.print(targetTemp);
-            Serial.print("°C, 误差: ");
-            Serial.print(targetTemp - currentTemp);
-            Serial.print("°C, PID输出: ");
-            Serial.print(pidOutput);
-            Serial.println("%");
-        } else {
-            digitalWrite(HEATER_PIN, LOW);
-        }
+    if (heatingEnabled && currentTemp < targetTemp) {
+        digitalWrite(HEATER_PIN, HIGH);
     } else {
-        // 使用原有的开关控制
-        if (heatingEnabled && currentTemp < targetTemp) {
-            digitalWrite(HEATER_PIN, HIGH);
-        } else {
-            digitalWrite(HEATER_PIN, LOW);
-        }
+        digitalWrite(HEATER_PIN, LOW);
     }
 }
 
 // =========================================
-// LED状态控制函数
+// LED状态控制函?
 // =========================================
 
 void updateLEDStatus() {
@@ -1951,13 +1695,13 @@ void updateLEDStatus() {
     
     if (currentTime - lastLedUpdate > LED_BLINK_INTERVAL) {
         ledState = !ledState;
-        digitalWrite(LED_PIN, ledState ? LOW : HIGH); // LED引脚低电平点亮
+        digitalWrite(LED_PIN, ledState ? LOW : HIGH); // LED引脚低电平点?
         lastLedUpdate = currentTime;
     }
 }
 
 // =========================================
-// 烘焙完成状态管理
+// 烘焙完成状态管?
 // =========================================
 
 void handleBakingComplete() {
@@ -1971,7 +1715,7 @@ void handleBakingComplete() {
 }
 
 // =========================================
-// 系统初始化函数
+// 系统初始化函?
 // =========================================
 
 void setup() {
@@ -1983,32 +1727,32 @@ void setup() {
     pinMode(BUZZER_PIN, OUTPUT);
     pinMode(LED_PIN, OUTPUT);
     
-    // 快速初始化加热器状态 - 默认关闭
+    // 快速初始化加热器状?- 默认关闭
     digitalWrite(HEATER_PIN, LOW);
     digitalWrite(BUZZER_PIN, LOW);
     digitalWrite(LED_PIN, HIGH); // LED默认熄灭
     
-    // 快速验证硬件初始化状态
+    // 快速验证硬件初始化状?
     if (!verifyHardwareInitialization()) {
         performHardwareRecovery();
     }
     
-    // 初始化文件系统
+    // 初始化文件系?
     if (!LittleFS.begin()) {
         Serial.println("文件系统初始化失败，HTML文件服务将不可用");
     } else {
-        Serial.println("文件系统初始化成功");
+        Serial.println("文件系统初始化成?);
     }
     
-    // 优化WiFi启动逻辑：先检查配置，再尝试连接
+    // 优化WiFi启动逻辑：先检查配置，再尝试连?
     if (loadConfig()) {
-        Serial.println("WiFi配置加载成功，尝试连接网络...");
+        Serial.println("WiFi配置加载成功，尝试连接网?..");
         Serial.print("SSID: ");
         Serial.println(wifiSSID);
         
         // 尝试连接WiFi
         if (connectToWiFi()) {
-            Serial.println("WiFi连接成功，设备进入正常模式");
+            Serial.println("WiFi连接成功，设备进入正常模?);
         } else {
             Serial.println("WiFi连接失败，启动Captive Portal配网模式");
             startCaptivePortal();
@@ -2018,13 +1762,13 @@ void setup() {
         startCaptivePortal();
     }
     
-    // 快速启动TCP服务器
+    // 快速启动TCP服务?
     tcpServer.begin();
     
-    // 检查是否有文件系统更新请求（重启后恢复）
+    // 检查是否有文件系统更新请求（重启后恢复?
     EEPROM.begin(512);
     if (EEPROM.read(500) == 1) {
-        Serial.println("检测到文件系统更新请求，开始处理...");
+        Serial.println("检测到文件系统更新请求，开始处?..");
         
         // 清除更新标志
         EEPROM.write(500, 0);
@@ -2033,13 +1777,13 @@ void setup() {
         
         // 检查是否存在上传的文件系统镜像
         if (LittleFS.exists("/littlefs.bin")) {
-            Serial.println("找到文件系统镜像，准备更新...");
+            Serial.println("找到文件系统镜像，准备更?..");
             
-            // 对于ESP8266，我们需要使用特殊的方法来应用文件系统镜像
+            // 对于ESP8266，我们需要使用特殊的方法来应用文件系统镜?
             // 这里我们简化处理，让设备重启后重新加载文件系统
-            // 在实际应用中，这里可以添加更复杂的逻辑来直接刷写镜像
+            // 在实际应用中，这里可以添加更复杂的逻辑来直接刷写镜?
             
-            Serial.println("文件系统更新将在本次启动中生效");
+            Serial.println("文件系统更新将在本次启动中生?);
         } else {
             Serial.println("警告：未找到文件系统镜像文件，但检测到更新标志");
         }
@@ -2047,203 +1791,23 @@ void setup() {
         EEPROM.end();
     }
     
-    // 初始化Web服务器
+    // 初始化Web服务?
     setupWebServer();
     
     // 快速初始化温度读取计数器和平均时间
     temperatureReadCount = 0;
     temperatureReadAvgTime = 0;
     
-    // 初始化PID控制变量
-    previousError = 0;
-    integral = 0;
-    previousMillis = millis();
-    
     // 快速播放启动提示音
     beepConfigSaved();
 }
 
 // =========================================
-// PID自动调优函数
-// =========================================
-
-void autoTunePID() {
-    Serial.println("开始PID自动调优...");
-    Serial.println("请确保烤箱为空并且在安全环境下操作");
-    
-    // 保存当前设置
-    bool originalHeatingEnabled = heatingEnabled;
-    bool originalUsePID = usePID;
-    float originalTargetTemp = targetTemp;
-    float originalKp = Kp;
-    float originalKi = Ki;
-    float originalKd = Kd;
-    
-    // 设置初始参数
-    Kp = 0.0;
-    Ki = 0.0;
-    Kd = 0.0;
-    usePID = false;
-    heatingEnabled = true;
-    
-    // 设置目标温度为当前温度+20°C
-    targetTemp = currentTemp + 20.0;
-    if (targetTemp > 250.0) targetTemp = 250.0; // 限制最高温度
-    
-    Serial.print("目标温度设置为: ");
-    Serial.print(targetTemp);
-    Serial.println("°C");
-    
-    // 等待温度稳定
-    Serial.println("等待温度稳定...");
-    unsigned long stableStart = millis();
-    
-    while (millis() - stableStart < 30000) { // 等待30秒
-        currentTemp = readTemperatureManual();
-        controlHeater();
-        delay(1000);
-        Serial.print("当前温度: ");
-        Serial.print(currentTemp);
-        Serial.println("°C");
-    }
-    
-    // 开始调优过程
-    Serial.println("开始寻找临界增益...");
-    float Ku = 0.0; // 临界增益
-    float Tu = 0.0; // 振荡周期
-    
-    // 逐步增加Kp直到出现持续振荡
-    Kp = 1.0;
-    usePID = true;
-    
-    bool oscillationDetected = false;
-    float maxTemp = currentTemp;
-    float minTemp = currentTemp;
-    int peakCount = 0;
-    unsigned long lastPeakTime = 0;
-    
-    Serial.println("逐步增加Kp直到出现持续振荡...");
-    
-    while (!oscillationDetected && Kp < 100.0) {
-        // 运行一段时间观察系统响应
-        unsigned long tuneStart = millis();
-        maxTemp = currentTemp;
-        minTemp = currentTemp;
-        peakCount = 0;
-        
-        // 观察2分钟内的温度变化
-        while (millis() - tuneStart < 120000) {
-            currentTemp = readTemperatureManual();
-            float pidOutput = computePID();
-            
-            // PWM控制加热器
-            unsigned long currentMillis = millis();
-            if (currentMillis - pwmStartTime >= pwmPeriod) {
-                pwmStartTime = currentMillis;
-            }
-            unsigned long pwmHighTime = (unsigned long)(pwmPeriod * pidOutput / 100.0);
-            if (currentMillis - pwmStartTime < pwmHighTime) {
-                digitalWrite(HEATER_PIN, HIGH);
-            } else {
-                digitalWrite(HEATER_PIN, LOW);
-            }
-            
-            // 检测峰值
-            if (currentTemp > maxTemp) {
-                maxTemp = currentTemp;
-            }
-            if (currentTemp < minTemp) {
-                minTemp = currentTemp;
-            }
-            
-            // 简单的峰值检测
-            static float prevTemp = currentTemp;
-            static float prevPrevTemp = currentTemp;
-            
-            if (prevPrevTemp < prevTemp && prevTemp > currentTemp && (millis() - lastPeakTime) > 10000) {
-                // 检测到峰值
-                if (peakCount == 0) {
-                    lastPeakTime = millis();
-                } else {
-                    Tu = (millis() - lastPeakTime) / 1000.0; // 转换为秒
-                    lastPeakTime = millis();
-                    
-                    // 如果连续检测到峰值且温差较大，则认为出现振荡
-                    if (peakCount >= 2 && (maxTemp - minTemp) > 2.0) {
-                        oscillationDetected = true;
-                        Ku = Kp;
-                        Serial.print("检测到持续振荡! 临界增益 Ku = ");
-                        Serial.print(Ku);
-                        Serial.print(", 振荡周期 Tu = ");
-                        Serial.print(Tu);
-                        Serial.println(" 秒");
-                        break;
-                    }
-                }
-                peakCount++;
-            }
-            
-            prevPrevTemp = prevTemp;
-            prevTemp = currentTemp;
-            
-            delay(1000);
-            Serial.print("Kp: ");
-            Serial.print(Kp);
-            Serial.print(", 温度: ");
-            Serial.print(currentTemp);
-            Serial.println("°C");
-        }
-        
-        if (!oscillationDetected) {
-            Kp += 1.0; // 增加Kp
-            // 重置PID变量
-            previousError = 0.0;
-            integral = 0.0;
-            previousMillis = millis();
-        }
-    }
-    
-    if (oscillationDetected) {
-        // 使用Ziegler-Nichols方法计算PID参数
-        // 这些是经典的Ziegler-Nichols系数
-        Kp = 0.6 * Ku;
-        Ki = 1.2 * Ku / Tu;
-        Kd = 0.075 * Ku * Tu;
-        
-        Serial.println("PID自动调优完成!");
-        Serial.print("推荐参数: Kp = ");
-        Serial.print(Kp);
-        Serial.print(", Ki = ");
-        Serial.print(Ki);
-        Serial.print(", Kd = ");
-        Serial.println(Kd);
-        
-        // 保存配置
-        if (saveConfig()) {
-            Serial.println("新参数已保存到EEPROM");
-        }
-    } else {
-        Serial.println("未能检测到持续振荡，请手动调整参数");
-        // 恢复原始参数
-        Kp = originalKp;
-        Ki = originalKi;
-        Kd = originalKd;
-    }
-    
-    // 恢复原始设置
-    targetTemp = originalTargetTemp;
-    usePID = originalUsePID;
-    heatingEnabled = originalHeatingEnabled;
-    
-    Serial.println("PID自动调优过程结束");
-}
-
-// =========================================
-// 主循环函数
+// 主循环函?
 // =========================================
 
 void loop() {
-    // 处理Web服务器请求
+    // 处理Web服务器请?
     webServer.handleClient();
     
     // 文件系统更新现在直接在handleFilesystemUpdate中处理并重启设备
@@ -2256,23 +1820,23 @@ void loop() {
     // 处理设备发现协议
     handleDiscovery();
     
-    // 处理TCP连接和命令
+    // 处理TCP连接和命?
     handleTCPConnection();
     handleTCPCommand();
     
     // 处理串口命令
     handleSerialCommands();
     
-    // 读取温度传感器数据
+    // 读取温度传感器数?
     currentTemp = readTemperatureManual();
     
-    // 控制加热器
+    // 控制加热?
     controlHeater();
     
-    // 更新LED状态
+    // 更新LED状?
     updateLEDStatus();
     
-    // 处理烘焙完成状态
+    // 处理烘焙完成状?
     handleBakingComplete();
     
     // 检查Captive Portal超时

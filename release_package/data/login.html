@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>智能电烤箱 - 管理员登录</title>
-    <link rel="stylesheet" href="css/title-styles.css">
+    <title>智能电烤�?- 管理员登�?/title>
     <style>
         * {
             margin: 0;
@@ -39,7 +38,12 @@
             margin-bottom: 30px;
         }
 
-
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
 
         .login-header p {
             font-size: 16px;
@@ -136,13 +140,13 @@
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1>智能电烤箱</h1>
-            <p>管理员登录</p>
+            <h1>智能电烤�?/h1>
+            <p>管理员登�?/p>
         </div>
         
         <form class="login-form" id="loginForm">
             <div class="form-group">
-                <label class="form-label">管理员密码</label>
+                <label class="form-label">管理员密�?/label>
                 <input type="password" class="form-input" id="password" placeholder="请输入管理员密码" required>
             </div>
             
@@ -181,11 +185,11 @@
             const storedPassword = getStoredPassword();
             
             if (passwordInput.value === storedPassword) {
-                // 登录成功，设置登录状态并跳转到主页
+                // 登录成功，设置登录状态并跳转到主�?
                 sessionStorage.setItem('isLoggedIn', 'true');
                 window.location.href = 'index.html';
             } else {
-                // 登录失败，显示错误信息
+                // 登录失败，显示错误信�?
                 errorMessage.style.display = 'block';
                 passwordInput.value = '';
                 passwordInput.focus();

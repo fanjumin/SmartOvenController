@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>设置与帮助 - 智能电烤箱</title>
-    <link rel="stylesheet" href="css/title-styles.css">
+    <title>设置与帮�?- 智能电烤�?/title>
     <style>
         * {
             margin: 0;
@@ -98,7 +97,15 @@
             margin-bottom: 25px;
         }
 
-
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         .setting-item {
             background: rgba(255, 255, 255, 0.6);
@@ -187,7 +194,7 @@
         }
 
         .select-wrapper:after {
-            content: "▼";
+            content: "�?;
             position: absolute;
             right: 10px;
             top: 50%;
@@ -416,30 +423,29 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">←</button>
-            <h1>设置与帮助</h1>
+            <button class="back-btn" onclick="goBack()">�?/button>
+            <h1>设置与帮�?/h1>
         </div>
 
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="switchTab('settings')">⚙️ 设置</button>
-                <button class="tab-btn" onclick="switchTab('pid')">sPid PID</button>
-                <button class="tab-btn" onclick="switchTab('help')">❓ 帮助</button>
+                <button class="tab-btn" onclick="switchTab('help')">�?帮助</button>
                 <button class="tab-btn" onclick="switchTab('about')">ℹ️ 关于</button>
             </div>
 
-            <!-- 设置标签页 -->
+            <!-- 设置标签�?-->
             <div id="settings" class="tab-content active">
                 <div class="section">
-                    <div class="section-title">🌡️ 温度设置</div>
+                    <div class="section-title">🌡�?温度设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
                             <span class="setting-label">温度单位</span>
                             <div class="select-wrapper">
                                 <select id="temp-unit">
-                                    <option value="celsius">摄氏度 (°C)</option>
-                                    <option value="fahrenheit">华氏度 (°F)</option>
+                                    <option value="celsius">摄氏�?(°C)</option>
+                                    <option value="fahrenheit">华氏�?(°F)</option>
                                 </select>
                             </div>
                         </div>
@@ -494,7 +500,7 @@
                             <span class="setting-label">语言设置</span>
                             <div class="select-wrapper">
                                 <select id="language">
-                                    <option value="zh-CN">简体中文</option>
+                                    <option value="zh-CN">简体中�?/option>
                                     <option value="en-US">English</option>
                                 </select>
                             </div>
@@ -528,10 +534,10 @@
                             <span class="setting-label">自动刷新间隔</span>
                             <div class="select-wrapper">
                                 <select id="refresh-interval">
-                                    <option value="3">3秒</option>
-                                    <option value="5">5秒</option>
-                                    <option value="10">10秒</option>
-                                    <option value="30">30秒</option>
+                                    <option value="3">3�?/option>
+                                    <option value="5">5�?/option>
+                                    <option value="10">10�?/option>
+                                    <option value="30">30�?/option>
                                 </select>
                             </div>
                         </div>
@@ -540,10 +546,10 @@
                             <span class="setting-label">数据保存周期</span>
                             <div class="select-wrapper">
                                 <select id="data-retention">
-                                    <option value="7">7天</option>
-                                    <option value="30">30天</option>
-                                    <option value="90">90天</option>
-                                    <option value="365">1年</option>
+                                    <option value="7">7�?/option>
+                                    <option value="30">30�?/option>
+                                    <option value="90">90�?/option>
+                                    <option value="365">1�?/option>
                                 </select>
                             </div>
                         </div>
@@ -569,97 +575,18 @@
                 </button>
             </div>
 
-            <!-- PID设置标签页 -->
-            <div id="pid" class="tab-content">
-                <div class="section">
-                    <div class="section-title">sPid PID控制器设置</div>
-                    <p class="section-description">配置PID控制器参数以优化温度控制精度</p>
-                    
-                    <div class="setting-item">
-                        <div class="setting-row">
-                            <span class="setting-label">启用PID控制</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="pid-enabled" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        
-                        <div class="setting-row">
-                            <span class="setting-label">PID模式</span>
-                            <div class="select-wrapper">
-                                <select id="pid-mode">
-                                    <option value="auto">自动调节</option>
-                                    <option value="manual">手动调节</option>
-                                    <option value="adaptive">自适应调节</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">sPid 参数设置</div>
-                        
-                        <div class="setting-item">
-                            <div class="setting-row">
-                                <span class="setting-label">比例增益 (Kp)</span>
-                                <input type="number" class="input-field" id="pid-kp" value="1.5" min="0" max="10" step="0.1">
-                            </div>
-                            
-                            <div class="setting-row">
-                                <span class="setting-label">积分时间 (Ki)</span>
-                                <input type="number" class="input-field" id="pid-ki" value="0.05" min="0" max="1" step="0.01">
-                            </div>
-                            
-                            <div class="setting-row">
-                                <span class="setting-label">微分时间 (Kd)</span>
-                                <input type="number" class="input-field" id="pid-kd" value="0.2" min="0" max="5" step="0.1">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">sPid 高级设置</div>
-                        
-                        <div class="setting-item">
-                            <div class="setting-row">
-                                <span class="setting-label">输出限制 (%)</span>
-                                <input type="number" class="input-field" id="pid-output-limit" value="100" min="0" max="100" step="1">
-                            </div>
-                            
-                            <div class="setting-row">
-                                <span class="setting-label">采样周期 (ms)</span>
-                                <input type="number" class="input-field" id="pid-sample-time" value="1000" min="100" max="5000" step="100">
-                            </div>
-                            
-                            <div class="setting-row">
-                                <span class="setting-label">死区范围 (°C)</span>
-                                <input type="number" class="input-field" id="pid-deadband" value="2" min="0" max="10" step="0.5">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-primary" onclick="savePIDSettings()">
-                        保存PID设置
-                    </button>
-                    
-                    <button class="btn btn-secondary" onclick="resetPIDSettings()">
-                        恢复默认值
-                    </button>
-                </div>
-            </div>
-
-            <!-- 帮助标签页 -->
+            <!-- 帮助标签�?-->
             <div id="help" class="tab-content">
                 <div class="section">
-                    <div class="section-title">❓ 常见问题</div>
+                    <div class="section-title">�?常见问题</div>
                     
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>如何连接设备？</span>
-                            <span class="expand-icon">▼</span>
+                            <span>如何连接设备�?/span>
+                            <span class="expand-icon">�?/span>
                         </div>
                         <div class="help-answer">
-                            1. 确保设备已通电并启动<br>
+                            1. 确保设备已通电并启�?br>
                             2. 在手机WiFi设置中连接到设备热点<br>
                             3. 打开浏览器访问设备IP地址<br>
                             4. 在WiFi配置页面设置家庭WiFi连接
@@ -669,39 +596,39 @@
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
                             <span>温度校准不准确怎么办？</span>
-                            <span class="expand-icon">▼</span>
+                            <span class="expand-icon">�?/span>
                         </div>
                         <div class="help-answer">
                             1. 检查温度传感器连接是否正常<br>
-                            2. 确保设备放置在通风良好的位置<br>
-                            3. 尝试校准温度传感器<br>
-                            4. 如果问题持续，请联系技术支持
+                            2. 确保设备放置在通风良好的位�?br>
+                            3. 尝试校准温度传感�?br>
+                            4. 如果问题持续，请联系技术支�?
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>设备无法连接WiFi？</span>
-                            <span class="expand-icon">▼</span>
+                            <span>设备无法连接WiFi�?/span>
+                            <span class="expand-icon">�?/span>
                         </div>
                         <div class="help-answer">
                             1. 检查WiFi密码是否正确<br>
-                            2. 确保路由器信号强度足够<br>
+                            2. 确保路由器信号强度足�?br>
                             3. 尝试重启设备和路由器<br>
-                            4. 检查设备是否支持2.4GHz频段
+                            4. 检查设备是否支�?.4GHz频段
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
-                            <span>如何更新固件？</span>
-                            <span class="expand-icon">▼</span>
+                            <span>如何更新固件�?/span>
+                            <span class="expand-icon">�?/span>
                         </div>
                         <div class="help-answer">
-                            1. 在设置页面检查当前固件版本<br>
-                            2. 访问官方网站下载最新固件<br>
+                            1. 在设置页面检查当前固件版�?br>
+                            2. 访问官方网站下载最新固�?br>
                             3. 通过OTA或USB方式更新<br>
-                            4. 更新过程中请勿断电
+                            4. 更新过程中请勿断�?
                         </div>
                     </div>
                 </div>
@@ -712,34 +639,34 @@
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
                             <span>基本操作流程</span>
-                            <span class="expand-icon">▼</span>
+                            <span class="expand-icon">�?/span>
                         </div>
                         <div class="help-answer">
-                            1. 连接设备电源并启动<br>
+                            1. 连接设备电源并启�?br>
                             2. 通过手机连接设备WiFi<br>
-                            3. 设置目标温度和时间<br>
-                            4. 开始加热并监控状态<br>
-                            5. 完成后关闭设备
+                            3. 设置目标温度和时�?br>
+                            4. 开始加热并监控状�?br>
+                            5. 完成后关闭设�?
                         </div>
                     </div>
 
                     <div class="help-item">
                         <div class="help-question" onclick="toggleHelp(this)">
                             <span>安全注意事项</span>
-                            <span class="expand-icon">▼</span>
+                            <span class="expand-icon">�?/span>
                         </div>
                         <div class="help-answer">
-                            1. 请勿在无人看管时长时间运行<br>
-                            2. 确保设备周围无易燃物品<br>
-                            3. 定期检查设备线路安全<br>
+                            1. 请勿在无人看管时长时间运�?br>
+                            2. 确保设备周围无易燃物�?br>
+                            3. 定期检查设备线路安�?br>
                             4. 儿童使用时需成人陪同<br>
-                            5. 异常情况立即断电检查
+                            5. 异常情况立即断电检�?
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📞 技术支持</div>
+                    <div class="section-title">📞 技术支�?/div>
                     
                     <div class="help-item">
                         <div class="setting-row">
@@ -748,7 +675,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">技术支持邮箱</span>
+                            <span class="setting-label">技术支持邮�?/span>
                             <span class="setting-value">support@smartoven.com</span>
                         </div>
                         
@@ -759,12 +686,12 @@
                     </div>
 
                     <button class="btn btn-primary" onclick="contactSupport()">
-                        联系技术支持
+                        联系技术支�?
                     </button>
                 </div>
             </div>
 
-            <!-- 关于标签页 -->
+            <!-- 关于标签�?-->
             <div id="about" class="tab-content">
                 <div class="section">
                     <div class="section-title">ℹ️ 设备信息</div>
@@ -772,42 +699,42 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">设备型号</div>
-                            <div class="info-value" id="device-model">未获取设备型号</div>
+                            <div class="info-value" id="device-model">--</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">固件版本</div>
-                            <div class="info-value" id="firmware-version">未获取固件版本</div>
+                            <div class="info-value" id="firmware-version">--</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">硬件版本</div>
-                            <div class="info-value" id="hardware-version">未获取硬件版本</div>
+                            <div class="info-value" id="hardware-version">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">序列号</div>
-                            <div class="info-value" id="serial-number">未获取序列号</div>
+                            <div class="info-label">序列�?/div>
+                            <div class="info-value" id="serial-number">--</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📊 系统状态</div>
+                    <div class="section-title">📊 系统状�?/div>
                     
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">运行时间</div>
-                            <div class="info-value" id="uptime">未获取运行时间</div>
+                            <div class="info-value" id="uptime">--</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">内存使用</div>
-                            <div class="info-value" id="memory-usage">未获取内存信息</div>
+                            <div class="info-value" id="memory-usage">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">最后启动</div>
-                            <div class="info-value" id="last-boot">未获取启动时间</div>
+                            <div class="info-label">最后启�?/div>
+                            <div class="info-value" id="last-boot">--</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">网络状态</div>
-                            <div class="info-value" id="network-status">未获取网络状态</div>
+                            <div class="info-label">网络状�?/div>
+                            <div class="info-value" id="network-status">--</div>
                         </div>
                     </div>
                 </div>
@@ -827,13 +754,13 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">开发者</span>
+                            <span class="setting-label">开发�?/span>
                             <span class="setting-value">SmartOven Team</span>
                         </div>
                     </div>
 
                     <button class="btn btn-secondary" onclick="checkUpdate()">
-                        检查更新
+                        检查更�?
                     </button>
                     
                     <button class="btn btn-primary" onclick="exportLogs()">
@@ -855,11 +782,11 @@
                 <li>用户偏好设置</li>
                 <li>设备运行数据</li>
             </ul>
-            <p>操作不可逆转，请谨慎操作！</p>
+            <p>操作不可逆转，请谨慎操作�?/p>
             
             <div class="input-group">
                 <label class="input-label">请输入确认密码：</label>
-                <input type="password" class="input-field" id="reset-password" placeholder="输入管理员密码">
+                <input type="password" class="input-field" id="reset-password" placeholder="输入管理员密�?>
             </div>
             
             <div class="modal-buttons">
@@ -877,19 +804,19 @@
             window.location.href = 'index.html';
         }
 
-        // 切换标签页
+        // 切换标签�?
         function switchTab(tabName) {
-            // 隐藏所有标签内容
+            // 隐藏所有标签内�?
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // 移除所有标签按钮的激活状态
+            // 移除所有标签按钮的激活状�?
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // 显示选中的标签内容
+            // 显示选中的标签内�?
             document.getElementById(tabName).classList.add('active');
             
             // 激活对应的标签按钮
@@ -938,10 +865,10 @@
                 dataRetention: document.getElementById('data-retention').value
             };
             
-            // 保存到本地存储
+            // 保存到本地存�?
             localStorage.setItem('ovenSettings', JSON.stringify(settings));
             
-            showToast('设置已保存');
+            showToast('设置已保�?);
         }
 
         // 加载设置
@@ -971,27 +898,27 @@
                     const data = await response.json();
                     
                     document.getElementById('device-model').textContent = data.model || 'SmartOven Pro';
-                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.2';
+                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.1';
                     document.getElementById('hardware-version').textContent = data.hardware || 'v2.1';
                     document.getElementById('serial-number').textContent = data.serial || 'SN001';
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);
                     document.getElementById('memory-usage').textContent = (data.freeHeap || 0) + ' KB';
                     document.getElementById('last-boot').textContent = new Date(data.lastBoot || Date.now()).toLocaleString();
-                    document.getElementById('network-status').textContent = data.wifiConnected ? '已连接' : '未连接';
+                    document.getElementById('network-status').textContent = data.wifiConnected ? '已连�? : '未连�?;
                 }
             } catch (error) {
                 console.error('获取设备信息失败:', error);
             }
         }
 
-        // 格式化运行时间
+        // 格式化运行时�?
         function formatUptime(seconds) {
             const days = Math.floor(seconds / 86400);
             const hours = Math.floor((seconds % 86400) / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
             
             if (days > 0) {
-                return `${days}天 ${hours}小时`;
+                return `${days}�?${hours}小时`;
             } else if (hours > 0) {
                 return `${hours}小时 ${minutes}分钟`;
             } else {
@@ -1001,7 +928,7 @@
 
         // 重启设备
         function restartDevice() {
-            if (confirm('确定要重启设备吗？重启过程需要约30秒。')) {
+            if (confirm('确定要重启设备吗？重启过程需要约30秒�?)) {
                 fetch('/restart', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
@@ -1013,7 +940,7 @@
                     })
                     .catch(error => {
                         console.error('重启设备失败:', error);
-                        showToast('重启失败，请检查连接');
+                        showToast('重启失败，请检查连�?);
                     });
             }
         }
@@ -1036,7 +963,7 @@
                 fetch('/reset', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('设备已恢复出厂设置');
+                            showToast('设备已恢复出厂设�?);
                             hideResetModal();
                             // 清除本地设置
                             localStorage.removeItem('ovenSettings');
@@ -1048,27 +975,27 @@
                     })
                     .catch(error => {
                         console.error('重置设备失败:', error);
-                        showToast('重置失败，请检查连接');
+                        showToast('重置失败，请检查连�?);
                     });
             } else {
                 showToast('密码错误，请重试');
             }
         }
 
-        // 联系技术支持
+        // 联系技术支�?
         function contactSupport() {
             const email = 'support@smartoven.com';
-            const subject = '智能电烤箱技术支持请求';
-            const body = `设备信息：\n- 设备型号：${document.getElementById('device-model').textContent}\n- 固件版本：${document.getElementById('firmware-version').textContent}\n- 问题描述：`;
+            const subject = '智能电烤箱技术支持请�?;
+            const body = `设备信息：\n- 设备型号�?{document.getElementById('device-model').textContent}\n- 固件版本�?{document.getElementById('firmware-version').textContent}\n- 问题描述：`;
             
             window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
         }
 
-        // 检查更新
+        // 检查更�?
         function checkUpdate() {
-            showToast('正在检查更新...');
+            showToast('正在检查更�?..');
             setTimeout(() => {
-                showToast('当前已是最新版本');
+                showToast('当前已是最新版�?);
             }, 2000);
         }
 
@@ -1094,7 +1021,7 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showToast('日志已导出');
+            showToast('日志已导�?);
         }
 
         // 显示提示信息
@@ -1108,63 +1035,10 @@
             }, 2000);
         }
 
-        // 保存PID设置
-        function savePIDSettings() {
-            const pidSettings = {
-                enabled: document.getElementById('pid-enabled').checked,
-                mode: document.getElementById('pid-mode').value,
-                kp: parseFloat(document.getElementById('pid-kp').value),
-                ki: parseFloat(document.getElementById('pid-ki').value),
-                kd: parseFloat(document.getElementById('pid-kd').value),
-                outputLimit: parseInt(document.getElementById('pid-output-limit').value),
-                sampleTime: parseInt(document.getElementById('pid-sample-time').value),
-                deadband: parseFloat(document.getElementById('pid-deadband').value)
-            };
-            
-            // 保存到本地存储
-            localStorage.setItem('pidSettings', JSON.stringify(pidSettings));
-            
-            showToast('PID设置已保存');
-        }
-
-        // 加载PID设置
-        function loadPIDSettings() {
-            const savedPIDSettings = localStorage.getItem('pidSettings');
-            if (savedPIDSettings) {
-                const pidSettings = JSON.parse(savedPIDSettings);
-                
-                document.getElementById('pid-enabled').checked = pidSettings.enabled !== false; // 默认为true
-                document.getElementById('pid-mode').value = pidSettings.mode || 'auto';
-                document.getElementById('pid-kp').value = pidSettings.kp || 1.5;
-                document.getElementById('pid-ki').value = pidSettings.ki || 0.05;
-                document.getElementById('pid-kd').value = pidSettings.kd || 0.2;
-                document.getElementById('pid-output-limit').value = pidSettings.outputLimit || 100;
-                document.getElementById('pid-sample-time').value = pidSettings.sampleTime || 1000;
-                document.getElementById('pid-deadband').value = pidSettings.deadband || 2;
-            }
-        }
-
-        // 恢复PID设置默认值
-        function resetPIDSettings() {
-            if (confirm('确定要恢复PID设置的默认值吗？')) {
-                document.getElementById('pid-enabled').checked = true;
-                document.getElementById('pid-mode').value = 'auto';
-                document.getElementById('pid-kp').value = 1.5;
-                document.getElementById('pid-ki').value = 0.05;
-                document.getElementById('pid-kd').value = 0.2;
-                document.getElementById('pid-output-limit').value = 100;
-                document.getElementById('pid-sample-time').value = 1000;
-                document.getElementById('pid-deadband').value = 2;
-                
-                showToast('PID设置已恢复默认值');
-            }
-        }
-
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 加载保存的设置
+            // 加载保存的设�?
             loadSettings();
-            loadPIDSettings();
             
             // 设置模态框点击外部关闭
             document.getElementById('reset-modal').addEventListener('click', function(e) {
@@ -1173,7 +1047,7 @@
                 }
             });
             
-            // 设置输入框回车确认
+            // 设置输入框回车确�?
             document.getElementById('reset-password').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     confirmReset();
