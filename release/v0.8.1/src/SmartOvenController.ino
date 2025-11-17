@@ -1013,9 +1013,9 @@ void handleOTAUpdate() {
     html += "<div class=\"tab\" id=\"fsTab\">";
     html += "<h3>💾 文件系统更新</h3>";
     html += "<p><strong>重要提示：</strong>文件系统更新将覆盖所有现有界面文件，请确保使用正确的.bin镜像文件。</p>";
-    html += "<form action=\"/fs_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
+    html += "<form action=\"/update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
     html += "<p><strong>选择文件系统镜像 (.bin):</strong></p>";
-    html += "<input type=\"file\" name=\"littlefs\" accept=\".bin\" required style=\"margin:10px 0;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;\">";
+    html += "<input type=\"file\" name=\"filesystem\" accept=\".bin\" required style=\"margin:10px 0;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;\">";
     html += "<br><button type=\"submit\">🚀 开始更新文件系统</button>";
     html += "</form>";
     html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fsProgress\"></div></div>";
@@ -1071,7 +1071,7 @@ void handleOTAUpdate() {
     html += "            document.getElementById('fsStatus').innerHTML='❌ 更新失败：'+xhr.responseText;";
     html += "        }";
     html += "    };";
-    html += "    xhr.open('POST','/fs_update');";
+    html += "    xhr.open('POST','/update');";
     html += "    xhr.send(new FormData(form));";
     html += "    return false;";
     html += "}";
@@ -1203,7 +1203,7 @@ void handleFileUpload() {
     if (upload.status == UPLOAD_FILE_START) {
         // 完全重置所有状态
         currentFilename = upload.filename;
-        isFilesystemUpdate = (webServer.uri() == "/fs_update");
+        isFilesystemUpdate = (webServer.uri() == "/update");
         receivedBytes = 0;
         estimatedTotalSize = 0;
         chunkNum = 0;
@@ -1460,7 +1460,7 @@ void setupWebServer() {
         webServer.send(200, "text/plain", "OTA update endpoint");
     }, handleFileUpload);
     
-    webServer.on("/fs_update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
+    webServer.on("/update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
     webServer.on("/status", HTTP_GET, handleStatus);
     webServer.onNotFound(handleNotFound);
     webServer.begin();

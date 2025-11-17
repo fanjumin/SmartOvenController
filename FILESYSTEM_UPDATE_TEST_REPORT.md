@@ -6,12 +6,12 @@
 - **文件路径**: `src/SmartOvenController.ino`
 - **修改内容**:
   - 将文件系统更新功能中使用的文件名从`fs_image.bin`改为`littlefs.bin`
-  - 修改了HTML表单中的文件输入字段名称，从`filesystem`改为`littlefs`
+  - 修改了HTML表单中的文件输入字段名称，从`littlefs`改为`filesystem`
 
 ### 2. 前端代码修改
 - **文件路径**: `data/index.html`
 - **修改内容**:
-  - 修改了FormData参数，将`formData.append('filesystem', selectedFilesystemFile)`改为`formData.append('littlefs', selectedFilesystemFile)`
+  - 修改了FormData参数，将`formData.append('littlefs', selectedFilesystemFile)`改为`formData.append('filesystem', selectedFilesystemFile)`
 
 ## 测试方法
 

@@ -13,7 +13,7 @@ def test_ota_upgrade():
     """测试OTA升级功能"""
     
     # 设备IP地址（需要根据实际情况修改）
-    device_ip = "192.168.4.1"  # 默认AP模式IP
+    device_ip = "192.168.16.100"  # 设备实际IP地址
     
     print("=== OTA升级功能测试 ===")
     
@@ -56,18 +56,23 @@ def test_ota_upgrade():
         if os.path.exists(firmware_path):
             print(f"   固件文件存在: {firmware_path}")
             print(f"   文件大小: {os.path.getsize(firmware_path)} 字节")
-            
-            # 测试升级端点
-            response = requests.get(f"http://{device_ip}/update", timeout=10)
-            if response.status_code == 200:
-                print("   固件升级端点可访问")
-            else:
-                print(f"   固件升级端点请求失败: {response.status_code}")
+
+            # 测试固件升级 - 使用正确的固件文件
+            with open(firmware_path, 'rb') as f:
+                files = {'firmware': ('firmware.bin', f, 'application/octet-stream')}
+                response = requests.post(f"http://{device_ip}/update", files=files, timeout=60)
+
+                if response.status_code == 200:
+                    print("   固件升级成功")
+                    print("   设备应该会在几秒后重启")
+                else:
+                    print(f"   固件升级失败: {response.status_code}")
+                    print(f"   响应: {response.text}")
         else:
             print("   警告: 固件文件不存在，请先编译项目")
     except Exception as e:
         print(f"   固件升级测试失败: {e}")
-    
+
     # 4. 测试文件上传端点
     print("\n4. 测试文件上传端点...")
     try:
@@ -75,16 +80,17 @@ def test_ota_upgrade():
         test_file = "data/index.html"
         if os.path.exists(test_file):
             print(f"   测试文件存在: {test_file}")
-            
+
             with open(test_file, 'rb') as f:
                 files = {'file': ('index.html', f, 'text/html')}
                 response = requests.post(f"http://{device_ip}/upload", files=files, timeout=30)
-                
+
                 if response.status_code == 200:
-                    print("   文件上传端点可访问")
+                    print("   文件上传成功")
                     print(f"   上传响应: {response.text}")
                 else:
-                    print(f"   文件上传请求失败: {response.status_code}")
+                    print(f"   文件上传失败: {response.status_code}")
+                    print(f"   响应: {response.text}")
         else:
             print("   警告: 测试文件不存在")
     except Exception as e:

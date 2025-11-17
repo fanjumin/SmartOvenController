@@ -11,7 +11,7 @@ def scan_endpoints():
         "/index.html",
         "/upload.html",
         "/update.html",
-        "/fs_update",
+        
         "/api",
         "/api/status",
         "/api/config",

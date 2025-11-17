@@ -96,7 +96,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
 # 创建服务器
-PORT = 8080
+PORT = 8081
 Handler = CustomHTTPRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:

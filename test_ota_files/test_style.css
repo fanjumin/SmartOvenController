@@ -1,0 +1,39 @@
+/* OTA测试样式文件 */
+.test-ota-page {
+    background-color: #f0f8ff;
+    font-family: Arial, sans-serif;
+}
+
+.test-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.test-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.test-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.test-button:hover {
+    background-color: #45a049;
+}
+
+.test-status {
+    background-color: #e7f3ff;
+    border-left: 4px solid #2196F3;
+    padding: 10px;
+    margin: 10px 0;
+}

@@ -5,7 +5,7 @@ import json
 def test_filesystem_upload():
     # 设备IP地址
     device_ip = "192.168.16.105"
-    url = f"http://{device_ip}/fs_update"
+    url = f"http://{device_ip}/update"
     
     # 创建一个测试文件
     test_file_path = "test_filesystem.bin"

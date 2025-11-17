@@ -9,7 +9,7 @@ import time
 
 def test_device_status():
     """测试设备状态"""
-    device_ip = "192.168.16.104"
+    device_ip = "192.168.16.100"
     
     print("=== 设备状态测试 ===")
     
