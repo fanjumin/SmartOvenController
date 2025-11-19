@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>智能电烤箱 - 温度校准</title>
+    <title data-lang="temperatureCalibrationTitle">烤箱温度校准</title>
     <link rel="stylesheet" href="css/title-styles.css">
+    <script src="lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -54,6 +55,35 @@
             padding: 30px;
             margin-bottom: 30px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .lang-toggle-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .lang-toggle-btn:active {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(0);
         }
 
 
@@ -290,6 +320,138 @@
             color: #f59e0b;
         }
 
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.6);
+            color: #2c3e50;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-secondary:active {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-danger:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        .modal-content.success {
+            border-left: 5px solid #10b981;
+        }
+
+        .modal-content.error {
+            border-left: 5px solid #ef4444;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon {
+            font-size: 2em;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body p {
+            margin: 0;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
         @media (max-width: 768px) {
             .calibration-form {
                 grid-template-columns: 1fr;
@@ -317,12 +479,15 @@
         <div class="header">
             <div class="header-content">
                 <div class="title-section">
-                    <h1 class="main-title">
+                    <h1 class="main-title" data-lang="ovenTemperatureCalibration">
                         <span class="title-icon">🌡️</span>
                         烤箱温度校准
-                        <span class="title-badge">v0.8.3</span>
+                        <span class="title-badge">v0.8.5</span>
                     </h1>
-                    <p class="subtitle">精确调整温度传感器参数，提高测量精度</p>
+                    <p class="subtitle" data-lang="adjustSensorParameters">精确调整温度传感器参数，提高测量精度</p>
+                </div>
+                <div class="language-switcher">
+                    <button class="lang-toggle-btn" onclick="switchLanguage()">中/En</button>
                 </div>
             </div>
         </div>
@@ -336,29 +501,31 @@
             <div id="message" class="message"></div>
             
             <div class="calibration-form">
-                <div class="form-group">
-                    <label class="form-label" for="actual-temp">实际温度 (°C)</label>
-                    <input type="number" id="actual-temp" class="form-input" placeholder="输入已知的实际温度" step="0.1">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="measured-temp">测量温度 (°C)</label>
-                    <input type="number" id="measured-temp" class="form-input" placeholder="输入设备测量的温度" step="0.1">
-                </div>
+            <div class="form-group">
+                <label class="form-label" data-lang="temperatureOffset" for="actual-temp">实际温度 (°C)</label>
+                <input type="number" id="actual-temp" class="form-input" placeholder="输入已知的实际温度" step="0.1" data-lang-placeholder="enterActualTemp">
+                <div class="form-help" data-lang="actualTempHelp">这是使用标准温度计测得的实际温度值</div>
             </div>
             
+            <div class="form-group">
+                <label class="form-label" data-lang="measuredTemp" for="measured-temp">测量温度 (°C)</label>
+                <input type="number" id="measured-temp" class="form-input" placeholder="输入设备测量的温度" step="0.1" data-lang-placeholder="enterMeasuredTemp">
+                <div class="form-help" data-lang="measuredTempHelp">这是设备当前显示的温度读数</div>
+            </div>
+        </div>
+            
             <div class="calibration-controls">
-                <button class="calibration-btn primary" onclick="performCalibration()">
-                    <span>🔧</span>
-                    执行校准
+                <button class="calibration-btn primary" onclick="performCalibration()" data-lang="calculateCalibration">
+                    <span>📊</span>
+                    计算校准参数
                 </button>
-                <button class="calibration-btn secondary" onclick="resetCalibration()">
+                <button class="calibration-btn secondary" onclick="applyCalibration()" data-lang="applyCalibration">
+                    <span>✅</span>
+                    应用校准
+                </button>
+                <button class="calibration-btn danger" onclick="resetCalibration()" data-lang="resetParameters">
                     <span>🔄</span>
-                    重置校准
-                </button>
-                <button class="calibration-btn danger" onclick="clearForm()">
-                    <span>🗑️</span>
-                    清空表单
+                    重置参数
                 </button>
             </div>
         </div>
@@ -370,22 +537,22 @@
             </h2>
             
             <div class="status-display">
-                <div class="status-title">校准参数</div>
+                <div class="status-title" data-lang="calibrationParameters">校准参数</div>
                 <div class="status-grid">
                     <div class="status-item">
-                        <div class="status-label">温度偏移量</div>
+                        <div class="status-label" data-lang="temperatureOffsetLabel">温度偏移量</div>
                         <div id="offset-value" class="status-value offset-value">0.0°C</div>
                     </div>
                     <div class="status-item">
-                        <div class="status-label">温度缩放系数</div>
+                        <div class="status-label" data-lang="temperatureScaleFactor">温度缩放系数</div>
                         <div id="scale-value" class="status-value scale-value">1.000</div>
                     </div>
                     <div class="status-item">
-                        <div class="status-label">校准状态</div>
-                        <div id="calibration-status" class="status-value">未校准</div>
+                        <div class="status-label" data-lang="calibrationStatus">校准状态</div>
+                        <div id="calibration-status" class="status-value" data-lang="notCalibrated">未校准</div>
                     </div>
                     <div class="status-item">
-                        <div class="status-label">最后更新时间</div>
+                        <div class="status-label" data-lang="lastUpdateTime">最后更新时间</div>
                         <div id="last-update" class="status-value">-</div>
                     </div>
                 </div>
@@ -393,43 +560,31 @@
         </div>
 
         <div class="instructions">
-            <h3 class="instructions-title">温度校准说明</h3>
-            <ul class="instructions-list">
-                <li class="instructions-item">
-                    <div class="instructions-number">1</div>
-                    <span>使用标准温度计测量烤箱内的实际温度</span>
-                </li>
-                <li class="instructions-item">
-                    <div class="instructions-number">2</div>
-                    <span>记录设备显示的测量温度</span>
-                </li>
-                <li class="instructions-item">
-                    <div class="instructions-number">3</div>
-                    <span>输入实际温度和测量温度，点击"执行校准"</span>
-                </li>
-                <li class="instructions-item">
-                    <div class="instructions-number">4</div>
-                    <span>系统将自动计算温度偏移量和缩放系数</span>
-                </li>
-                <li class="instructions-item">
-                    <div class="instructions-number">5</div>
-                    <span>校准参数将保存到设备EEPROM中</span>
-                </li>
-            </ul>
+            <h3 class="instructions-title" data-lang="calibrationInstructions">校准步骤说明</h3>
+            <ol>
+                <li data-lang="instruction1">准备一个已知准确温度的标准温度计</li>
+                <li data-lang="instruction2">将温度计和设备放置在同一环境中</li>
+                <li data-lang="instruction3">等待两者温度稳定（约5-10分钟）</li>
+                <li data-lang="instruction4">记录标准温度计的读数（实际温度）</li>
+                <li data-lang="instruction5">记录设备显示的温度读数（测量温度）</li>
+                <li data-lang="instruction6">点击"计算校准参数"按钮</li>
+                <li data-lang="instruction7">检查计算结果是否合理</li>
+                <li data-lang="instruction8">点击"应用校准"保存参数</li>
+            </ol>
         </div>
 
         <div class="navigation">
-            <a href="index.html" class="nav-btn">
+            <a href="index.html" class="nav-btn" data-lang="returnHome">
                 <span>🏠</span>
-                返回主控制台
+                返回主页
             </a>
-            <a href="device_status.html" class="nav-btn">
+            <a href="device_status.html" class="nav-btn" data-lang="deviceStatus">
                 <span>📈</span>
-                查看设备状态
+                设备状态
             </a>
-            <a href="settings_help.html" class="nav-btn">
-                <span>❓</span>
-                获取帮助
+            <a href="settings_help.html" class="nav-btn" data-lang="settingsCenter">
+                <span>⚙️</span>
+                设置中心
             </a>
         </div>
     </div>
@@ -572,7 +727,78 @@
                     }
                 });
             });
+            
+            // 初始化语言设置
+            updatePageLanguage();
         });
+
+        // 显示成功模态框
+        function showSuccessModal(message) {
+            document.getElementById('success-message').textContent = message || '操作已完成';
+            document.getElementById('success-modal').classList.add('show');
+        }
+
+        // 关闭成功模态框
+        function closeSuccessModal() {
+            document.getElementById('success-modal').classList.remove('show');
+        }
+
+        // 显示错误模态框
+        function showErrorModal(message) {
+            document.getElementById('error-message').textContent = message || '发生未知错误';
+            document.getElementById('error-modal').classList.add('show');
+        }
+
+        // 关闭错误模态框
+        function closeErrorModal() {
+            document.getElementById('error-modal').classList.remove('show');
+        }
+
+        // 应用校准函数
+        async function applyCalibration() {
+            try {
+                // 这里应该是实际的API调用
+                // const response = await fetch('/apply_calibration', { method: 'POST' });
+                // 模拟API调用
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                showSuccessModal('校准参数已成功应用');
+            } catch (error) {
+                showErrorModal('应用校准参数失败: ' + error.message);
+            }
+        }
     </script>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content success">
+            <div class="modal-header">
+                <span class="modal-icon">✅</span>
+                <h2 data-lang="operationSuccess">操作成功</h2>
+            </div>
+            <div class="modal-body">
+                <p id="success-message" data-lang="operationCompleted">操作已完成</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeSuccessModal()" data-lang="confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="error-modal" class="modal">
+        <div class="modal-content error">
+            <div class="modal-header">
+                <span class="modal-icon">❌</span>
+                <h2 data-lang="operationFailed">操作失败</h2>
+            </div>
+            <div class="modal-body">
+                <p id="error-message" data-lang="unknownError">发生未知错误</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeErrorModal()" data-lang="confirm">确定</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

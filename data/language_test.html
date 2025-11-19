@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多语言测试页面</title>
+    <script src="lang.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .language-indicator {
+            background-color: #2196F3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>多语言功能测试</h1>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <span class="language-indicator" id="current-lang">当前语言: 中文</span>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <button onclick="switchLanguage('zh')">切换到中文</button>
+            <button onclick="switchLanguage('en')">切换到英文</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>基础设置测试</h2>
+            <div class="test-item">
+                <label data-lang="tempUnit">温度单位</label>
+                <select>
+                    <option data-lang="celsius">摄氏度 (°C)</option>
+                    <option data-lang="fahrenheit">华氏度 (°F)</option>
+                </select>
+            </div>
+            
+            <div class="test-item">
+                <label data-lang="themeMode">主题模式</label>
+                <select>
+                    <option data-lang="themeLight">浅色模式</option>
+                    <option data-lang="themeDark">深色模式</option>
+                </select>
+            </div>
+            
+            <div class="test-item">
+                <button data-lang="saveSettings">保存设置</button>
+                <button data-lang="restartDevice">重启设备</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>帮助内容测试</h2>
+            <div class="test-item">
+                <h3 data-lang="faq">❓ 常见问题</h3>
+                <p data-lang="howToConnect">如何连接设备？</p>
+                <p data-lang="tempCalibrationIssue">温度校准不准确怎么办？</p>
+            </div>
+            
+            <div class="test-item">
+                <h3 data-lang="userGuide">📖 使用指南</h3>
+                <p data-lang="basicOperation">基本操作流程</p>
+                <p data-lang="safetyNotice">安全注意事项</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>确认对话框测试</h2>
+            <div class="test-item">
+                <button onclick="testConfirm('restartConfirm')">测试重启确认</button>
+                <button onclick="testConfirm('resetConfirm')">测试恢复出厂设置确认</button>
+            </div>
+        </div>
+        
+        <div id="toast" style="position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 15px; border-radius: 5px; display: none;"></div>
+    </div>
+
+    <script>
+        // 更新语言显示
+        function updateLanguageDisplay() {
+            const langIndicator = document.getElementById('current-lang');
+            langIndicator.textContent = currentLanguage === 'zh' ? '当前语言: 中文' : 'Current Language: English';
+        }
+        
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            updatePageLanguage();
+            updateLanguageDisplay();
+            showToast('Language switched to: ' + (lang === 'zh' ? '中文' : 'English'));
+        }
+        
+        // 测试确认对话框
+        function testConfirm(type) {
+            let message = '';
+            if (type === 'restartConfirm') {
+                message = getTranslation('restartConfirm');
+            } else if (type === 'resetConfirm') {
+                message = getTranslation('resetConfirm');
+            }
+            
+            // 使用自定义toast显示而不是alert
+            showToast(message || 'Translation not found');
+        }
+        
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLanguageDisplay();
+        });
+    </script>
+</body>
+</html>

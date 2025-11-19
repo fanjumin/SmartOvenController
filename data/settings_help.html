@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>设置与帮助 - 智能电烤箱</title>
+    <title data-lang="settingsHelpTitle">设置与帮助 - 智能电烤箱</title>
     <link rel="stylesheet" href="css/title-styles.css">
+    <script src="lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -417,40 +418,40 @@
     <div class="container">
         <div class="header">
             <button class="back-btn" onclick="goBack()">←</button>
-            <h1>设置与帮助</h1>
+            <h1 data-lang="settingsHelp">设置与帮助</h1>
         </div>
 
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('settings')">⚙️ 设置</button>
-                <button class="tab-btn" onclick="switchTab('pid')">sPid PID</button>
-                <button class="tab-btn" onclick="switchTab('help')">❓ 帮助</button>
-                <button class="tab-btn" onclick="switchTab('about')">ℹ️ 关于</button>
+                <button class="tab-btn active" onclick="switchTab('settings')" data-lang="settingsTab">⚙️ 设置</button>
+                <button class="tab-btn" onclick="switchTab('pid')" data-lang="pidSettingsTab">sPid PID</button>
+                <button class="tab-btn" onclick="switchTab('help')" data-lang="helpTab">❓ 帮助</button>
+                <button class="tab-btn" onclick="switchTab('about')" data-lang="aboutTab">ℹ️ 关于</button>
             </div>
 
             <!-- 设置标签页 -->
             <div id="settings" class="tab-content active">
                 <div class="section">
-                    <div class="section-title">🌡️ 温度设置</div>
+                    <div class="section-title" data-lang="tempSettings">🌡️ 温度设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">温度单位</span>
+                            <span class="setting-label" data-lang="tempUnit">温度单位</span>
                             <div class="select-wrapper">
                                 <select id="temp-unit">
-                                    <option value="celsius">摄氏度 (°C)</option>
-                                    <option value="fahrenheit">华氏度 (°F)</option>
+                                    <option value="celsius" data-lang="celsius">摄氏度 (°C)</option>
+                                    <option value="fahrenheit" data-lang="fahrenheit">华氏度 (°F)</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">温度精度</span>
+                            <span class="setting-label" data-lang="tempPrecision">温度精度</span>
                             <div class="select-wrapper">
                                 <select id="temp-precision">
-                                    <option value="1">1°C</option>
-                                    <option value="5">5°C</option>
-                                    <option value="10">10°C</option>
+                                    <option value="1" data-lang="tempStep1">1°C</option>
+                                    <option value="5" data-lang="tempStep5">5°C</option>
+                                    <option value="10" data-lang="tempStep10">10°C</option>
                                 </select>
                             </div>
                         </div>
@@ -458,7 +459,7 @@
 
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">自动保存温度设置</span>
+                            <span class="setting-label" data-lang="autoSaveTemp">自动保存温度设置</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="auto-save-temp">
                                 <span class="slider"></span>
@@ -466,7 +467,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">温度报警提醒</span>
+                            <span class="setting-label" data-lang="tempAlert">温度报警提醒</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="temp-alert">
                                 <span class="slider"></span>
@@ -476,26 +477,26 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📱 界面设置</div>
+                    <div class="section-title" data-lang="interfaceSettings">📱 界面设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">主题模式</span>
+                            <span class="setting-label" data-lang="themeMode">主题模式</span>
                             <div class="select-wrapper">
                                 <select id="theme-mode">
-                                    <option value="light">浅色模式</option>
-                                    <option value="dark">深色模式</option>
-                                    <option value="auto">自动切换</option>
+                                    <option value="light" data-lang="themeLight">浅色模式</option>
+                                    <option value="dark" data-lang="themeDark">深色模式</option>
+                                    <option value="auto" data-lang="themeAuto">自动切换</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">语言设置</span>
+                            <span class="setting-label" data-lang="language">语言设置</span>
                             <div class="select-wrapper">
                                 <select id="language">
-                                    <option value="zh-CN">简体中文</option>
-                                    <option value="en-US">English</option>
+                                    <option value="zh-CN" data-lang="languageChinese">简体中文</option>
+                                    <option value="en-US" data-lang="languageEnglish">English</option>
                                 </select>
                             </div>
                         </div>
@@ -503,7 +504,7 @@
 
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">振动反馈</span>
+                            <span class="setting-label" data-lang="vibration">振动反馈</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="vibration">
                                 <span class="slider"></span>
@@ -511,7 +512,7 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">声音提示</span>
+                            <span class="setting-label" data-lang="sound">声音提示</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="sound">
                                 <span class="slider"></span>
@@ -521,50 +522,50 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">🔧 系统设置</div>
+                    <div class="section-title" data-lang="systemSettings">🔧 系统设置</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">自动刷新间隔</span>
+                            <span class="setting-label" data-lang="refreshInterval">自动刷新间隔</span>
                             <div class="select-wrapper">
                                 <select id="refresh-interval">
-                                    <option value="3">3秒</option>
-                                    <option value="5">5秒</option>
-                                    <option value="10">10秒</option>
-                                    <option value="30">30秒</option>
+                                    <option value="3" data-lang="refresh3">3秒</option>
+                                    <option value="5" data-lang="refresh5">5秒</option>
+                                    <option value="10" data-lang="refresh10">10秒</option>
+                                    <option value="30" data-lang="refresh30">30秒</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">数据保存周期</span>
+                            <span class="setting-label" data-lang="dataRetention">数据保存周期</span>
                             <div class="select-wrapper">
                                 <select id="data-retention">
-                                    <option value="7">7天</option>
-                                    <option value="30">30天</option>
-                                    <option value="90">90天</option>
-                                    <option value="365">1年</option>
+                                    <option value="7" data-lang="retention7">7天</option>
+                                    <option value="30" data-lang="retention30">30天</option>
+                                    <option value="90" data-lang="retention90">90天</option>
+                                    <option value="365" data-lang="retention365">1年</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <div class="warning">
+                    <div class="warning" data-lang="systemWarning">
                         ⚠️ 警告：以下操作可能会影响设备正常运行
                     </div>
 
                     <div class="setting-item">
-                        <button class="btn btn-secondary" onclick="restartDevice()">
+                        <button class="btn btn-secondary" onclick="restartDeviceFromSettings()" data-lang="restartDevice">
                             重启设备
                         </button>
                         
-                        <button class="btn btn-danger" onclick="showResetModal()">
+                        <button class="btn btn-danger" onclick="showResetModal()" data-lang="factoryReset">
                             恢复出厂设置
                         </button>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="saveSettings()">
+                <button class="btn btn-primary" onclick="saveSettings()" data-lang="saveSettings">
                     保存设置
                 </button>
             </div>
@@ -572,12 +573,12 @@
             <!-- PID设置标签页 -->
             <div id="pid" class="tab-content">
                 <div class="section">
-                    <div class="section-title">sPid PID控制器设置</div>
-                    <p class="section-description">配置PID控制器参数以优化温度控制精度</p>
+                    <div class="section-title" data-lang="pidControllerSettings">sPid PID控制器设置</div>
+                    <p class="section-description" data-lang="pidConfigDescription">配置PID控制器参数以优化温度控制精度</p>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">启用PID控制</span>
+                            <span class="setting-label" data-lang="enablePID">启用PID控制</span>
                             <label class="toggle-switch">
                                 <input type="checkbox" id="pid-enabled" checked>
                                 <span class="slider"></span>
@@ -585,64 +586,64 @@
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">PID模式</span>
+                            <span class="setting-label" data-lang="pidMode">PID模式</span>
                             <div class="select-wrapper">
                                 <select id="pid-mode">
-                                    <option value="auto">自动调节</option>
-                                    <option value="manual">手动调节</option>
-                                    <option value="adaptive">自适应调节</option>
+                                    <option value="auto" data-lang="pidAuto">自动调节</option>
+                                    <option value="manual" data-lang="pidManual">手动调节</option>
+                                    <option value="adaptive" data-lang="pidAdaptive">自适应调节</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="section">
-                        <div class="section-title">sPid 参数设置</div>
+                        <div class="section-title" data-lang="pidParamSettings">sPid 参数设置</div>
                         
                         <div class="setting-item">
                             <div class="setting-row">
-                                <span class="setting-label">比例增益 (Kp)</span>
+                                <span class="setting-label" data-lang="proportionalGain">比例增益 (Kp)</span>
                                 <input type="number" class="input-field" id="pid-kp" value="1.5" min="0" max="10" step="0.1">
                             </div>
                             
                             <div class="setting-row">
-                                <span class="setting-label">积分时间 (Ki)</span>
+                                <span class="setting-label" data-lang="integralTime">积分时间 (Ki)</span>
                                 <input type="number" class="input-field" id="pid-ki" value="0.05" min="0" max="1" step="0.01">
                             </div>
                             
                             <div class="setting-row">
-                                <span class="setting-label">微分时间 (Kd)</span>
+                                <span class="setting-label" data-lang="derivativeTime">微分时间 (Kd)</span>
                                 <input type="number" class="input-field" id="pid-kd" value="0.2" min="0" max="5" step="0.1">
                             </div>
                         </div>
                     </div>
 
                     <div class="section">
-                        <div class="section-title">sPid 高级设置</div>
+                        <div class="section-title" data-lang="pidAdvancedSettings">sPid 高级设置</div>
                         
                         <div class="setting-item">
                             <div class="setting-row">
-                                <span class="setting-label">输出限制 (%)</span>
+                                <span class="setting-label" data-lang="outputLimitPercent">输出限制 (%)</span>
                                 <input type="number" class="input-field" id="pid-output-limit" value="100" min="0" max="100" step="1">
                             </div>
                             
                             <div class="setting-row">
-                                <span class="setting-label">采样周期 (ms)</span>
+                                <span class="setting-label" data-lang="samplePeriod">采样周期 (ms)</span>
                                 <input type="number" class="input-field" id="pid-sample-time" value="1000" min="100" max="5000" step="100">
                             </div>
                             
                             <div class="setting-row">
-                                <span class="setting-label">死区范围 (°C)</span>
+                                <span class="setting-label" data-lang="deadbandRange">死区范围 (°C)</span>
                                 <input type="number" class="input-field" id="pid-deadband" value="2" min="0" max="10" step="0.5">
                             </div>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" onclick="savePIDSettings()">
+                    <button class="btn btn-primary" onclick="savePIDSettings()" data-lang="savePIDSettings">
                         保存PID设置
                     </button>
                     
-                    <button class="btn btn-secondary" onclick="resetPIDSettings()">
+                    <button class="btn btn-secondary" onclick="resetPIDSettings()" data-lang="restorePIDDefaults">
                         恢复默认值
                     </button>
                 </div>
@@ -651,14 +652,14 @@
             <!-- 帮助标签页 -->
             <div id="help" class="tab-content">
                 <div class="section">
-                    <div class="section-title">❓ 常见问题</div>
+                    <div class="section-title" data-lang="faq">❓ 常见问题</div>
                     
                     <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
+                        <div class="help-question" onclick="toggleHelp(this)" data-lang="connectDeviceQuestion">
                             <span>如何连接设备？</span>
                             <span class="expand-icon">▼</span>
                         </div>
-                        <div class="help-answer">
+                        <div class="help-answer" data-lang="connectDeviceAnswer">
                             1. 确保设备已通电并启动<br>
                             2. 在手机WiFi设置中连接到设备热点<br>
                             3. 打开浏览器访问设备IP地址<br>
@@ -667,11 +668,11 @@
                     </div>
 
                     <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
+                        <div class="help-question" onclick="toggleHelp(this)" data-lang="tempCalibrationQuestion">
                             <span>温度校准不准确怎么办？</span>
                             <span class="expand-icon">▼</span>
                         </div>
-                        <div class="help-answer">
+                        <div class="help-answer" data-lang="tempCalibrationAnswer">
                             1. 检查温度传感器连接是否正常<br>
                             2. 确保设备放置在通风良好的位置<br>
                             3. 尝试校准温度传感器<br>
@@ -680,11 +681,11 @@
                     </div>
 
                     <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
+                        <div class="help-question" onclick="toggleHelp(this)" data-lang="wifiConnectionQuestion">
                             <span>设备无法连接WiFi？</span>
                             <span class="expand-icon">▼</span>
                         </div>
-                        <div class="help-answer">
+                        <div class="help-answer" data-lang="wifiConnectionAnswer">
                             1. 检查WiFi密码是否正确<br>
                             2. 确保路由器信号强度足够<br>
                             3. 尝试重启设备和路由器<br>
@@ -693,11 +694,11 @@
                     </div>
 
                     <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
+                        <div class="help-question" onclick="toggleHelp(this)" data-lang="firmwareUpdateQuestion">
                             <span>如何更新固件？</span>
                             <span class="expand-icon">▼</span>
                         </div>
-                        <div class="help-answer">
+                        <div class="help-answer" data-lang="firmwareUpdateAnswer">
                             1. 在设置页面检查当前固件版本<br>
                             2. 访问官方网站下载最新固件<br>
                             3. 通过OTA或USB方式更新<br>
@@ -707,14 +708,14 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📖 使用指南</div>
+                    <div class="section-title" data-lang="userGuide">📖 使用指南</div>
                     
                     <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
+                        <div class="help-question" onclick="toggleHelp(this)" data-lang="basicOperationFlow">
                             <span>基本操作流程</span>
                             <span class="expand-icon">▼</span>
                         </div>
-                        <div class="help-answer">
+                        <div class="help-answer" data-lang="basicOperationFlowContent">
                             1. 连接设备电源并启动<br>
                             2. 通过手机连接设备WiFi<br>
                             3. 设置目标温度和时间<br>
@@ -724,11 +725,11 @@
                     </div>
 
                     <div class="help-item">
-                        <div class="help-question" onclick="toggleHelp(this)">
+                        <div class="help-question" onclick="toggleHelp(this)" data-lang="safetyPrecautions">
                             <span>安全注意事项</span>
                             <span class="expand-icon">▼</span>
                         </div>
-                        <div class="help-answer">
+                        <div class="help-answer" data-lang="safetyPrecautionsContent">
                             1. 请勿在无人看管时长时间运行<br>
                             2. 确保设备周围无易燃物品<br>
                             3. 定期检查设备线路安全<br>
@@ -739,26 +740,26 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📞 技术支持</div>
+                    <div class="section-title" data-lang="techSupport">📞 技术支持</div>
                     
                     <div class="help-item">
                         <div class="setting-row">
-                            <span class="setting-label">客服电话</span>
-                            <span class="setting-value">400-123-4567</span>
+                            <span class="setting-label" data-lang="supportPhoneLabel">客服电话</span>
+                            <span class="setting-value" data-lang="supportPhone">400-123-4567</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">技术支持邮箱</span>
-                            <span class="setting-value">support@smartoven.com</span>
+                            <span class="setting-label" data-lang="supportEmailLabel">技术支持邮箱</span>
+                            <span class="setting-value" data-lang="supportEmail">support@smartoven.com</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">官方网站</span>
-                            <span class="setting-value">www.smartoven.com</span>
+                            <span class="setting-label" data-lang="officialWebsiteLabel">官方网站</span>
+                            <span class="setting-value" data-lang="officialWebsite">www.smartoven.com</span>
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" onclick="contactSupport()">
+                    <button class="btn btn-primary" onclick="contactSupport()" data-lang="contactSupport">
                         联系技术支持
                     </button>
                 </div>
@@ -767,76 +768,76 @@
             <!-- 关于标签页 -->
             <div id="about" class="tab-content">
                 <div class="section">
-                    <div class="section-title">ℹ️ 设备信息</div>
+                    <div class="section-title" data-lang="deviceInfo">ℹ️ 设备信息</div>
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">设备型号</div>
+                            <div class="info-label" data-lang="deviceModel">设备型号</div>
                             <div class="info-value" id="device-model">未获取设备型号</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">固件版本</div>
+                            <div class="info-label" data-lang="firmwareVersion">固件版本</div>
                             <div class="info-value" id="firmware-version">未获取固件版本</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">硬件版本</div>
+                            <div class="info-label" data-lang="hardwareVersion">硬件版本</div>
                             <div class="info-value" id="hardware-version">未获取硬件版本</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">序列号</div>
+                            <div class="info-label" data-lang="serialNumber">序列号</div>
                             <div class="info-value" id="serial-number">未获取序列号</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📊 系统状态</div>
+                    <div class="section-title" data-lang="systemStatus">📊 系统状态</div>
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label">运行时间</div>
+                            <div class="info-label" data-lang="uptime">运行时间</div>
                             <div class="info-value" id="uptime">未获取运行时间</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">内存使用</div>
+                            <div class="info-label" data-lang="memoryUsage">内存使用</div>
                             <div class="info-value" id="memory-usage">未获取内存信息</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">最后启动</div>
+                            <div class="info-label" data-lang="lastBoot">最后启动</div>
                             <div class="info-value" id="last-boot">未获取启动时间</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">网络状态</div>
+                            <div class="info-label" data-lang="networkStatus">网络状态</div>
                             <div class="info-value" id="network-status">未获取网络状态</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">📄 版本信息</div>
+                    <div class="section-title" data-lang="versionInfo">📄 版本信息</div>
                     
                     <div class="setting-item">
                         <div class="setting-row">
-                            <span class="setting-label">应用版本</span>
-                            <span class="setting-value">v0.8.3</span>
+                            <span class="setting-label" data-lang="appVersion">应用版本</span>
+                            <span class="setting-value">v0.8.5</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">构建日期</span>
+                            <span class="setting-label" data-lang="buildDate">构建日期</span>
                             <span class="setting-value">2024-01-01</span>
                         </div>
                         
                         <div class="setting-row">
-                            <span class="setting-label">开发者</span>
+                            <span class="setting-label" data-lang="developer">开发者</span>
                             <span class="setting-value">SmartOven Team</span>
                         </div>
                     </div>
 
-                    <button class="btn btn-secondary" onclick="checkUpdate()">
+                    <button class="btn btn-secondary" onclick="checkUpdate()" data-lang="checkForUpdates">
                         检查更新
                     </button>
                     
-                    <button class="btn btn-primary" onclick="exportLogs()">
+                    <button class="btn btn-primary" onclick="exportLogs()" data-lang="exportLogs">
                         导出日志
                     </button>
                 </div>
@@ -847,24 +848,24 @@
     <!-- 重置确认模态框 -->
     <div class="modal" id="reset-modal">
         <div class="modal-content">
-            <div class="modal-title">⚠️ 确认恢复出厂设置</div>
-            <p>此操作将清除所有用户设置和数据，包括：</p>
+            <div class="modal-title" data-lang="confirmFactoryReset">⚠️ 确认恢复出厂设置</div>
+            <p data-lang="resetWarning">此操作将清除所有用户设置和数据，包括：</p>
             <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>WiFi连接配置</li>
-                <li>温度设置历史</li>
-                <li>用户偏好设置</li>
-                <li>设备运行数据</li>
+                <li data-lang="wifiConfig">WiFi连接配置</li>
+                <li data-lang="tempHistory">温度设置历史</li>
+                <li data-lang="userPreferences">用户偏好设置</li>
+                <li data-lang="usageStats">设备运行数据</li>
             </ul>
-            <p>操作不可逆转，请谨慎操作！</p>
+            <p data-lang="irreversibleAction">操作不可逆转，请谨慎操作！</p>
             
             <div class="input-group">
-                <label class="input-label">请输入确认密码：</label>
+                <label class="input-label" data-lang="enterPassword">请输入确认密码：</label>
                 <input type="password" class="input-field" id="reset-password" placeholder="输入管理员密码">
             </div>
             
             <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="hideResetModal()">取消</button>
-                <button class="btn btn-danger" onclick="confirmReset()">确认重置</button>
+                <button class="btn btn-secondary" onclick="hideResetModal()" data-lang="cancel">取消</button>
+                <button class="btn btn-danger" onclick="confirmReset()" data-lang="confirmReset">确认重置</button>
             </div>
         </div>
     </div>
@@ -941,7 +942,10 @@
             // 保存到本地存储
             localStorage.setItem('ovenSettings', JSON.stringify(settings));
             
-            showToast('设置已保存');
+            // 应用语言设置
+            setLanguage(settings.language);
+            
+            showToast(getTranslation('settingsSaved'));
         }
 
         // 加载设置
@@ -971,7 +975,7 @@
                     const data = await response.json();
                     
                     document.getElementById('device-model').textContent = data.model || 'SmartOven Pro';
-                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.3';
+                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.5';
                     document.getElementById('hardware-version').textContent = data.hardware || 'v2.1';
                     document.getElementById('serial-number').textContent = data.serial || 'SN001';
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);
@@ -1000,20 +1004,20 @@
         }
 
         // 重启设备
-        function restartDevice() {
-            if (confirm('确定要重启设备吗？重启过程需要约30秒。')) {
+        function restartDeviceFromSettings() {
+            if (confirm(getTranslation('confirmRestartMessage'))) {
                 fetch('/restart', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('设备正在重启...');
+                            showToast(getTranslation('deviceRebooting'));
                             setTimeout(() => {
-                                showToast('设备重启完成，请重新连接');
+                                showToast(getTranslation('deviceRebootComplete'));
                             }, 35000);
                         }
                     })
                     .catch(error => {
-                        console.error('重启设备失败:', error);
-                        showToast('重启失败，请检查连接');
+                        console.error(getTranslation('restartFailedLog'), error);
+                        showToast(getTranslation('restartFailed'));
                     });
             }
         }
@@ -1036,7 +1040,7 @@
                 fetch('/reset', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            showToast('设备已恢复出厂设置');
+                            showToast(getTranslation('factoryResetComplete'));
                             hideResetModal();
                             // 清除本地设置
                             localStorage.removeItem('ovenSettings');
@@ -1047,28 +1051,28 @@
                         }
                     })
                     .catch(error => {
-                        console.error('重置设备失败:', error);
-                        showToast('重置失败，请检查连接');
+                        console.error(getTranslation('resetFailedLog'), error);
+                        showToast(getTranslation('resetFailed'));
                     });
             } else {
-                showToast('密码错误，请重试');
+                showToast(getTranslation('passwordError'));
             }
         }
 
         // 联系技术支持
         function contactSupport() {
             const email = 'support@smartoven.com';
-            const subject = '智能电烤箱技术支持请求';
-            const body = `设备信息：\n- 设备型号：${document.getElementById('device-model').textContent}\n- 固件版本：${document.getElementById('firmware-version').textContent}\n- 问题描述：`;
+            const subject = getTranslation('supportRequestSubject');
+            const body = `${getTranslation('deviceInfoLabel')}\n- ${getTranslation('deviceModelLabel')}: ${document.getElementById('device-model').textContent}\n- ${getTranslation('firmwareVersionLabel')}: ${document.getElementById('firmware-version').textContent}\n- ${getTranslation('issueDescriptionLabel')}`;
             
             window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
         }
 
         // 检查更新
         function checkUpdate() {
-            showToast('正在检查更新...');
+            showToast(getTranslation('checkingForUpdates'));
             setTimeout(() => {
-                showToast('当前已是最新版本');
+                showToast(getTranslation('alreadyLatestVersion'));
             }, 2000);
         }
 
@@ -1094,7 +1098,7 @@
             a.click();
             URL.revokeObjectURL(url);
             
-            showToast('日志已导出');
+            showToast(getTranslation('logsExported'));
         }
 
         // 显示提示信息
@@ -1124,7 +1128,7 @@
             // 保存到本地存储
             localStorage.setItem('pidSettings', JSON.stringify(pidSettings));
             
-            showToast('PID设置已保存');
+            showToast(getTranslation('pidSettingsSaved'));
         }
 
         // 加载PID设置
@@ -1146,7 +1150,7 @@
 
         // 恢复PID设置默认值
         function resetPIDSettings() {
-            if (confirm('确定要恢复PID设置的默认值吗？')) {
+            if (confirm(getTranslation('confirmResetPIDMessage'))) {
                 document.getElementById('pid-enabled').checked = true;
                 document.getElementById('pid-mode').value = 'auto';
                 document.getElementById('pid-kp').value = 1.5;
@@ -1156,7 +1160,7 @@
                 document.getElementById('pid-sample-time').value = 1000;
                 document.getElementById('pid-deadband').value = 2;
                 
-                showToast('PID设置已恢复默认值');
+                showToast(getTranslation('pidSettingsReset'));
             }
         }
 

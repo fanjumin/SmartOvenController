@@ -65,6 +65,7 @@
     </script>
 
     <link rel="stylesheet" href="css/title-styles.css">
+    <script src="lang.js"></script>
     <style>
 
         * {
@@ -122,6 +123,30 @@
             justify-content: space-between;
             align-items: center;
             gap: 20px;
+        }
+
+        .language-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lang-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .title-section {
@@ -2697,9 +2722,14 @@
             <div class="header-content">
                 <div class="title-section">
                     <h1 class="main-title">
-                        <span class="title-icon">🍞</span> 智能烤箱
+                        <span class="title-icon">🍞</span> <span data-lang="smartOvenProject">智能烤箱</span>
                     </h1>
-                    <p class="subtitle">高级烘焙控制器</p>
+                    <p class="subtitle" data-lang="advancedBakingController">高级烘焙控制器</p>
+                </div>
+                <div class="language-switch">
+                    <button class="lang-toggle" id="lang-toggle" onclick="switchLanguage()">
+                        <span data-lang="chineseEnglish">中/En</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -2926,7 +2956,7 @@
 
         <div class="footer">
 
-            <p>智能电烤箱控制器 v0.8.3</p>
+            <p>智能电烤箱控制器 v0.8.5</p>
 
             <p>© 2025 智能电烤箱项目</p>
 
@@ -3045,7 +3075,7 @@
                 wifiSSID: 'SmartOven_AP',
                 ip_address: '192.168.4.1',
                 device_id: 'SmartOven_001',
-                firmware_version: '0.8.3'
+                firmware_version: '0.8.5'
             };
 
             

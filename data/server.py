@@ -56,13 +56,13 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def handle_device_status(self):
         # 返回模拟的设备状态数据
         status_data = {
-            "deviceName": "智能电烤箱",
-            "firmwareVersion": "v0.8.2",
+            "deviceName": "Smart Oven",  # This should be translated on the client side
+            "firmwareVersion": "v0.8.5",
             "currentTemperature": 25,
             "targetTemperature": 180,
             "heatingTime": 0,
             "remainingTime": 0,
-            "status": "待机",
+            "status": "standby",  # This should be translated on the client side
             "wifiConnected": True,
             "wifiSSID": "Home_WiFi_5G",
             "ipAddress": "192.168.1.100",
@@ -87,7 +87,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         # 返回成功响应
         response = {
             "status": "success",
-            "message": f"WiFi配置已保存，SSID: {ssid}"
+            "message": f"WiFi configuration saved, SSID: {ssid}"  # This should be translated on the client side
         }
         
         self.send_response(200)
@@ -100,6 +100,6 @@ PORT = 8081
 Handler = CustomHTTPRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"服务器启动于端口 {PORT}")
-    print(f"访问地址: http://localhost:{PORT}")
+    print(f"Server started on port {PORT}")
+    print(f"Access URL: http://localhost:{PORT}")
     httpd.serve_forever()

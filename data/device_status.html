@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>设备状态 - 智能电烤箱</title>
+    <title data-lang="deviceStatusTitle">设备状态</title>
     <link rel="stylesheet" href="css/title-styles.css">
+    <script src="lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -31,6 +32,7 @@
             align-items: center;
             padding: 20px 0;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .back-btn {
@@ -44,6 +46,35 @@
             cursor: pointer;
             margin-right: 15px;
             backdrop-filter: blur(10px);
+        }
+
+        .language-switcher {
+            position: absolute;
+            top: 50%;
+            right: 60px;
+            transform: translateY(-50%);
+        }
+
+        .lang-toggle-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            color: #333;
+        }
+
+        .lang-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .lang-toggle-btn:active {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(0);
         }
 
 
@@ -318,32 +349,35 @@
     <div class="container">
         <div class="header">
             <button class="back-btn" onclick="goBack()">←</button>
-            <h1>设备状态</h1>
-            <button class="refresh-btn" onclick="refreshStatus()">
-                🔄 刷新
+            <h1 data-lang="deviceStatus">设备状态</h1>
+            <div class="language-switcher">
+                <button class="lang-toggle-btn" onclick="switchLanguage()">中/En</button>
+            </div>
+            <button class="refresh-btn" onclick="refreshStatus()" data-lang="refresh">
+                🔄 <span data-lang="refresh">刷新</span>
             </button>
         </div>
 
         <!-- 温度状态卡片 -->
         <div class="status-card">
-            <div class="card-title">🌡️ 温度监控</div>
+            <div class="card-title" data-lang="temperatureMonitoring">🌡️ 温度监控</div>
             
             <div class="status-grid">
                 <div class="status-item">
-                    <div class="status-label">当前温度</div>
-                    <div class="status-value temperature" id="current-temp">未获取温度数据（在真实设备中可获取）</div>
+                    <div class="status-label" data-lang="currentTemperature">当前温度</div>
+                    <div class="status-value temperature" id="current-temp" data-lang="noTempData">未获取温度数据（在真实设备中可获取）</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">目标温度</div>
-                    <div class="status-value temperature" id="target-temp">未获取目标温度（在真实设备中可获取）</div>
+                    <div class="status-label" data-lang="targetTemperature">目标温度</div>
+                    <div class="status-value temperature" id="target-temp" data-lang="noTargetTempData">未获取目标温度（在真实设备中可获取）</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">温度差</div>
-                    <div class="status-value" id="temp-diff">未获取温差数据（在真实设备中可获取）</div>
+                    <div class="status-label" data-lang="temperatureDifference">温度差</div>
+                    <div class="status-value" id="temp-diff" data-lang="noTempDiffData">未获取温差数据（在真实设备中可获取）</div>
                 </div>
                 <div class="status-item">
-                    <div class="status-label">加热状态</div>
-                    <div class="status-value heating" id="heating-status">未获取加热状态（在真实设备中可获取）</div>
+                    <div class="status-label" data-lang="heatingStatus">加热状态</div>
+                    <div class="status-value heating" id="heating-status" data-lang="noHeatingStatusData">未获取加热状态（在真实设备中可获取）</div>
                 </div>
             </div>
 
@@ -351,65 +385,65 @@
                 <div class="progress-bar">
                     <div class="progress-fill" id="temp-progress" style="width: 0%"></div>
                 </div>
-                <div class="progress-text" id="temp-progress-text">温度进度: 0%</div>
+                <div class="progress-text" id="temp-progress-text" data-lang="temperatureProgress">温度进度: 0%</div>
             </div>
         </div>
 
         <!-- 网络状态卡片 -->
         <div class="status-card">
-            <div class="card-title">📶 网络状态</div>
+            <div class="card-title" data-lang="networkStatus">📶 网络状态</div>
             
             <div class="status-list">
                 <div class="list-item">
-                    <span class="list-label">连接状态</span>
+                    <span class="list-label" data-lang="connectionStatus">连接状态</span>
                     <span class="list-value" id="connection-status">
                         <span class="indicator" id="connection-indicator"></span>
                         --
                     </span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">WiFi名称</span>
-                    <span class="list-value" id="wifi-ssid">未获取WiFi名称（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="wifiName">WiFi名称</span>
+                    <span class="list-value" id="wifi-ssid" data-lang="noWifiNameData">未获取WiFi名称（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">IP地址</span>
-                    <span class="list-value" id="ip-address">未获取IP地址（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="ipAddress">IP地址</span>
+                    <span class="list-value" id="ip-address" data-lang="noIpData">未获取IP地址（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">信号强度</span>
-                    <span class="list-value" id="signal-strength">未获取信号强度（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="signalStrength">信号强度</span>
+                    <span class="list-value" id="signal-strength" data-lang="noSignalData">未获取信号强度（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">设备ID</span>
-                    <span class="list-value" id="device-id">未获取设备ID（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="deviceId">设备ID</span>
+                    <span class="list-value" id="device-id" data-lang="noDeviceIdData">未获取设备ID（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">固件版本</span>
-                    <span class="list-value" id="firmware-version">未获取固件版本（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="firmwareVersion">固件版本</span>
+                    <span class="list-value" id="firmware-version" data-lang="noFirmwareData">未获取固件版本（在真实设备中可获取）</span>
                 </div>
             </div>
         </div>
 
         <!-- 系统信息卡片 -->
         <div class="status-card">
-            <div class="card-title">⚙️ 系统信息</div>
+            <div class="card-title" data-lang="systemInfo">⚙️ 系统信息</div>
             
             <div class="status-list">
                 <div class="list-item">
-                    <span class="list-label">运行时间</span>
-                    <span class="list-value" id="uptime">未获取运行时间（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="uptime">运行时间</span>
+                    <span class="list-value" id="uptime" data-lang="noUptimeData">未获取运行时间（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">内存使用</span>
-                    <span class="list-value" id="memory-usage">未获取内存使用（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="memoryUsage">内存使用</span>
+                    <span class="list-value" id="memory-usage" data-lang="noMemoryData">未获取内存使用（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">最后更新</span>
-                    <span class="list-value" id="last-update">未获取最后更新时间（在真实设备中可获取）</span>
+                    <span class="list-label" data-lang="lastUpdate">最后更新</span>
+                    <span class="list-value" id="last-update" data-lang="noLastUpdateData">未获取最后更新时间（在真实设备中可获取）</span>
                 </div>
                 <div class="list-item">
-                    <span class="list-label">设备类型</span>
-                    <span class="list-value" id="device-type">智能电烤箱控制器</span>
+                    <span class="list-label" data-lang="deviceType">设备类型</span>
+                    <span class="list-value" id="device-type" data-lang="ovenController">智能电烤箱控制器</span>
                 </div>
             </div>
         </div>
@@ -664,6 +698,9 @@
             
             // 每5秒更新一次状态
             setInterval(updateDeviceStatus, 5000);
+            
+            // 初始化语言设置
+            updatePageLanguage();
         });
     </script>
 </body>

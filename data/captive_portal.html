@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang="wifiConfigTitle">智能烤箱设备WiFi配置页面</title>
+    <script src="lang.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 10px; }
+        .device-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .device-info p { margin: 5px 0; color: #6c757d; font-size: 14px; }
+        .form-container { padding: 25px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        .btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3); }
+        .btn:disabled { background: #6c757d; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        }
+        .btn-secondary:hover { box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3); }
+        .scan-section { text-align: center; margin-bottom: 20px; }
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-connected { background: #28a745; }
+        .status-disconnected { background: #dc3545; }
+        .temperature-display {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 data-lang="deviceNetworkConfig">智能烤箱控制器 - WiFi配置页面</h1>
+            <p data-lang="wifiNetworkConfig">WiFi网络连接设置</p>
+        </div>
+        <div class="device-info">
+            <p><strong data-lang="deviceId">设备ID:</strong> %DEVICE_ID%</p>
+            <p><strong data-lang="firmwareVersion">固件版本:</strong> %FIRMWARE_VERSION%</p>
+        </div>
+        <div class="temperature-display" data-temp-format="currentTempDisplay"><span data-lang="currentTempDisplay">当前温度: %CURRENT_TEMP%°C</span></div>
+        <div class="form-container">
+            <form method="POST" action="/savewifi">
+                <div class="scan-section">
+                    <button type="button" id="scanBtn" class="btn btn-secondary" onclick="scanWiFi()" data-lang="scanWifiNetworks">
+                        <span class="status-indicator status-disconnected"></span><span data-lang="scanWifiNetworksText">点击搜索WiFi网络</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="ssid" data-lang="wifiNetworkName">WiFi网络名称</label>
+                    <select id="ssid" name="ssid" class="form-control" required>
+                        <option value="" data-lang="selectWifiNetwork">请选择WiFi网络</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password" data-lang="wifiPassword">WiFi密码</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="请输入WiFi密码" data-placeholder="enterWifiPassword" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;" data-lang="connectWifi">连接WiFi</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function scanWiFi() {
+            var wifiList = document.getElementById('ssid');
+            var scanBtn = document.getElementById('scanBtn');
+            scanBtn.disabled = true;
+            scanBtn.innerHTML = '<span class="status-indicator status-connecting"></span><span data-lang="scanningWifi">扫描WiFi网络中...</span>';
+            wifiList.innerHTML = '<option value="" data-lang="scanningWifiOption">扫描WiFi网络中...</option>';
+
+            fetch('/scanwifi').then(response => response.json()).then(data => {
+                wifiList.innerHTML = '';
+                wifiList.innerHTML = '<option value="" data-lang="selectWifiNetwork">请选择WiFi网络</option>';
+                if (data.networks && data.networks.length > 0) {
+                    data.networks.forEach(network => {
+                        var option = document.createElement('option');
+                        option.value = network.ssid;
+                        option.textContent = network.ssid + ' (' + network.rssi + ' dBm)';
+                        wifiList.appendChild(option);
+                    });
+                    scanBtn.innerHTML = '<span class="status-indicator status-connected"></span><span data-scan-result>扫描完成</span> (' + data.networks.length + '<span data-network-count>个网络</span>)';
+                } else {
+                    wifiList.innerHTML = '<option value="" data-lang="noWifiNetworksFound">未找到可用的WiFi网络</option>';
+                    scanBtn.innerHTML = '<span class="status-indicator status-disconnected"></span><span data-lang="scanFailedRetry">扫描失败，请重试</span>';
+                }
+                scanBtn.disabled = false;
+            }).catch(error => {
+                wifiList.innerHTML = '<option value="" data-lang="wifiScanFailed">扫描WiFi网络失败</option>';
+                scanBtn.disabled = false;
+                scanBtn.innerHTML = '<span class="status-indicator status-disconnected"></span><span data-lang="scanFailedRetry">扫描失败，请重试</span>';
+            });
+        }
+
+        window.onload = function() {
+    scanWiFi();
+    
+    // 更新温度显示
+    const tempDisplay = document.querySelector('[data-temp-format]');
+    if (tempDisplay) {
+        const tempText = tempDisplay.textContent;
+        const tempMatch = tempText.match(/(\d+(\.\d+)?)/);
+        if (tempMatch) {
+            const tempValue = tempMatch[1];
+            const formattedTemp = getTranslation('currentTempDisplay').replace('%CURRENT_TEMP%', tempValue);
+            tempDisplay.innerHTML = '<span data-lang="currentTempDisplay">' + formattedTemp + '</span>';
+        }
+    }
+};
+
+        function confirmFactoryReset() {
+            if (confirm(getTranslation('warningResetConfirmation'))) {
+                var resetBtn = document.querySelector('[onclick="confirmFactoryReset()"]');
+                resetBtn.disabled = true;
+                resetBtn.innerHTML = '<span data-lang="resetting">正在重置...</span>';
+                resetBtn.style.opacity = '0.7';
+
+                fetch('/factoryreset', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) {
+                            resetBtn.innerHTML = '<span data-lang="resetSuccess">重置成功...设备正在重启</span>';
+                            resetBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                        } else {
+                            throw new Error('重置失败');
+                        }
+                    })
+                    .catch(error => {
+                        resetBtn.disabled = false;
+                        resetBtn.innerHTML = '<span data-lang="factoryReset">工厂重置</span>';
+                        resetBtn.style.opacity = '1';
+                        alert(getTranslation('factoryResetFailed') + error.message);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

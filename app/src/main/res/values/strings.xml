@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">智能烤箱控制器</string>
+
+    <!-- 主界面 -->
+    <string name="no_devices_found">未发现设备</string>
+    <string name="pull_to_refresh">下拉刷新重新扫描</string>
+    <string name="scanning_devices">正在扫描设备...</string>
+    <string name="scan_complete">扫描完成</string>
+    <string name="scan_failed">扫描失败</string>
+
+    <!-- 设备状态 -->
+    <string name="device_online">在线</string>
+    <string name="device_offline">离线</string>
+    <string name="heating">加热中</string>
+    <string name="idle">待机</string>
+    <string name="connected">已连接</string>
+    <string name="disconnected">未连接</string>
+
+    <!-- 温度控制 -->
+    <string name="current_temperature">当前温度</string>
+    <string name="target_temperature">目标温度</string>
+    <string name="temperature_unit">°C</string>
+    <string name="preset_temperatures">预设温度</string>
+    <string name="custom_temperature">自定义</string>
+
+    <!-- 加热控制 -->
+    <string name="start_heating">开始加热</string>
+    <string name="stop_heating">停止加热</string>
+    <string name="heating_active">加热器工作中</string>
+    <string name="heating_inactive">加热器已关闭</string>
+
+    <!-- 系统控制 -->
+    <string name="refresh_status">刷新状态</string>
+    <string name="restart_device">重启设备</string>
+    <string name="factory_reset">恢复出厂设置</string>
+    <string name="advanced_settings">高级设置</string>
+
+    <!-- 确认对话框 -->
+    <string name="confirm_restart">确定要重启设备吗？</string>
+    <string name="confirm_factory_reset">确定要恢复出厂设置吗？\n这将清除所有配置。</string>
+    <string name="yes">确定</string>
+    <string name="no">取消</string>
+
+    <!-- 错误信息 -->
+    <string name="network_error">网络连接失败</string>
+    <string name="device_unreachable">设备无法访问</string>
+    <string name="operation_failed">操作失败</string>
+    <string name="invalid_temperature">无效的温度值</string>
+
+    <!-- 成功信息 -->
+    <string name="operation_success">操作成功</string>
+    <string name="temperature_updated">温度已更新</string>
+    <string name="device_restarted">设备已重启</string>
+
+    <!-- PID控制 -->
+    <string name="pid_control">PID控制</string>
+    <string name="pid_enabled">PID已启用</string>
+    <string name="pid_disabled">PID已禁用</string>
+    <string name="pid_parameters">PID参数</string>
+
+    <!-- 固件信息 -->
+    <string name="firmware_version">固件版本</string>
+    <string name="device_id">设备ID</string>
+    <string name="ip_address">IP地址</string>
+
+    <!-- 烘焙模式 -->
+    <string name="baking_mode">烘焙模式</string>
+    <string name="bread_mode">面包模式</string>
+    <string name="cake_mode">蛋糕模式</string>
+    <string name="pizza_mode">披萨模式</string>
+    <string name="cookies_mode">饼干模式</string>
+    <string name="roast_mode">烤肉模式</string>
+    <string name="defrost_mode">解冻模式</string>
+
+    <!-- 时间设置 -->
+    <string name="baking_time">烘焙时间</string>
+    <string name="time_minutes">分钟</string>
+    <string name="time_hours">小时</string>
+
+    <!-- 设备发现 -->
+    <string name="discovering_devices">正在发现设备...</string>
+    <string name="device_discovered">发现新设备</string>
+    <string name="no_devices_available">无可用设备</string>
+
+</resources>

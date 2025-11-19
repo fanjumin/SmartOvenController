@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>设备配网</title>
+    <title data-lang="wifiConfigTitle">设备配网</title>
     <link rel="stylesheet" href="css/title-styles.css">
+    <script src="lang.js"></script>
     <style>
         * {
             margin: 0;
@@ -36,13 +37,41 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
         }
-        
 
         
         .device-info {
             color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
+        }
+
+        .language-switcher {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .lang-toggle-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            color: #333;
+        }
+
+        .lang-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .lang-toggle-btn:active {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(0);
         }
         
         .config-form {
@@ -165,28 +194,31 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>设备配网</h1>
-            <div class="device-info">WiFi网络配置</div>
+            <h1 data-lang="deviceNetworkConfig">设备配网</h1>
+            <div class="device-info" data-lang="wifiNetworkConfig">WiFi网络配置</div>
+            <div class="language-switcher">
+                <button class="lang-toggle-btn" onclick="switchLanguage()" data-lang="chineseEnglish">中/En</button>
+            </div>
         </div>
         
         <div class="config-form">
             <div class="form-row">
-                <span class="form-label">选择WiFi</span>
+                <span class="form-label" data-lang="selectWiFi">选择WiFi</span>
                 <div style="position: relative; width: 100%;">
-                    <input type="text" class="form-input" id="wifi-search" placeholder="搜索WiFi网络..." oninput="filterWiFiNetworks()">
+                    <input type="text" class="form-input" id="wifi-search" placeholder="搜索WiFi网络..." data-lang-placeholder="searchWiFiNetworks" oninput="filterWiFiNetworks()">
                     <select class="wifi-select" id="wifi-select" style="display: none;">
-                        <option value="">请选择网络</option>
+                        <option value="" data-lang="pleaseSelectNetwork">请选择网络</option>
                     </select>
                     <div id="wifi-results" style="position: absolute; top: 100%; left: 0; right: 0; background: rgba(255,255,255,0.95); border-radius: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-height: 200px; overflow-y: auto; display: none; z-index: 1000;"></div>
                 </div>
             </div>
             
             <div class="form-row">
-                <span class="form-label">输入密码</span>
-                <input type="password" class="form-input" id="password-input" placeholder="请输入WiFi密码">
+                <span class="form-label" data-lang="wifiPassword">WiFi密码</span>
+                <input type="password" class="form-input" id="password-input" placeholder="请输入WiFi密码" data-lang-placeholder="enterWiFiPassword">
             </div>
             
-            <button class="connect-btn" onclick="connectWiFi()">连接网络</button>
+            <button class="connect-btn" onclick="connectWiFi()" data-lang="connectWiFi">连接WiFi</button>
         </div>
     </div>
     
@@ -234,7 +266,7 @@
                         searchInput.value = option.text;
                         wifiSelect.value = option.value;
                         resultsContainer.style.display = 'none';
-                        showToast(`已选择网络: ${option.text}`);
+                        showToast(`${getTranslation('selectedNetwork')}: ${option.text}`);
                     });
                     
                     resultItem.addEventListener('mouseenter', () => {
@@ -263,7 +295,7 @@
                         searchInput.value = option.text;
                         wifiSelect.value = option.value;
                         resultsContainer.style.display = 'none';
-                        showToast(`已选择网络: ${option.text}`);
+                        showToast(`${getTranslation('selectedNetwork')}: ${option.text}`);
                     });
                     
                     resultItem.addEventListener('mouseenter', () => {
@@ -294,17 +326,17 @@
             const password = passwordInput.value;
             
             if (!selectedWifi) {
-                showToast('请选择WiFi网络');
+                showToast(getTranslation('pleaseSelectWiFiNetwork'));
                 return;
             }
-            
+
             if (!password) {
-                showToast('请输入WiFi密码');
+                showToast(getTranslation('pleaseEnterWiFiPassword'));
                 return;
             }
-            
+
             // 调用真实设备API保存WiFi配置
-            showToast('正在保存WiFi配置...');
+            showToast(getTranslation('savingWiFiConfig'));
             
             // 构建POST请求数据
             const formData = new URLSearchParams();
@@ -322,48 +354,48 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    showToast('WiFi配置保存成功！设备将在3秒后重启...');
-                    
+                    showToast(getTranslation('wifiConfigSavedSuccessfully'));
+
                     // 清空输入框
                     passwordInput.value = '';
                     wifiSelect.value = '';
                     document.getElementById('wifi-search').value = '';
                     resultsContainer.style.display = 'none';
-                    
+
                     // 等待设备重启
                     setTimeout(() => {
-                        showToast('设备重启中，请稍后检查连接状态...');
+                        showToast(getTranslation('deviceRestartingPleaseCheckConnection'));
                     }, 3000);
                 } else {
-                    showToast('配置保存失败: ' + (data.message || '未知错误'));
+                    showToast(getTranslation('configSaveFailed') + ': ' + (data.message || getTranslation('unknownError')));
                 }
             })
             .catch(error => {
                 console.error('WiFi配置保存错误:', error);
-                showToast('网络错误，请检查设备连接状态');
+                showToast(getTranslation('networkErrorPleaseCheckDeviceConnection'));
             });
         }
         
         // 扫描WiFi网络
         function scanWiFiNetworks() {
-            showToast('正在扫描WiFi网络...');
-            
+            showToast(getTranslation('scanningWiFiNetworks'));
+
             // 调用设备API获取WiFi列表
             fetch('/scanwifi')
                 .then(response => response.json())
                 .then(data => {
                     if (data.networks) {
                         populateWiFiList(data.networks);
-                        showToast(`发现 ${data.networks.length} 个WiFi网络`);
+                        showToast(`${getTranslation('foundNetworks')} ${data.networks.length} ${getTranslation('wifiNetworks')}`);
                     } else {
-                        showToast('扫描失败: 未找到网络数据');
+                        showToast(getTranslation('scanFailedNoNetworkData'));
                         // 如果扫描失败，使用模拟数据作为备用
                         populateWiFiList(getMockWiFiNetworks());
                     }
                 })
                 .catch(error => {
                     console.error('WiFi扫描错误:', error);
-                    showToast('扫描失败，使用模拟数据');
+                    showToast(getTranslation('scanFailedUsingMockData'));
                     // 网络错误时使用模拟数据作为备用
                     populateWiFiList(getMockWiFiNetworks());
                 });
@@ -406,10 +438,20 @@
         
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', function() {
-            showToast('配网界面已就绪，正在扫描WiFi网络...');
-            
+            showToast(getTranslation('configInterfaceReadyScanningWiFi'));
+
             // 自动扫描WiFi网络
             scanWiFiNetworks();
+            
+            // 添加回车键监听事件
+            document.getElementById('password-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    connectWiFi();
+                }
+            });
+            
+            // 初始化语言设置
+            applyTranslations();
             
             // 点击页面其他地方时隐藏搜索结果
             document.addEventListener('click', (e) => {

@@ -1,10 +1,140 @@
 // =========================================
-// 智能烤箱控制器固件 v0.8.3 - 正式版
+// 智能烤箱控制器固件 v0.8.5 - 正式版
 // =========================================
-// 固件版本: 0.8.3
+// 固件版本: 0.8.5
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能 + PID温控算法
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
+
+// =========================================
+// 多语言支持定义
+// =========================================
+
+// 当前语言设置 (0=中文, 1=英文)
+int currentLanguage = 0;
+
+// 简化的翻译函数 - 由于Arduino内存限制，使用条件编译
+#define TR(key) (currentLanguage == 0 ? getChineseTranslation(key) : getEnglishTranslation(key))
+
+// 中文翻译函数
+const char* getChineseTranslation(const char* key) {
+    if (strcmp(key, "eeprom_save_retry") == 0) return "EEPROM保存失败，重试 ";
+    if (strcmp(key, "eeprom_save_failed") == 0) return "错误：EEPROM保存失败，配置未保存";
+    if (strcmp(key, "config_saved_success") == 0) return "配置已成功保存到EEPROM";
+    if (strcmp(key, "loading_config") == 0) return "从EEPROM加载配置参数...";
+    if (strcmp(key, "eeprom_read_failed") == 0) return "错误：EEPROM读取失败，使用默认配置";
+    if (strcmp(key, "default_config_loaded") == 0) return "已重置为默认配置参数";
+    if (strcmp(key, "sensor_comm_error") == 0) return "传感器通信错误: MAX6675未连接或读取失败";
+    if (strcmp(key, "sensor_data_invalid") == 0) return "传感器数据无效，准备重试...";
+    if (strcmp(key, "sensor_comm_failure") == 0) return "传感器通信失败 - 已达最大重试次数，无法获取有效数据 - 将返回默认温度";
+    if (strcmp(key, "sensor_read_failure") == 0) return "传感器读取失败，返回默认温度: 25.0°C";
+    if (strcmp(key, "sensor_status_abnormal") == 0) return "传感器连接状态异常- 尝试重新连接...";
+    if (strcmp(key, "sensor_status_failure") == 0) return "传感器连接状态异常- 已达最大重试次数";
+    if (strcmp(key, "temp_out_of_range") == 0) return "温度值超出有效范围";
+    if (strcmp(key, "temp_read") == 0) return "读取到的温度: ";
+    if (strcmp(key, "temp_calibration_complete") == 0) return "温度校准参数计算完成";
+    if (strcmp(key, "calibration_saved") == 0) return "温度校准参数已保存到EEPROM";
+    if (strcmp(key, "captive_portal_start") == 0) return "启动Captive Portal服务...";
+    if (strcmp(key, "captive_portal_started") == 0) return "Captive portal启动成功 - 快速配网模式已启用";
+    if (strcmp(key, "captive_portal_stop") == 0) return "停止Captive Portal服务，关闭相关网络服务...";
+    if (strcmp(key, "wifi_config_missing") == 0) return "WiFi配置参数缺失，启动配网界面";
+    if (strcmp(key, "using_saved_wifi") == 0) return "使用保存的WiFi配置参数尝试连接网络";
+    if (strcmp(key, "wifi_connect_success") == 0) return "WiFi连接成功";
+    if (strcmp(key, "wifi_connect_failed") == 0) return "WiFi连接失败，启动配网界面";
+    if (strcmp(key, "discovery_request_received") == 0) return "收到设备发现请求，正在发送响应";
+    if (strcmp(key, "tcp_client_connected") == 0) return "TCP客户端已连接";
+    if (strcmp(key, "tcp_command_received") == 0) return "收到TCP命令: ";
+    if (strcmp(key, "serial_command_received") == 0) return "收到串口命令: ";
+    if (strcmp(key, "device_status_title") == 0) return "=== 设备状态 ===";
+    if (strcmp(key, "temp_label") == 0) return "温度: ";
+    if (strcmp(key, "target_temp_label") == 0) return "目标温度: ";
+    if (strcmp(key, "heating_status_label") == 0) return "加热状态: ";
+    if (strcmp(key, "heating_on") == 0) return "开启";
+    if (strcmp(key, "heating_off") == 0) return "关闭";
+    if (strcmp(key, "mode_label") == 0) return "工作模式: ";
+    if (strcmp(key, "oven_mode") == 0) return "烤箱模式";
+    if (strcmp(key, "toaster_mode") == 0) return "烤面包机模式";
+    if (strcmp(key, "wifi_status_label") == 0) return "WiFi状态: ";
+    if (strcmp(key, "connected") == 0) return "已连接";
+    if (strcmp(key, "disconnected") == 0) return "未连接";
+    if (strcmp(key, "pid_control_label") == 0) return "PID控制: ";
+    if (strcmp(key, "enabled") == 0) return "启用";
+    if (strcmp(key, "disabled") == 0) return "禁用";
+    if (strcmp(key, "device_restart") == 0) return "执行设备重启...";
+    if (strcmp(key, "target_temp_set") == 0) return "目标温度已设置为: ";
+    if (strcmp(key, "heating_started") == 0) return "加热已开启";
+    if (strcmp(key, "heating_stopped") == 0) return "加热已关闭";
+    if (strcmp(key, "temp_calibration_mode") == 0) return "温度校准模式";
+    if (strcmp(key, "use_web_interface") == 0) return "请使用网页界面进行温度校准";
+    if (strcmp(key, "pid_enabled_msg") == 0) return "PID控制已启用";
+    if (strcmp(key, "pid_disabled_msg") == 0) return "PID控制已禁用";
+    if (strcmp(key, "config_saved") == 0) return "配置已保存到EEPROM";
+    if (strcmp(key, "config_save_failed") == 0) return "配置保存失败";
+    if (strcmp(key, "filesystem_init_success") == 0) return "文件系统初始化成功";
+    if (strcmp(key, "filesystem_init_failed") == 0) return "文件系统初始化失败，HTML文件服务将不可用";
+    if (strcmp(key, "wifi_config_load_success") == 0) return "WiFi配置加载成功，尝试连接网络...";
+    return key; // 如果找不到翻译，返回原始键
+}
+
+// 英文翻译函数
+const char* getEnglishTranslation(const char* key) {
+    if (strcmp(key, "eeprom_save_retry") == 0) return "EEPROM save failed, retry ";
+    if (strcmp(key, "eeprom_save_failed") == 0) return "Error: EEPROM save failed, configuration not saved";
+    if (strcmp(key, "config_saved_success") == 0) return "Configuration successfully saved to EEPROM";
+    if (strcmp(key, "loading_config") == 0) return "Loading configuration parameters from EEPROM...";
+    if (strcmp(key, "eeprom_read_failed") == 0) return "Error: EEPROM read failed, using default configuration";
+    if (strcmp(key, "default_config_loaded") == 0) return "Reset to default configuration parameters";
+    if (strcmp(key, "sensor_comm_error") == 0) return "Sensor communication error: MAX6675 not connected or read failed";
+    if (strcmp(key, "sensor_data_invalid") == 0) return "Sensor data invalid, preparing to retry...";
+    if (strcmp(key, "sensor_comm_failure") == 0) return "Sensor communication failure - Maximum retries reached, unable to obtain valid data - Will return default temperature";
+    if (strcmp(key, "sensor_read_failure") == 0) return "Sensor read failure, returning default temperature: 25.0°C";
+    if (strcmp(key, "sensor_status_abnormal") == 0) return "Sensor connection status abnormal - Attempting to reconnect...";
+    if (strcmp(key, "sensor_status_failure") == 0) return "Sensor connection status abnormal - Maximum retries reached";
+    if (strcmp(key, "temp_out_of_range") == 0) return "Temperature value out of valid range";
+    if (strcmp(key, "temp_read") == 0) return "Temperature read: ";
+    if (strcmp(key, "temp_calibration_complete") == 0) return "Temperature calibration parameters calculation complete";
+    if (strcmp(key, "calibration_saved") == 0) return "Temperature calibration parameters saved to EEPROM";
+    if (strcmp(key, "captive_portal_start") == 0) return "Starting Captive Portal service...";
+    if (strcmp(key, "captive_portal_started") == 0) return "Captive portal started successfully - Quick configuration mode enabled";
+    if (strcmp(key, "captive_portal_stop") == 0) return "Stopping Captive Portal service, closing related network services...";
+    if (strcmp(key, "wifi_config_missing") == 0) return "WiFi configuration parameters missing, starting configuration interface";
+    if (strcmp(key, "using_saved_wifi") == 0) return "Using saved WiFi configuration parameters to attempt network connection";
+    if (strcmp(key, "wifi_connect_success") == 0) return "WiFi connection successful";
+    if (strcmp(key, "wifi_connect_failed") == 0) return "WiFi connection failed, starting configuration interface";
+    if (strcmp(key, "discovery_request_received") == 0) return "Device discovery request received, sending response";
+    if (strcmp(key, "tcp_client_connected") == 0) return "TCP client connected";
+    if (strcmp(key, "tcp_command_received") == 0) return "TCP command received: ";
+    if (strcmp(key, "serial_command_received") == 0) return "Serial command received: ";
+    if (strcmp(key, "device_status_title") == 0) return "=== Device Status ===";
+    if (strcmp(key, "temp_label") == 0) return "Temperature: ";
+    if (strcmp(key, "target_temp_label") == 0) return "Target Temperature: ";
+    if (strcmp(key, "heating_status_label") == 0) return "Heating Status: ";
+    if (strcmp(key, "heating_on") == 0) return "On";
+    if (strcmp(key, "heating_off") == 0) return "Off";
+    if (strcmp(key, "mode_label") == 0) return "Operating Mode: ";
+    if (strcmp(key, "oven_mode") == 0) return "Oven Mode";
+    if (strcmp(key, "toaster_mode") == 0) return "Toaster Mode";
+    if (strcmp(key, "wifi_status_label") == 0) return "WiFi Status: ";
+    if (strcmp(key, "connected") == 0) return "Connected";
+    if (strcmp(key, "disconnected") == 0) return "Disconnected";
+    if (strcmp(key, "pid_control_label") == 0) return "PID Control: ";
+    if (strcmp(key, "enabled") == 0) return "Enabled";
+    if (strcmp(key, "disabled") == 0) return "Disabled";
+    if (strcmp(key, "device_restart") == 0) return "Executing device restart...";
+    if (strcmp(key, "target_temp_set") == 0) return "Target temperature set to: ";
+    if (strcmp(key, "heating_started") == 0) return "Heating started";
+    if (strcmp(key, "heating_stopped") == 0) return "Heating stopped";
+    if (strcmp(key, "temp_calibration_mode") == 0) return "Temperature calibration mode";
+    if (strcmp(key, "use_web_interface") == 0) return "Please use web interface for temperature calibration";
+    if (strcmp(key, "pid_enabled_msg") == 0) return "PID control enabled";
+    if (strcmp(key, "pid_disabled_msg") == 0) return "PID control disabled";
+    if (strcmp(key, "config_saved") == 0) return "Configuration saved to EEPROM";
+    if (strcmp(key, "config_save_failed") == 0) return "Configuration save failed";
+    if (strcmp(key, "filesystem_init_success") == 0) return "Filesystem initialization successful";
+    if (strcmp(key, "filesystem_init_failed") == 0) return "Filesystem initialization failed, HTML file service will be unavailable";
+    if (strcmp(key, "wifi_config_load_success") == 0) return "WiFi configuration loaded successfully, attempting network connection...";
+    return key; // 如果找不到翻译，返回原始键
+}
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -53,7 +183,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.8.3";
+const String FIRMWARE_VERSION = "0.8.5";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -135,11 +265,11 @@ bool saveConfig() {
     
     // 验证WiFi配置参数有效性
     if (wifiSSID.length() == 0 || wifiSSID.length() > 31) {
-        Serial.println("错误：SSID无效，无法保存配置");
+        Serial.println(TR("error_ssid_invalid"));
         return false;
     }
     if (wifiPassword.length() > 63) {
-        Serial.println("错误：密码过长，无法保存配置");
+        Serial.println(TR("error_password_too_long"));
         return false;
     }
     
@@ -172,38 +302,38 @@ bool saveConfig() {
         EEPROM.end();
         
         if (!saveSuccess) {
-            Serial.println("EEPROM保存失败，重试 " + String(attempt + 1));
+            Serial.println(TR("eeprom_save_retry") + String(attempt + 1));
             delay(100);
         }
     }
     
     if (saveSuccess) {
-        Serial.println("配置已成功保存到EEPROM");
+        Serial.println(TR("config_saved_success"));
         Serial.print("SSID: ");
         Serial.println(config.ssid);
-        Serial.print("密码长度: ");
+        Serial.print(TR("password_length"));
         Serial.println(strlen(config.password));
-        Serial.print("温度校准偏移量: ");
+        Serial.print(TR("temp_offset"));
         Serial.print(config.temperatureOffset);
         Serial.println("°C");
-        Serial.print("温度校准缩放系数: ");
+        Serial.print(TR("temp_scale"));
         Serial.println(config.temperatureScale);
-        Serial.print("PID参数 - Kp: ");
+        Serial.print(TR("pid_kp"));
         Serial.print(config.Kp);
         Serial.print(", Ki: ");
         Serial.print(config.Ki);
         Serial.print(", Kd: ");
         Serial.println(config.Kd);
-        Serial.print("PID控制: ");
-        Serial.println(config.usePID ? "启用" : "禁用");
-        Serial.print("配置签名: ");
+        Serial.print(TR("pid_enabled"));
+        Serial.println(config.usePID ? TR("enabled") : TR("disabled"));
+        Serial.print(TR("config_signature"));
         Serial.println(config.signature);
         
         // 配置保存成功提示音
         beepConfigSaved();
         return true;
     } else {
-        Serial.println("错误：EEPROM保存失败，配置未保存");
+        Serial.println(TR("eeprom_save_failed"));
         return false;
     }
 }
@@ -228,31 +358,31 @@ bool loadConfig() {
     }
     
     if (!readSuccess) {
-        Serial.println("错误：EEPROM读取失败，使用默认配置");
+        Serial.println(TR("eeprom_read_failed"));
         resetToDefaultConfig();
         return false;
     }
-    
-    Serial.println("从EEPROM加载配置参数...");
-    Serial.print("配置签名: ");
+
+    Serial.println(TR("loading_config"));
+    Serial.print(TR("config_signature"));
     Serial.println(config.signature);
-    Serial.print("配置SSID: ");
+    Serial.print(TR("config_ssid"));
     Serial.println(config.ssid);
-    Serial.print("密码长度: ");
+    Serial.print(TR("password_length"));
     Serial.println(strlen(config.password));
-    Serial.print("温度校准偏移量: ");
+    Serial.print(TR("temp_offset"));
     Serial.print(config.temperatureOffset);
     Serial.println("°C");
-    Serial.print("温度校准缩放系数: ");
+    Serial.print(TR("temp_scale"));
     Serial.println(config.temperatureScale);
-    Serial.print("PID参数 - Kp: ");
+    Serial.print(TR("pid_kp"));
     Serial.print(config.Kp);
     Serial.print(", Ki: ");
     Serial.print(config.Ki);
     Serial.print(", Kd: ");
     Serial.println(config.Kd);
-    Serial.print("PID控制: ");
-    Serial.println(config.usePID ? "启用" : "禁用");
+    Serial.print(TR("pid_enabled"));
+    Serial.println(config.usePID ? TR("enabled") : TR("disabled"));
     
     // 严格的配置验证
     if (strcmp(config.signature, "SMARTOVEN") == 0) {
@@ -261,13 +391,13 @@ bool loadConfig() {
         String loadedPassword = String(config.password);
         
         if (loadedSSID.length() == 0 || loadedSSID.length() > 31) {
-            Serial.println("警告：加载的SSID无效，使用默认配置");
+            Serial.println(TR("error_ssid_invalid"));
             resetToDefaultConfig();
             return false;
         }
-        
+
         if (loadedPassword.length() > 63) {
-            Serial.println("警告：加载的密码过长，使用默认配置");
+            Serial.println(TR("error_password_too_long"));
             resetToDefaultConfig();
             return false;
         }
@@ -297,23 +427,23 @@ bool loadConfig() {
         Kd = config.Kd;
         usePID = config.usePID;
         
-        Serial.println("配置文件加载成功，应用温度校准参数");
-        Serial.print("温度校准偏移量: ");
+        Serial.println(TR("config_load_success"));
+        Serial.print(TR("temp_offset"));
         Serial.print(temperatureOffset);
         Serial.println("°C");
-        Serial.print("温度校准缩放系数: ");
+        Serial.print(TR("temp_scale"));
         Serial.println(temperatureScale);
-        Serial.print("PID参数 - Kp: ");
+        Serial.print(TR("pid_kp"));
         Serial.print(Kp);
         Serial.print(", Ki: ");
         Serial.print(Ki);
         Serial.print(", Kd: ");
         Serial.println(Kd);
-        Serial.print("PID控制: ");
-        Serial.println(usePID ? "启用" : "禁用");
+        Serial.print(TR("pid_enabled"));
+        Serial.println(usePID ? TR("enabled") : TR("disabled"));
         return true;
     } else {
-        Serial.println("配置文件签名验证失败，使用默认配置参数");
+        Serial.println(TR("config_signature_invalid"));
         resetToDefaultConfig();
         return false;
     }
@@ -334,7 +464,7 @@ void resetToDefaultConfig() {
     Kd = 1.0;
     usePID = false;  // 默认使用开关控制
     
-    Serial.println("已重置为默认配置参数");
+    Serial.println(TR("default_config_loaded"));
 }
 
 // =========================================
@@ -449,20 +579,20 @@ float readTemperatureManual() {
         Serial.print(": 原始数据: 0x"); Serial.println(rawData, HEX);
         
         // 检查传感器数据有效性 - 排除无效数据（0x0000或0xFFFF）
-        if (rawData == 0x0000 || rawData == 0xFFFF) {
-            if (retry < 2) {
-                Serial.println("传感器数据无效，准备重试...");
-                delay(100);  // 重试前延迟100ms
-                continue;
-            } else {
-                Serial.println("传感器通信失败 - 已达最大重试次数，无法获取有效数据 - 将返回默认温度");
-                // 传感器读取失败，增加硬件故障计数
-                hardwareFailureCount++;
-                // 传感器读取失败，已达最大重试次数，返回默认温度 25.0°C
-                Serial.println("传感器读取失败，返回默认温度: 25.0°C");
-                return 25.0;
+            if (rawData == 0x0000 || rawData == 0xFFFF) {
+                if (retry < 2) {
+                    Serial.println(TR("sensor_data_invalid"));
+                    delay(100);  // 重试前延迟100ms
+                    continue;
+                } else {
+                    Serial.println(TR("sensor_comm_failure"));
+                    // 传感器读取失败，增加硬件故障计数
+                    hardwareFailureCount++;
+                    // 传感器读取失败，已达最大重试次数，返回默认温度 25.0°C
+                    Serial.println(TR("sensor_read_failure"));
+                    return 25.0;
+                }
             }
-        }
         
         // 检查传感器连接状态位 - 第3位为0表示连接正常
         if (!(rawData & 0x04)) {
@@ -474,34 +604,34 @@ float readTemperatureManual() {
             
             // 验证温度值是否在有效范围内（-50.0°C 到 400.0°C）
             if (temperature >= -50.0 && temperature <= 400.0) {
-                Serial.print("读取到的温度: ");
+                Serial.print(TR("temp_read"));
                 Serial.print(temperature); Serial.println("°C");
-                
+
                 // 重置传感器错误计数器，更新最后成功读取时间
                 if (retry == 0) {
                     hardwareFailureCount = 0;
                 }
                 return temperature;
             } else {
-                Serial.println("温度值超出有效范围");
+                Serial.println(TR("temp_out_of_range"));
                 return -1.0;
             }
         } else {
             if (retry < 2) {
-                Serial.println("传感器连接状态异常- 尝试重新连接...");
+                Serial.println(TR("sensor_status_abnormal"));
                 delay(100);  // 重试前延迟100ms
                 continue;
             } else {
-                Serial.println("传感器连接状态异常- 已达最大重试次数");
+                Serial.println(TR("sensor_status_failure"));
                 return -1.0;
             }
         }
     }
     
     // 所有读取尝试失败- 无法获取有效温度数据
-    Serial.println("所有读取尝试失败- 返回默认温度");
+    Serial.println(TR("sensor_comm_error"));
     // 传感器读取失败，已达最大重试次数，返回默认温度 25.0°C
-    Serial.println("传感器读取失败，返回默认温度: 25.0°C");
+    Serial.println(TR("sensor_read_failure"));
     return 25.0;
 }
 
@@ -516,15 +646,15 @@ void calibrateTemperature(float actualTemp, float measuredTemp) {
         temperatureScale = 1.0;
     }
     
-    Serial.println("温度校准参数计算完成");
-    Serial.print("实际校准温度: "); Serial.print(actualTemp); Serial.println("°C");
-    Serial.print("传感器测量温度: "); Serial.print(measuredTemp); Serial.println("°C");
-    Serial.print("温度校准偏移量: "); Serial.print(temperatureOffset); Serial.println("°C");
-    Serial.print("温度校准缩放系数: "); Serial.println(temperatureScale);
-    
+    Serial.println(TR("temp_calibration_complete"));
+    Serial.print(TR("actual_temp")); Serial.print(actualTemp); Serial.println("°C");
+    Serial.print(TR("measured_temp")); Serial.print(measuredTemp); Serial.println("°C");
+    Serial.print(TR("calibration_offset")); Serial.print(temperatureOffset); Serial.println("°C");
+    Serial.print(TR("calibration_scale")); Serial.println(temperatureScale);
+
     // 保存温度校准参数到EEPROM
     saveConfig();
-    Serial.println("温度校准参数已保存到EEPROM");
+    Serial.println(TR("calibration_saved"));
 }
 
 // =========================================
@@ -539,31 +669,31 @@ void calibrateTemperature(float actualTemp, float measuredTemp) {
  * 会自动启动此服务进行网络配置。
  */
 void startCaptivePortal() {
-    Serial.println("启动Captive Portal服务...");
-    
+    Serial.println(TR("captive_portal_start"));
+
     // 快速断开现有WiFi连接（快速配网优化）
     WiFi.disconnect();
     delay(50); // 减少等待时间
-    
+
     // 快速配置并启动WiFi接入点模式
     WiFi.mode(WIFI_AP);
     WiFi.softAP(AP_SSID.c_str(), AP_PASSWORD.c_str());
-    
-    Serial.print("AP名称: ");
+
+    Serial.print(TR("ap_ssid"));
     Serial.println(AP_SSID);
-    Serial.print("AP IP地址: ");
+    Serial.print(TR("ap_ip"));
     Serial.println(WiFi.softAPIP());
-    
+
     // 快速配置DNS服务器参数
     dnsServer.start(53, "*", WiFi.softAPIP());
-    
+
     // 启动UDP服务用于设备发现广播
     udp.begin(8888);
-    
+
     isCaptivePortalMode = true;
     captivePortalStartTime = millis();
-    
-    Serial.println("Captive portal启动成功 - 快速配网模式已启用");
+
+    Serial.println(TR("captive_portal_started"));
 }
 
 /**
