@@ -819,7 +819,7 @@
                     <div class="setting-item">
                         <div class="setting-row">
                             <span class="setting-label" data-lang="appVersion">应用版本</span>
-                            <span class="setting-value">v0.8.5</span>
+                            <span class="setting-value">v0.8.6</span>
                         </div>
                         
                         <div class="setting-row">
@@ -938,13 +938,18 @@
                 refreshInterval: document.getElementById('refresh-interval').value,
                 dataRetention: document.getElementById('data-retention').value
             };
-            
+
             // 保存到本地存储
             localStorage.setItem('ovenSettings', JSON.stringify(settings));
-            
-            // 应用语言设置
-            setLanguage(settings.language);
-            
+
+            // 应用语言设置 - 将语言代码映射到lang.js使用的格式
+            const langMap = {
+                'zh-CN': 'zh',
+                'en-US': 'en'
+            };
+            const mappedLang = langMap[settings.language] || 'zh';
+            setLanguage(mappedLang);
+
             showToast(getTranslation('settingsSaved'));
         }
 
@@ -953,7 +958,7 @@
             const savedSettings = localStorage.getItem('ovenSettings');
             if (savedSettings) {
                 const settings = JSON.parse(savedSettings);
-                
+
                 document.getElementById('temp-unit').value = settings.tempUnit || 'celsius';
                 document.getElementById('temp-precision').value = settings.tempPrecision || '1';
                 document.getElementById('auto-save-temp').checked = settings.autoSaveTemp || false;
@@ -964,6 +969,17 @@
                 document.getElementById('sound').checked = settings.sound || false;
                 document.getElementById('refresh-interval').value = settings.refreshInterval || '5';
                 document.getElementById('data-retention').value = settings.dataRetention || '30';
+
+                // 应用语言设置 - 将语言代码映射到lang.js使用的格式
+                const langMap = {
+                    'zh-CN': 'zh',
+                    'en-US': 'en'
+                };
+                const mappedLang = langMap[settings.language] || 'zh';
+                setLanguage(mappedLang);
+            } else {
+                // 如果没有保存的设置，默认设置为中文
+                setLanguage('zh');
             }
         }
 
@@ -975,7 +991,7 @@
                     const data = await response.json();
                     
                     document.getElementById('device-model').textContent = data.model || 'SmartOven Pro';
-                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.5';
+                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.6';
                     document.getElementById('hardware-version').textContent = data.hardware || 'v2.1';
                     document.getElementById('serial-number').textContent = data.serial || 'SN001';
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);

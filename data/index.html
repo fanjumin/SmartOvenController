@@ -2897,12 +2897,6 @@
         </div>
     </div>
 
-
-
-        </div>
-
-
-
         <!-- API端点信息 -->
         <div class="api-section">
             <div class="api-title">API端点</div>
@@ -2956,7 +2950,7 @@
 
         <div class="footer">
 
-            <p>智能电烤箱控制器 v0.8.5</p>
+            <p>智能电烤箱控制器 v0.8.6</p>
 
             <p>© 2025 智能电烤箱项目</p>
 
@@ -2995,6 +2989,20 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             console.log('智能电烤箱管理员页面已加载');
+
+            // 初始化语言设置
+            const savedSettings = localStorage.getItem('ovenSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                const langMap = {
+                    'zh-CN': 'zh',
+                    'en-US': 'en'
+                };
+                const mappedLang = langMap[settings.language] || 'zh';
+                setLanguage(mappedLang);
+            } else {
+                setLanguage('zh'); // 默认中文
+            }
 
             refreshData();
 
@@ -3075,7 +3083,7 @@
                 wifiSSID: 'SmartOven_AP',
                 ip_address: '192.168.4.1',
                 device_id: 'SmartOven_001',
-                firmware_version: '0.8.5'
+                firmware_version: '0.8.6'
             };
 
             
@@ -3306,85 +3314,6 @@
 
 
 
-        // 在状态更新时也更新固件版本显示
-
-        function updateStatusDisplay(data) {
-
-            deviceStatus = {
-
-                currentTemp: data.temperature || 0,
-
-                targetTemp: data.target_temperature || 180,
-
-                heatingEnabled: data.heating_enabled || false,
-
-                wifiConnected: data.wifi_connected || false,
-
-                wifiSSID: data.wifi_ssid || '',
-
-                ipAddress: data.ip_address || '',
-
-                deviceId: data.device_id || '',
-
-                firmwareVersion: data.firmware_version || ''
-
-            };
-
-
-
-            // 安全地更新温度显示
-
-            const statusItems = document.querySelectorAll('.status-item');
-
-            if (statusItems.length >= 4) {
-
-                statusItems[0].querySelector('.status-value').textContent = 
-
-                    deviceStatus.currentTemp.toFixed(1) + '°C';
-
-                statusItems[1].querySelector('.status-value').textContent = 
-
-                    deviceStatus.targetTemp.toFixed(1) + '°C';
-
-                
-
-                // 更新加热状态
-
-                const heatingStatus = deviceStatus.heatingEnabled ? '加热中' : '已停止';
-
-                statusItems[2].querySelector('.status-value').textContent = heatingStatus;
-
-                statusItems[2].querySelector('.status-value').style.color = 
-
-                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
-
-                
-
-                // 更新WiFi状态
-
-                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '已连接') : '未连接';
-
-                statusItems[3].querySelector('.status-value').textContent = wifiStatus;
-
-                statusItems[3].querySelector('.status-value').style.color = 
-
-                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
-
-            }
-
-            
-
-            // 更新固件版本显示
-
-            updateFirmwareDisplay();
-
-            
-
-            // 更新温度控制面板显示
-
-            updateTemperatureControlDisplay();
-
-        }
 
 
 
@@ -4064,40 +3993,78 @@
             }
         }
 
-        function toggleHeating() {
+        async function toggleHeating() {
             const toggleBtn = document.getElementById('heating-toggle');
             const heatingIcon = toggleBtn.querySelector('.heating-icon');
             const heatingText = toggleBtn.querySelector('.heating-text');
             
             isHeating = !isHeating;
             
-            if (isHeating) {
-                toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                heatingIcon.textContent = '❄️';
-                heatingText.textContent = '停止加热';
-                
-                // 根据当前模式显示不同的提示信息
-                if (controlMode === 'manual') {
-                    showToast(`开始手动加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
-                } else {
-                    const modeSelect = document.getElementById('baking-mode-select');
-                    const selectedMode = modeSelect.value;
-                    const preset = bakingPresets[selectedMode];
-                    if (preset) {
-                        showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟 (${preset.name}模式)`);
+            try {
+                if (isHeating) {
+                    toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                    heatingIcon.textContent = '❄️';
+                    heatingText.textContent = '停止加热';
+                    
+                    // 根据当前模式显示不同的提示信息
+                    if (controlMode === 'manual') {
+                        showToast(`开始手动加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
                     } else {
-                        showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                        const modeSelect = document.getElementById('baking-mode-select');
+                        const selectedMode = modeSelect.value;
+                        const preset = bakingPresets[selectedMode];
+                        if (preset) {
+                            showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟 (${preset.name}模式)`);
+                        } else {
+                            showToast(`开始加热到 ${targetTemperature}°C，持续 ${bakingTime} 分钟`);
+                        }
                     }
+                    // 发送启动加热的请求到设备
+                    const response = await fetch('/control', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            heating_enabled: true,
+                            target_temperature: targetTemperature,
+                            oven_mode: bakingMode
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('启动加热失败');
+                    }
+                    
+                    refreshData();
+                } else {
+                    toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                    heatingIcon.textContent = '🔥';
+                    heatingText.textContent = '启动加热';
+                    showToast('加热已停止');
+                    // 发送停止加热的请求到设备
+                    const response = await fetch('/control', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            heating_enabled: false,
+                            oven_mode: bakingMode
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('停止加热失败');
+                    }
+                    
+                    refreshData();
                 }
-                // 这里应该发送启动加热的请求到设备
-                // startHeating(targetTemperature, bakingTime, bakingMode);
-            } else {
-                toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-                heatingIcon.textContent = '🔥';
-                heatingText.textContent = '启动加热';
-                showToast('加热已停止');
-                // 这里应该发送停止加热的请求到设备
-                // stopHeating();
+            } catch (error) {
+                console.error('控制设备失败:', error);
+                alert('网络连接失败');
+                // 恢复状态
+                isHeating = !isHeating;
             }
         }
 

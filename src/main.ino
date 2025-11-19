@@ -1,7 +1,7 @@
 // =========================================
-// 智能烤箱控制器固件 v0.8.5 - 正式版
+// 智能烤箱控制器固件 v0.8.6 - 正式版
 // =========================================
-// 固件版本: 0.8.5
+// 固件版本: 0.8.6
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能 + PID温控算法
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -183,7 +183,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.8.5";
+const String FIRMWARE_VERSION = "0.8.6";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -203,7 +203,7 @@ const String AP_PASSWORD = "12345678";
 float currentTemp = 0.0;
 float targetTemp = 180.0;
 bool heatingEnabled = false;
-bool ovenMode = true; // 烤箱工作模式：true=自动模式，false=手动模式
+char ovenMode[20] = "standard"; // 烘焙模式：standard, bread, cake, pizza, cookies, roast, defrost, custom
 
 // PID控制变量
 bool usePID = false;  // 是否使用PID控制
@@ -1102,7 +1102,9 @@ void handleControl() {
         heatingEnabled = webServer.arg("heating_enabled") == "true";
     }
     if (webServer.hasArg("oven_mode")) {
-        ovenMode = webServer.arg("oven_mode") == "true";
+        String mode = webServer.arg("oven_mode");
+        // 将接收到的模式字符串保存到ovenMode变量中
+        mode.toCharArray(ovenMode, sizeof(ovenMode));
     }
     
     webServer.send(200, "application/json", "{\"status\":\"success\"}");
@@ -1733,7 +1735,7 @@ void handleTCPCommand() {
         Serial.println(command);
         
         if (command == "GET_STATUS") {
-            String status = "STATUS:TEMP:" + String(currentTemp) + ",TARGET:" + String(targetTemp) + ",HEAT:" + String(heatingEnabled ? "ON" : "OFF") + ",MODE:" + String(ovenMode ? "OVEN" : "TOASTER");
+            String status = "STATUS:TEMP:" + String(currentTemp) + ",TARGET:" + String(targetTemp) + ",HEAT:" + String(heatingEnabled ? "ON" : "OFF") + ",MODE:" + String(ovenMode);
             tcpClient.println(status);
         } else if (command.startsWith("SET_TEMP:")) {
             targetTemp = command.substring(9).toFloat();
@@ -1811,6 +1813,7 @@ void handleStatus() {
     json += "\"temperature\":" + String(currentTemp) + ",";
     json += "\"target_temperature\":" + String(targetTemp) + ",";
     json += "\"heating_enabled\":" + String(heatingEnabled ? "true" : "false") + ",";
+    json += "\"oven_mode\":\"" + String(ovenMode) + "\",";
     json += "\"wifi_connected\":" + String(WiFi.status() == WL_CONNECTED ? "true" : "false") + ",";
     json += "\"wifi_ssid\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.SSID() : "") + "\",";
     json += "\"ip_address\":\"" + String(WiFi.status() == WL_CONNECTED ? WiFi.localIP().toString() : "0.0.0.0") + "\",";

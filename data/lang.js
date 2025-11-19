@@ -149,7 +149,7 @@ const translations = {
         'adminPassword': '管理员密码',
         'enterAdminPassword': '请输入管理员密码',
         'login': '登录',
-        'versionInfo': '智能电烤箱控制器 v0.8.5',
+        'versionInfo': '智能电烤箱控制器 v0.8.6',
 
         // 烘焙模式
         'bread': '面包',
@@ -402,7 +402,7 @@ const translations = {
         'adminPassword': 'Admin Password',
         'enterAdminPassword': 'Please enter admin password',
         'login': 'Login',
-        'versionInfo': 'Smart Oven Controller v0.8.5',
+        'versionInfo': 'Smart Oven Controller v0.8.6',
 
         // Baking Modes
         'bread': 'Bread',
@@ -554,17 +554,17 @@ function switchLanguage() {
     const newLang = currentLang === 'zh' ? 'en' : 'zh';
     setLanguage(newLang);
 
-    // 更新语言切换按钮文本 - 找到内部的span元素
-    const langToggleBtn = document.getElementById('lang-toggle');
-    if (langToggleBtn) {
-        const spanElement = langToggleBtn.querySelector('span[data-lang="chineseEnglish"]');
+    // 更新所有语言切换按钮文本
+    const langButtons = document.querySelectorAll('[onclick="switchLanguage()"], .lang-toggle-btn, #lang-toggle, #lang-toggle-btn');
+    langButtons.forEach(btn => {
+        const spanElement = btn.querySelector('span[data-lang="chineseEnglish"]');
         if (spanElement) {
             spanElement.textContent = newLang === 'zh' ? '中/En' : 'Zh/En';
         } else {
             // 如果没有span元素，则直接设置按钮文本
-            langToggleBtn.textContent = newLang === 'zh' ? '中/En' : 'Zh/En';
+            btn.textContent = newLang === 'zh' ? '中/En' : 'Zh/En';
         }
-    }
+    });
 }
 
 // 页面加载完成后应用翻译
