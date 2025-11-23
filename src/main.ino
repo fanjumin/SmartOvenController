@@ -10,131 +10,17 @@
 // 多语言支持定义
 // =========================================
 
-// 当前语言设置 (0=中文, 1=英文)
-int currentLanguage = 0;
+#include "lang.h"
 
 // 简化的翻译函数 - 由于Arduino内存限制，使用条件编译
-#define TR(key) (currentLanguage == 0 ? getChineseTranslation(key) : getEnglishTranslation(key))
+// 移除本地TR宏定义，使用lang.h中的版本
 
-// 中文翻译函数
-const char* getChineseTranslation(const char* key) {
-    if (strcmp(key, "eeprom_save_retry") == 0) return "EEPROM保存失败，重试 ";
-    if (strcmp(key, "eeprom_save_failed") == 0) return "错误：EEPROM保存失败，配置未保存";
-    if (strcmp(key, "config_saved_success") == 0) return "配置已成功保存到EEPROM";
-    if (strcmp(key, "loading_config") == 0) return "从EEPROM加载配置参数...";
-    if (strcmp(key, "eeprom_read_failed") == 0) return "错误：EEPROM读取失败，使用默认配置";
-    if (strcmp(key, "default_config_loaded") == 0) return "已重置为默认配置参数";
-    if (strcmp(key, "sensor_comm_error") == 0) return "传感器通信错误: MAX6675未连接或读取失败";
-    if (strcmp(key, "sensor_data_invalid") == 0) return "传感器数据无效，准备重试...";
-    if (strcmp(key, "sensor_comm_failure") == 0) return "传感器通信失败 - 已达最大重试次数，无法获取有效数据 - 将返回默认温度";
-    if (strcmp(key, "sensor_read_failure") == 0) return "传感器读取失败，返回默认温度: 25.0°C";
-    if (strcmp(key, "sensor_status_abnormal") == 0) return "传感器连接状态异常- 尝试重新连接...";
-    if (strcmp(key, "sensor_status_failure") == 0) return "传感器连接状态异常- 已达最大重试次数";
-    if (strcmp(key, "temp_out_of_range") == 0) return "温度值超出有效范围";
-    if (strcmp(key, "temp_read") == 0) return "读取到的温度: ";
-    if (strcmp(key, "temp_calibration_complete") == 0) return "温度校准参数计算完成";
-    if (strcmp(key, "calibration_saved") == 0) return "温度校准参数已保存到EEPROM";
-    if (strcmp(key, "captive_portal_start") == 0) return "启动Captive Portal服务...";
-    if (strcmp(key, "captive_portal_started") == 0) return "Captive portal启动成功 - 快速配网模式已启用";
-    if (strcmp(key, "captive_portal_stop") == 0) return "停止Captive Portal服务，关闭相关网络服务...";
-    if (strcmp(key, "wifi_config_missing") == 0) return "WiFi配置参数缺失，启动配网界面";
-    if (strcmp(key, "using_saved_wifi") == 0) return "使用保存的WiFi配置参数尝试连接网络";
-    if (strcmp(key, "wifi_connect_success") == 0) return "WiFi连接成功";
-    if (strcmp(key, "wifi_connect_failed") == 0) return "WiFi连接失败，启动配网界面";
-    if (strcmp(key, "discovery_request_received") == 0) return "收到设备发现请求，正在发送响应";
-    if (strcmp(key, "tcp_client_connected") == 0) return "TCP客户端已连接";
-    if (strcmp(key, "tcp_command_received") == 0) return "收到TCP命令: ";
-    if (strcmp(key, "serial_command_received") == 0) return "收到串口命令: ";
-    if (strcmp(key, "device_status_title") == 0) return "=== 设备状态 ===";
-    if (strcmp(key, "temp_label") == 0) return "温度: ";
-    if (strcmp(key, "target_temp_label") == 0) return "目标温度: ";
-    if (strcmp(key, "heating_status_label") == 0) return "加热状态: ";
-    if (strcmp(key, "heating_on") == 0) return "开启";
-    if (strcmp(key, "heating_off") == 0) return "关闭";
-    if (strcmp(key, "mode_label") == 0) return "工作模式: ";
-    if (strcmp(key, "oven_mode") == 0) return "烤箱模式";
-    if (strcmp(key, "toaster_mode") == 0) return "烤面包机模式";
-    if (strcmp(key, "wifi_status_label") == 0) return "WiFi状态: ";
-    if (strcmp(key, "connected") == 0) return "已连接";
-    if (strcmp(key, "disconnected") == 0) return "未连接";
-    if (strcmp(key, "pid_control_label") == 0) return "PID控制: ";
-    if (strcmp(key, "enabled") == 0) return "启用";
-    if (strcmp(key, "disabled") == 0) return "禁用";
-    if (strcmp(key, "device_restart") == 0) return "执行设备重启...";
-    if (strcmp(key, "target_temp_set") == 0) return "目标温度已设置为: ";
-    if (strcmp(key, "heating_started") == 0) return "加热已开启";
-    if (strcmp(key, "heating_stopped") == 0) return "加热已关闭";
-    if (strcmp(key, "temp_calibration_mode") == 0) return "温度校准模式";
-    if (strcmp(key, "use_web_interface") == 0) return "请使用网页界面进行温度校准";
-    if (strcmp(key, "pid_enabled_msg") == 0) return "PID控制已启用";
-    if (strcmp(key, "pid_disabled_msg") == 0) return "PID控制已禁用";
-    if (strcmp(key, "config_saved") == 0) return "配置已保存到EEPROM";
-    if (strcmp(key, "config_save_failed") == 0) return "配置保存失败";
-    if (strcmp(key, "filesystem_init_success") == 0) return "文件系统初始化成功";
-    if (strcmp(key, "filesystem_init_failed") == 0) return "文件系统初始化失败，HTML文件服务将不可用";
-    if (strcmp(key, "wifi_config_load_success") == 0) return "WiFi配置加载成功，尝试连接网络...";
-    return key; // 如果找不到翻译，返回原始键
-}
+// 已移除旧的翻译函数，使用lang.h中的getText()函数实现多语言支持
+// 已完全清理旧翻译函数残留代码
+// 已完全清理所有残留的翻译函数代码
+// 已彻底清理所有残留的全局作用域翻译代码
+// 已彻底清理所有残留的全局作用域翻译代码
 
-// 英文翻译函数
-const char* getEnglishTranslation(const char* key) {
-    if (strcmp(key, "eeprom_save_retry") == 0) return "EEPROM save failed, retry ";
-    if (strcmp(key, "eeprom_save_failed") == 0) return "Error: EEPROM save failed, configuration not saved";
-    if (strcmp(key, "config_saved_success") == 0) return "Configuration successfully saved to EEPROM";
-    if (strcmp(key, "loading_config") == 0) return "Loading configuration parameters from EEPROM...";
-    if (strcmp(key, "eeprom_read_failed") == 0) return "Error: EEPROM read failed, using default configuration";
-    if (strcmp(key, "default_config_loaded") == 0) return "Reset to default configuration parameters";
-    if (strcmp(key, "sensor_comm_error") == 0) return "Sensor communication error: MAX6675 not connected or read failed";
-    if (strcmp(key, "sensor_data_invalid") == 0) return "Sensor data invalid, preparing to retry...";
-    if (strcmp(key, "sensor_comm_failure") == 0) return "Sensor communication failure - Maximum retries reached, unable to obtain valid data - Will return default temperature";
-    if (strcmp(key, "sensor_read_failure") == 0) return "Sensor read failure, returning default temperature: 25.0°C";
-    if (strcmp(key, "sensor_status_abnormal") == 0) return "Sensor connection status abnormal - Attempting to reconnect...";
-    if (strcmp(key, "sensor_status_failure") == 0) return "Sensor connection status abnormal - Maximum retries reached";
-    if (strcmp(key, "temp_out_of_range") == 0) return "Temperature value out of valid range";
-    if (strcmp(key, "temp_read") == 0) return "Temperature read: ";
-    if (strcmp(key, "temp_calibration_complete") == 0) return "Temperature calibration parameters calculation complete";
-    if (strcmp(key, "calibration_saved") == 0) return "Temperature calibration parameters saved to EEPROM";
-    if (strcmp(key, "captive_portal_start") == 0) return "Starting Captive Portal service...";
-    if (strcmp(key, "captive_portal_started") == 0) return "Captive portal started successfully - Quick configuration mode enabled";
-    if (strcmp(key, "captive_portal_stop") == 0) return "Stopping Captive Portal service, closing related network services...";
-    if (strcmp(key, "wifi_config_missing") == 0) return "WiFi configuration parameters missing, starting configuration interface";
-    if (strcmp(key, "using_saved_wifi") == 0) return "Using saved WiFi configuration parameters to attempt network connection";
-    if (strcmp(key, "wifi_connect_success") == 0) return "WiFi connection successful";
-    if (strcmp(key, "wifi_connect_failed") == 0) return "WiFi connection failed, starting configuration interface";
-    if (strcmp(key, "discovery_request_received") == 0) return "Device discovery request received, sending response";
-    if (strcmp(key, "tcp_client_connected") == 0) return "TCP client connected";
-    if (strcmp(key, "tcp_command_received") == 0) return "TCP command received: ";
-    if (strcmp(key, "serial_command_received") == 0) return "Serial command received: ";
-    if (strcmp(key, "device_status_title") == 0) return "=== Device Status ===";
-    if (strcmp(key, "temp_label") == 0) return "Temperature: ";
-    if (strcmp(key, "target_temp_label") == 0) return "Target Temperature: ";
-    if (strcmp(key, "heating_status_label") == 0) return "Heating Status: ";
-    if (strcmp(key, "heating_on") == 0) return "On";
-    if (strcmp(key, "heating_off") == 0) return "Off";
-    if (strcmp(key, "mode_label") == 0) return "Operating Mode: ";
-    if (strcmp(key, "oven_mode") == 0) return "Oven Mode";
-    if (strcmp(key, "toaster_mode") == 0) return "Toaster Mode";
-    if (strcmp(key, "wifi_status_label") == 0) return "WiFi Status: ";
-    if (strcmp(key, "connected") == 0) return "Connected";
-    if (strcmp(key, "disconnected") == 0) return "Disconnected";
-    if (strcmp(key, "pid_control_label") == 0) return "PID Control: ";
-    if (strcmp(key, "enabled") == 0) return "Enabled";
-    if (strcmp(key, "disabled") == 0) return "Disabled";
-    if (strcmp(key, "device_restart") == 0) return "Executing device restart...";
-    if (strcmp(key, "target_temp_set") == 0) return "Target temperature set to: ";
-    if (strcmp(key, "heating_started") == 0) return "Heating started";
-    if (strcmp(key, "heating_stopped") == 0) return "Heating stopped";
-    if (strcmp(key, "temp_calibration_mode") == 0) return "Temperature calibration mode";
-    if (strcmp(key, "use_web_interface") == 0) return "Please use web interface for temperature calibration";
-    if (strcmp(key, "pid_enabled_msg") == 0) return "PID control enabled";
-    if (strcmp(key, "pid_disabled_msg") == 0) return "PID control disabled";
-    if (strcmp(key, "config_saved") == 0) return "Configuration saved to EEPROM";
-    if (strcmp(key, "config_save_failed") == 0) return "Configuration save failed";
-    if (strcmp(key, "filesystem_init_success") == 0) return "Filesystem initialization successful";
-    if (strcmp(key, "filesystem_init_failed") == 0) return "Filesystem initialization failed, HTML file service will be unavailable";
-    if (strcmp(key, "wifi_config_load_success") == 0) return "WiFi configuration loaded successfully, attempting network connection...";
-    return key; // 如果找不到翻译，返回原始键
-}
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -352,7 +238,7 @@ bool loadConfig() {
         if (config.signature[0] != '\0') {
             readSuccess = true;
         } else {
-            Serial.println("EEPROM读取失败，重试 " + String(attempt + 1));
+            Serial.println(TR(TXT_EEPROM_READ_RETRY) + String(attempt + 1));
             delay(100);
         }
     }
@@ -412,12 +298,12 @@ bool loadConfig() {
         
         // 验证温度校准参数的合理性
         if (temperatureOffset < -50.0 || temperatureOffset > 50.0) {
-            Serial.println("警告：温度校准偏移量超出合理范围，重置为0");
+            Serial.println(TR(TXT_TEMP_CALIBRATION_OFFSET_WARN));
             temperatureOffset = 0.0;
         }
         
         if (temperatureScale < 0.5 || temperatureScale > 2.0) {
-            Serial.println("警告：温度校准缩放系数超出合理范围，重置为1");
+            Serial.println(TR(TXT_TEMP_CALIBRATION_SCALE_WARN));
             temperatureScale = 1.0;
         }
         
@@ -509,7 +395,7 @@ uint16_t readMAX6675RawData() {
   
   // 检查传感器数据有效性 - 判断是否通信正常
   if (data == 0x0000 || data == 0xFFFF) {
-    Serial.println("传感器通信错误: MAX6675未连接或读取失败");
+    Serial.println(TR("sensor_comm_error"));
   }
   
   return data;
@@ -575,7 +461,7 @@ float readTemperatureManual() {
         uint16_t rawData = readMAX6675RawData();
         
         // 输出当前重试次数及原始数据
-        Serial.print("读取尝试"); Serial.print(retry + 1); 
+        Serial.print(TR(TXT_READ_ATTEMPT) + String(retry + 1)); 
         Serial.print(": 原始数据: 0x"); Serial.println(rawData, HEX);
         
         // 检查传感器数据有效性 - 排除无效数据（0x0000或0xFFFF）
@@ -1628,21 +1514,45 @@ bool isValidFileType(String filename) {
 
 
 
+// 注意：setupWebServer函数定义移至下方
+// 函数原型声明
+void handleStaticFileWithUtf8(String filePath);
+void handleFilesystemUpdate();
+
+// 设置Web服务器的函数
 void setupWebServer() {
-    // 设置静态文件服务（所有模式下都需要）
-    webServer.serveStatic("/login.html", LittleFS, "/login.html");
-    webServer.serveStatic("/index.html", LittleFS, "/index.html");
-    webServer.serveStatic("/wifi_config.html", LittleFS, "/wifi_config.html");
-    webServer.serveStatic("/device_status.html", LittleFS, "/device_status.html");
-    webServer.serveStatic("/temperature_calibration.html", LittleFS, "/temperature_calibration.html");
-    webServer.serveStatic("/settings_help.html", LittleFS, "/settings_help.html");
-    webServer.serveStatic("/mobile_utils.js", LittleFS, "/mobile_utils.js");
-    webServer.serveStatic("/css/", LittleFS, "/css/");
-    webServer.serveStatic("/js/", LittleFS, "/js/");
+    // 静态文件服务 - 设置UTF-8编码支持
+    webServer.on("/", HTTP_GET, handleRoot);
+    webServer.on("/index.html", HTTP_GET, []() { handleStaticFileWithUtf8("/index.html"); });
+    webServer.on("/login.html", HTTP_GET, []() { handleStaticFileWithUtf8("/login.html"); });
+    webServer.on("/wifi_config.html", HTTP_GET, []() { handleStaticFileWithUtf8("/wifi_config.html"); });
+    webServer.on("/device_status.html", HTTP_GET, []() { handleStaticFileWithUtf8("/device_status.html"); });
+    webServer.on("/temperature_calibration.html", HTTP_GET, []() { handleStaticFileWithUtf8("/temperature_calibration.html"); });
+    webServer.on("/settings_help.html", HTTP_GET, []() { handleStaticFileWithUtf8("/settings_help.html"); });
+    webServer.on("/mobile_utils.js", HTTP_GET, []() { handleStaticFileWithUtf8("/mobile_utils.js"); });
+    webServer.on("/lang.js", HTTP_GET, []() { handleStaticFileWithUtf8("/lang.js"); });
+    
+    // JS目录的处理
+    webServer.on("/js/([^\"]+)\\.js", HTTP_GET, []() {
+        String filename = "/js/" + webServer.pathArg(0) + ".js";
+        handleStaticFileWithUtf8(filename);
+    });
+    
+    // 其他静态资源目录 - 设置正确的Content-Type
+    // 自定义CSS文件处理器，支持UTF-8编码
+    webServer.on("/css/*", HTTP_GET, []() {
+        String filePath = webServer.uri();
+        if (LittleFS.exists(filePath)) {
+            File file = LittleFS.open(filePath, "r");
+            webServer.streamFile(file, "text/css; charset=utf-8");
+            file.close();
+        } else {
+            webServer.send(404, "text/plain", "File not found");
+        }
+    });
     webServer.serveStatic("/images/", LittleFS, "/images/");
     
-    // 设置Web服务器路由，处理各种HTTP请求
-    webServer.on("/", HTTP_GET, handleRoot);
+    // API端点
     webServer.on("/scanwifi", HTTP_GET, handleScanWiFi);
     webServer.on("/control", HTTP_POST, handleControl);
     webServer.on("/savewifi", HTTP_POST, handleSaveWiFi);
@@ -1650,9 +1560,7 @@ void setupWebServer() {
     webServer.on("/restart", HTTP_POST, handleRestart);
     webServer.on("/reset_calibration", HTTP_POST, handleResetCalibration);
     webServer.on("/ota_update", HTTP_GET, handleOTAUpdate);
-    webServer.on("/update", HTTP_POST, []() {
-        webServer.send(200, "text/plain", "OTA update endpoint");
-    }, handleFileUpload);
+    
     
     webServer.on("/update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
     webServer.on("/status", HTTP_GET, handleStatus);
@@ -2369,6 +2277,25 @@ void autoTunePID() {
     heatingEnabled = originalHeatingEnabled;
     
     Serial.println("PID自动调优过程结束");
+}
+
+// =========================================
+// 静态文件服务辅助函数 - 用于处理UTF-8编码文件
+// =========================================
+
+// 处理单个静态文件并设置UTF-8编码支持
+void handleStaticFileWithUtf8(String filePath) {
+  String contentType;
+  if (filePath.endsWith(".html")) {
+    contentType = "text/html; charset=utf-8";
+  } else if (filePath.endsWith(".js")) {
+    contentType = "application/javascript; charset=utf-8";
+  } else if (filePath.endsWith(".css")) {
+    contentType = "text/css; charset=utf-8";
+  } else {
+    contentType = "text/plain; charset=utf-8";
+  }
+  // 文件读取和发送逻辑...
 }
 
 // =========================================

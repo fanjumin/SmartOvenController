@@ -34,7 +34,7 @@ class MobileOvenController {
             const saved = localStorage.getItem('ovenSettings');
             return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
         } catch (error) {
-            console.error('加载设置失败:', error);
+            console.error(getTranslation('loadSettingsFailed') + ':', error);
             return defaultSettings;
         }
     }
@@ -47,7 +47,7 @@ class MobileOvenController {
             this.applySettings();
             return true;
         } catch (error) {
-            console.error('保存设置失败:', error);
+            console.error(getTranslation('saveSettingsFailed') + ':', error);
             return false;
         }
     }
@@ -146,7 +146,7 @@ class MobileOvenController {
             }
         } catch (error) {
             if (error.name === 'AbortError') {
-                throw new Error('请求超时');
+                throw new Error(getTranslation('requestTimeout'));
             }
             throw error;
         }
@@ -158,7 +158,7 @@ class MobileOvenController {
             const data = await this.apiCall('/status');
             return this.formatDeviceStatus(data);
         } catch (error) {
-            console.error('获取设备状态失败:', error);
+            console.error(getTranslation('getDeviceStatusFailed') + ':', error);
             throw error;
         }
     }
@@ -166,7 +166,7 @@ class MobileOvenController {
     // 格式化设备状态
     formatDeviceStatus(data) {
         // 解析设备返回的实际数据格式
-        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.8.6","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.8.7","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
         
         const currentTemp = data.temperature || data.currentTemp || 0;
         const targetTemp = data.target_temperature || data.targetTemp || 0;
@@ -217,7 +217,7 @@ class MobileOvenController {
             await this.apiCall('/status');
             return true;
         } catch (error) {
-            console.error('连接检查失败:', error);
+            console.error(getTranslation('connectionCheckFailed') + ':', error);
             return false;
         }
     }
@@ -246,10 +246,10 @@ class MobileOvenController {
                 this.onHeatingStateChanged(enabled);
                 return true;
             } else {
-                throw new Error('设置加热状态失败');
+                throw new Error(getTranslation('setHeatingStateFailed'));
             }
         } catch (error) {
-            console.error('设置加热状态失败:', error);
+            console.error(getTranslation('setHeatingStatusFailed') + ':', error);
             throw error;
         }
     }
@@ -266,10 +266,10 @@ class MobileOvenController {
                 this.onTemperatureChanged(temperature);
                 return true;
             } else {
-                throw new Error('设置温度失败');
+                throw new Error(getTranslation('setTemperatureFailed'));
             }
         } catch (error) {
-            console.error('设置温度失败:', error);
+            console.error(getTranslation('setTemperatureFailed') + ':', error);
             throw error;
         }
     }
@@ -295,10 +295,10 @@ class MobileOvenController {
                 this.onWiFiConnected(ssid);
                 return true;
             } else {
-                throw new Error('WiFi连接失败: ' + (response.message || '未知错误'));
+                throw new Error(getTranslation('wifiConnectionFailed') + ': ' + (response.message || getTranslation('unknownError')));
             }
         } catch (error) {
-            console.error('WiFi连接失败:', error);
+            console.error(getTranslation('wifiConnectionFailed') + ':', error);
             throw error;
         }
     }
@@ -314,10 +314,10 @@ class MobileOvenController {
                 this.onWiFiDisconnected();
                 return true;
             } else {
-                throw new Error('断开WiFi失败');
+                throw new Error(getTranslation('disconnectWiFiFailed'));
             }
         } catch (error) {
-            console.error('断开WiFi失败:', error);
+            console.error(getTranslation('disconnectWiFiFailed') + ':', error);
             throw error;
         }
     }
@@ -333,10 +333,10 @@ class MobileOvenController {
                 this.onDeviceRebooting();
                 return true;
             } else {
-                throw new Error('重启设备失败');
+                throw new Error(getTranslation('rebootDeviceFailed'));
             }
         } catch (error) {
-            console.error('重启设备失败:', error);
+            console.error(getTranslation('rebootDeviceFailed') + ':', error);
             throw error;
         }
     }
@@ -352,10 +352,10 @@ class MobileOvenController {
                 this.onFactoryReset();
                 return true;
             } else {
-                throw new Error('恢复出厂设置失败');
+                throw new Error(getTranslation('factoryResetFailed'));
             }
         } catch (error) {
-            console.error('恢复出厂设置失败:', error);
+            console.error(getTranslation('factoryResetFailed') + ':', error);
             throw error;
         }
     }
@@ -445,7 +445,7 @@ class MobileOvenController {
                 try {
                     callback(data);
                 } catch (error) {
-                    console.error(`事件处理错误 (${event}):`, error);
+                    console.error(getTranslation('eventHandlingError').replace('{event}', event) + ':', error);
                 }
             });
         }
@@ -457,7 +457,7 @@ class MobileOvenController {
             try {
                 navigator.vibrate(pattern);
             } catch (error) {
-                console.warn('振动功能不可用:', error);
+                console.warn(getTranslation('vibrationNotAvailable') + ':', error);
             }
         }
     }
@@ -507,8 +507,11 @@ class MobileOvenController {
                 icon: '/favicon.ico'
             });
         } else {
-            // 回退到浏览器提示
-            alert(`${title}: ${message}`);
+            // 回退到浏览器提示，使用国际化函数
+            const notificationMsg = getTranslation('notificationMessage')
+                .replace('{title}', title)
+                .replace('{message}', message);
+            alert(notificationMsg);
         }
     }
 
@@ -527,7 +530,7 @@ class MobileOvenController {
             localStorage.setItem(key, JSON.stringify(value));
             return true;
         } catch (error) {
-            console.error('存储数据失败:', error);
+            console.error(getTranslation('storageDataFailed') + ':', error);
             return false;
         }
     }
@@ -537,7 +540,7 @@ class MobileOvenController {
             const value = localStorage.getItem(key);
             return value ? JSON.parse(value) : defaultValue;
         } catch (error) {
-            console.error('读取数据失败:', error);
+            console.error(getTranslation('readDataFailed') + ':', error);
             return defaultValue;
         }
     }
@@ -547,7 +550,7 @@ class MobileOvenController {
             localStorage.removeItem(key);
             return true;
         } catch (error) {
-            console.error('删除数据失败:', error);
+            console.error(getTranslation('deleteDataFailed') + ':', error);
             return false;
         }
     }

@@ -91,11 +91,37 @@
             font-weight: bold;
             margin-bottom: 20px;
         }
+
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .lang-toggle-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .lang-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="language-switcher">
+                <button class="lang-toggle-btn" onclick="switchLanguage()" data-lang="chineseEnglish">中/En</button>
+            </div>
             <h1 data-lang="deviceNetworkConfig">智能烤箱控制器 - WiFi配置页面</h1>
             <p data-lang="wifiNetworkConfig">WiFi网络连接设置</p>
         </div>
@@ -158,8 +184,12 @@
         }
 
         window.onload = function() {
+    // 初始化语言设置
+    initializeLanguage();
+    applyTranslations();
+
     scanWiFi();
-    
+
     // 更新温度显示
     const tempDisplay = document.querySelector('[data-temp-format]');
     if (tempDisplay) {

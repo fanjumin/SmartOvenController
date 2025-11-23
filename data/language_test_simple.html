@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语言切换测试</title>
+    <script src="lang.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .lang-toggle-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .lang-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 data-lang="smartOvenProject"><span data-lang="smartOven">智能烤箱</span></h1>
+        <button class="lang-toggle-btn" id="lang-toggle" data-lang="chineseEnglish">中/En</button>
+    </div>
+    
+    <div class="content">
+        <p data-lang="advancedBakingController">高级烘焙控制器</p>
+        <p data-lang="ovenStatus">烤箱状态</p>
+        <p data-lang="currentTemperature">当前温度</p>
+        <p data-lang="heatingStatus">加热状态</p>
+    </div>
+
+    <script>
+        // 页面加载完成后应用翻译
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保DOM完全加载后再应用翻译
+            setTimeout(function() {
+                if (typeof applyTranslations === 'function') {
+                    applyTranslations();
+                } else {
+                    console.error(getTranslation('applyTranslationsUndefined'));
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>

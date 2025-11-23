@@ -5,6 +5,44 @@ import os
 from urllib.parse import urlparse, parse_qs
 
 class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def send_head(self):
+        path = self.translate_path(self.path)
+        f = None
+        if os.path.isdir(path):
+            if not self.path.endswith('/'):
+                # Redirect browser - doing basically what apache does
+                self.send_response(301)
+                self.send_header("Location", self.path + "/")
+                self.end_headers()
+                return None
+            for index in "index.html", "index.htm":
+                index = os.path.join(path, index)
+                if os.path.exists(index):
+                    path = index
+                    break
+            else:
+                return self.list_directory(path)
+        ctype = self.guess_type(path)
+        try:
+            f = open(path, 'rb')
+        except OSError:
+            self.send_error(404, "File not found")
+            return None
+        try:
+            self.send_response(200)
+            # 为HTML和JS文件添加UTF-8字符集声明
+            ext = os.path.splitext(path)[1].lower()
+            if ext in ('.html', '.htm', '.js') or ctype.startswith('text/html') or ctype in ['application/javascript', 'text/javascript']:
+                ctype += '; charset=utf-8'
+            self.send_header("Content-type", ctype)
+            fs = os.fstat(f.fileno())
+            self.send_header("Content-Length", str(fs[6]))
+            self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+            self.end_headers()
+            return f
+        except:
+            f.close()
+            raise
     def do_GET(self):
         parsed_path = urlparse(self.path)
         path = parsed_path.path
@@ -56,17 +94,17 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def handle_device_status(self):
         # 返回模拟的设备状态数据
         status_data = {
-            "deviceName": "Smart Oven",  # This should be translated on the client side
-            "firmwareVersion": "v0.8.6",
-            "currentTemperature": 25,
-            "targetTemperature": 180,
-            "heatingTime": 0,
-            "remainingTime": 0,
-            "status": "standby",  # This should be translated on the client side
+            "currentTemp": 25,
+            "targetTemp": 30,
+            "heatingEnabled": True,
             "wifiConnected": True,
-            "wifiSSID": "Home_WiFi_5G",
+            "wifiSSID": "TestWiFi",
             "ipAddress": "192.168.1.100",
-            "macAddress": "00:11:22:33:44:55"
+            "rssi": -65,
+            "deviceId": "oven123",
+            "firmwareVersion": "v0.8.6",
+            "uptime": 3600,
+            "freeHeap": 45000
         }
         
         self.send_response(200)
@@ -96,7 +134,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
 # 创建服务器
-PORT = 8081
+PORT = 8083
 Handler = CustomHTTPRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:

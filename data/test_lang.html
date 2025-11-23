@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语言切换测试</title>
+    <script src="lang.js"></script>
+</head>
+<body>
+    <h1 data-lang="smartOvenProject"><span data-lang="smartOven">智能烤箱</span></h1>
+    <p data-lang="advancedBakingController">高级烘焙控制器</p>
+    <button class="lang-toggle-btn" data-lang="chineseEnglish">中/En</button>
+    
+    <script>
+        // 页面加载完成后应用翻译
+        document.addEventListener('DOMContentLoaded', function() {
+            applyTranslations();
+        });
+    </script>
+</body>
+</html>

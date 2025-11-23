@@ -3,7 +3,7 @@
 {
   "projectName": "智能电烤箱",
   "projectDescription": "专业级智能电烤箱控制系统",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "firmwareVersion": "固件版本",
   "connectionStatus": "连接状态",
   "connected": "已连接",

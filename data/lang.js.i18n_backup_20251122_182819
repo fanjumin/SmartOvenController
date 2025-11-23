@@ -1,0 +1,4284 @@
+// 多语言支持
+const translations = {
+    "zh": {
+    " 0) {
+                    // å�‘å�³æ»‘åŠ¨ - åˆ·æ–°æ•°æ�®
+                    refreshData();
+                    showToast('æ•°æ�®å·²åˆ·æ–°');
+                }
+            }
+        }, { passive: true });
+        
+        // 显示Toastæ��ç¤º
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // æ·»åŠ CSSåŠ¨ç”»
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes highlight {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+            
+            /* ç§»åŠ¨ç«¯æŒ‰é’®ç‚¹å‡»æ•ˆæ�œ */
+            .control-btn:active, .nav-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+            
+            /* ç§»åŠ¨ç«¯ä¼˜åŒ–æ»šåŠ¨ */
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        `;
+        document.head.appendChild(style);
+
+    ": " 0) {
+                    // å�‘å�³æ»‘åŠ¨ - åˆ·æ–°æ•°æ�®
+                    refreshData();
+                    showToast('æ•°æ�®å·²åˆ·æ–°');
+                }
+            }
+        }, { passive: true });
+        
+        // 显示Toastæ��ç¤º
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // æ·»åŠ CSSåŠ¨ç”»
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes highlight {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+            
+            /* ç§»åŠ¨ç«¯æŒ‰é’®ç‚¹å‡»æ•ˆæ�œ */
+            .control-btn:active, .nav-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+            
+            /* ç§»åŠ¨ç«¯ä¼˜åŒ–æ»šåŠ¨ */
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        `;
+        document.head.appendChild(style);
+
+    ",
+    "
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // 5ç§’å��è‡ªåŠ¨åˆ·æ–°é¡µé�¢
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        }
+
+        // åŠ çƒ­æ�§åˆ¶åŠŸèƒ½
+        let currentTemperature = 0;
+
+        // åˆ‡æ�¢åˆ°è‡ªåŠ¨æ¨¡å¼�
+        function switchToAutoMode() {
+            controlMode = 'auto';
+            
+            // æ›´æ–°æŒ‰é’®状态�
+            document.getElementById('auto-mode-btn').classList.add('active');
+            document.getElementById('manual-mode-btn').classList.remove('active');
+            
+            // 显示è‡ªåŠ¨æ¨¡å¼�éƒ¨åˆ†ï¼Œéš�è—�æ‰‹åŠ¨æ¨¡å¼�éƒ¨åˆ†
+            document.getElementById('auto-mode-section').style.display = 'block';
+            document.getElementById('manual-mode-section').style.display = 'none';
+            
+            // å¦‚æ�œå½“å‰�æ˜¯è‡ªå®šä¹‰æ¨¡å¼�ï¼Œåˆ‡æ�¢å›�æ ‡å‡†æ¨¡å¼�
+            const modeSelect = document.getElementById('baking-mode-select');
+            if (modeSelect.value === 'custom') {
+                modeSelect.value = 'bread';
+                onBakingModeChange();
+            }
+            
+            showToast(getTranslation('switchedToAutoMode'))
+        }
+
+        // åˆ‡æ�¢åˆ°æ‰‹åŠ¨æ¨¡å¼�
+        function switchToManualMode() {
+            controlMode = 'manual';
+            
+            // æ›´æ–°æŒ‰é’®状态�
+            document.getElementById('manual-mode-btn').classList.add('active');
+            document.getElementById('auto-mode-btn').classList.remove('active');
+            
+            // 显示æ‰‹åŠ¨æ¨¡å¼�éƒ¨åˆ†ï¼Œéš�è—�è‡ªåŠ¨æ¨¡å¼�éƒ¨åˆ†
+            document.getElementById('manual-mode-section').style.display = 'block';
+            document.getElementById('auto-mode-section').style.display = 'none';
+            
+            // 设置æ‰‹åŠ¨æ¨¡å¼�çš„é»˜è®¤å€¼ï¼ˆé��é›¶å€¼ï¼‰
+            document.getElementById('target-temp').value = config.defaultTemp;
+            document.getElementById('baking-time').value = config.defaultTime;
+            targetTemperature = 180;
+            bakingTime = 30;
+            
+            showToast(getTranslation('switchedToManualMode'))
+        }
+
+        // çƒ˜ç„™æ¨¡å¼�é€‰æ‹©å�˜åŒ–å¤„ç�†
+        function onBakingModeChange() {
+            const modeSelect = document.getElementById('baking-mode-select');
+            const selectedMode = modeSelect.value;
+            const preset = bakingPresets[selectedMode];
+            
+            if (preset) {
+                // æ›´æ–°æ¸©åº¦å’Œæ—¶é—´è¾“å…¥æ¡†
+                document.getElementById('target-temp').value = preset.temperature;
+                document.getElementById('baking-time').value = preset.time;
+                
+                // æ›´æ–°å…¨å±€å�˜é‡�
+                targetTemperature = preset.temperature;
+                bakingTime = preset.time;
+                bakingMode = selectedMode;
+                
+                if (selectedMode === 'custom') {
+                    showToast(getTranslation('switchedToCustomMode'));
+                } else {
+                    showToast(getTranslation('switchedToPresetMode', {name: preset.name, temperature: preset.temperature, time: preset.time}));
+                }
+            }
+        }
+
+        // æ¸©åº¦è¾“å…¥éªŒè¯�
+        function validateTemperature() {
+            const tempInput = document.getElementById('target-temp');
+            const temp = parseInt(tempInput.value);
+            
+            if (temp >= 50 && temp ": "
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // 5ç§’å��è‡ªåŠ¨åˆ·æ–°é¡µé�¢
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        }
+
+        // åŠ çƒ­æ�§åˆ¶åŠŸèƒ½
+        let currentTemperature = 0;
+
+        // åˆ‡æ�¢åˆ°è‡ªåŠ¨æ¨¡å¼�
+        function switchToAutoMode() {
+            controlMode = 'auto';
+            
+            // æ›´æ–°æŒ‰é’®状态�
+            document.getElementById('auto-mode-btn').classList.add('active');
+            document.getElementById('manual-mode-btn').classList.remove('active');
+            
+            // 显示è‡ªåŠ¨æ¨¡å¼�éƒ¨åˆ†ï¼Œéš�è—�æ‰‹åŠ¨æ¨¡å¼�éƒ¨åˆ†
+            document.getElementById('auto-mode-section').style.display = 'block';
+            document.getElementById('manual-mode-section').style.display = 'none';
+            
+            // å¦‚æ�œå½“å‰�æ˜¯è‡ªå®šä¹‰æ¨¡å¼�ï¼Œåˆ‡æ�¢å›�æ ‡å‡†æ¨¡å¼�
+            const modeSelect = document.getElementById('baking-mode-select');
+            if (modeSelect.value === 'custom') {
+                modeSelect.value = 'bread';
+                onBakingModeChange();
+            }
+            
+            showToast(getTranslation('switchedToAutoMode'))
+        }
+
+        // åˆ‡æ�¢åˆ°æ‰‹åŠ¨æ¨¡å¼�
+        function switchToManualMode() {
+            controlMode = 'manual';
+            
+            // æ›´æ–°æŒ‰é’®状态�
+            document.getElementById('manual-mode-btn').classList.add('active');
+            document.getElementById('auto-mode-btn').classList.remove('active');
+            
+            // 显示æ‰‹åŠ¨æ¨¡å¼�éƒ¨åˆ†ï¼Œéš�è—�è‡ªåŠ¨æ¨¡å¼�éƒ¨åˆ†
+            document.getElementById('manual-mode-section').style.display = 'block';
+            document.getElementById('auto-mode-section').style.display = 'none';
+            
+            // 设置æ‰‹åŠ¨æ¨¡å¼�çš„é»˜è®¤å€¼ï¼ˆé��é›¶å€¼ï¼‰
+            document.getElementById('target-temp').value = config.defaultTemp;
+            document.getElementById('baking-time').value = config.defaultTime;
+            targetTemperature = 180;
+            bakingTime = 30;
+            
+            showToast(getTranslation('switchedToManualMode'))
+        }
+
+        // çƒ˜ç„™æ¨¡å¼�é€‰æ‹©å�˜åŒ–å¤„ç�†
+        function onBakingModeChange() {
+            const modeSelect = document.getElementById('baking-mode-select');
+            const selectedMode = modeSelect.value;
+            const preset = bakingPresets[selectedMode];
+            
+            if (preset) {
+                // æ›´æ–°æ¸©åº¦å’Œæ—¶é—´è¾“å…¥æ¡†
+                document.getElementById('target-temp').value = preset.temperature;
+                document.getElementById('baking-time').value = preset.time;
+                
+                // æ›´æ–°å…¨å±€å�˜é‡�
+                targetTemperature = preset.temperature;
+                bakingTime = preset.time;
+                bakingMode = selectedMode;
+                
+                if (selectedMode === 'custom') {
+                    showToast(getTranslation('switchedToCustomMode'));
+                } else {
+                    showToast(getTranslation('switchedToPresetMode', {name: preset.name, temperature: preset.temperature, time: preset.time}));
+                }
+            }
+        }
+
+        // æ¸©åº¦è¾“å…¥éªŒè¯�
+        function validateTemperature() {
+            const tempInput = document.getElementById('target-temp');
+            const temp = parseInt(tempInput.value);
+            
+            if (temp >= 50 && temp ",
+    "
+                    æ‰€æœ‰设置willbe清除ï¼Œ设备å°†é‡�å�¯å¹¶æ�¢å¤�å‡ºå�‚状态�ã€‚
+                ": "
+                    æ‰€æœ‰设置将被清除ï¼Œ设备å°†é‡�å�¯å¹¶æ�¢å¤�å‡ºå�‚状态�ã€‚
+                ",
+    "设备æ­£åœ¨æ�¢å¤�å‡ºå�‚设置": "设备æ­£åœ¨æ�¢å¤�å‡ºå�‚设置",
+    "
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            
+
+            // 5ç§’å��è‡ªåŠ¨åˆ·æ–°é¡µé�¢
+
+            setTimeout(() => {
+
+                window.location.reload();
+
+            }, 5000);
+
+        }
+
+        
+
+        // æ�¢å¤�å‡ºå�‚设置
+
+        async function factoryReset() {
+
+            const confirmed = confirm(getTranslation('confirmFactoryReset'));
+
+            if (!confirmed) return;
+
+            
+
+            const password = prompt(getTranslation('enterAdminPassword'));
+
+            if (!password) return;
+
+            
+
+            try {
+
+                const response = await fetch('/factoryreset', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        password: password
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert(getTranslation('factoryResetComplete'));
+
+                    // 显示æ�¢å¤�å‡ºå�‚设置æ��ç¤º
+
+                    showFactoryResetMessage();
+
+                } else {
+
+                    alert(getTranslation('factoryResetFailedInvalidPassword'));
+
+                }
+
+            } catch (error) {
+
+                console.error('æ�¢å¤�å‡ºå�‚设置å¤±è´¥:', error);
+
+                alert(getTranslation('networkFailedFactoryReset'));
+
+            }
+
+        }
+
+        
+
+        // 显示æ�¢å¤�å‡ºå�‚设置æ��ç¤º
+        function showFactoryResetMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 1000;
+                font-size: 16px;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                ": "
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            
+
+            // 5ç§’å��è‡ªåŠ¨åˆ·æ–°é¡µé�¢
+
+            setTimeout(() => {
+
+                window.location.reload();
+
+            }, 5000);
+
+        }
+
+        
+
+        // æ�¢å¤�å‡ºå�‚设置
+
+        async function factoryReset() {
+
+            const confirmed = confirm(getTranslation('confirmFactoryReset'));
+
+            if (!confirmed) return;
+
+            
+
+            const password = prompt(getTranslation('enterAdminPassword'));
+
+            if (!password) return;
+
+            
+
+            try {
+
+                const response = await fetch('/factoryreset', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        password: password
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert(getTranslation('factoryResetComplete'));
+
+                    // 显示æ�¢å¤�å‡ºå�‚设置æ��ç¤º
+
+                    showFactoryResetMessage();
+
+                } else {
+
+                    alert(getTranslation('factoryResetFailedInvalidPassword'));
+
+                }
+
+            } catch (error) {
+
+                console.error('æ�¢å¤�å‡ºå�‚设置å¤±è´¥:', error);
+
+                alert(getTranslation('networkFailedFactoryReset'));
+
+            }
+
+        }
+
+        
+
+        // 显示æ�¢å¤�å‡ºå�‚设置æ��ç¤º
+        function showFactoryResetMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 1000;
+                font-size: 16px;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                ",
+    "ï¼Œè¯·ç­‰å¾…å‡ 分钟å��é‡�æ–°è¿�æ�¥ã€‚
+                ": "ï¼Œè¯·ç­‰å¾…å‡ 分钟å��é‡�æ–°è¿�æ�¥ã€‚
+                ",
+    "设备æ­£åœ¨é‡�å�¯": "设备æ­£åœ¨é‡�å�¯",
+    "
+
+        // 设备状态�å�˜é‡�
+
+        let deviceStatus = {
+
+            currentTemp: 0,
+
+            targetTemp: 180,
+
+            heatingEnabled: false,
+
+            wifiConnected: false,
+
+            wifiSSID: '',
+
+            ipAddress: '',
+
+            deviceId: '',
+
+            firmwareVersion: ''
+
+        };
+
+
+
+        // æ›´æ–°设备状态�显示
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifi_ssid || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || '',
+
+                calibration: data.calibration || { offset: 0, scale: 1.0 }
+
+            };
+
+
+
+            // å®‰å…¨åœ°æ›´æ–°状态�显示
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+
+
+            if (statusItems.length == 4) {
+
+                // æ›´æ–°å½“å‰�æ¸©åº¦
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + 'Â°C';
+
+                
+
+                // æ›´æ–°åŠ çƒ­状态�
+
+                const heatingStatus = deviceStatus.heatingEnabled ? 'åŠ çƒ­ä¸­' : 'å·²å�œæ­¢';
+
+                statusItems[1].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[1].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // æ›´æ–°WiFi状态� - 显示å®�é™…WiFiå��ç§°
+
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || 'å·²è¿�æ�¥') : 'æœªè¿�æ�¥';
+
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+                
+
+                // æ›´æ–°IPåœ°å�€
+
+                statusItems[3].querySelector('.status-value').textContent = 
+
+                    deviceStatus.ipAddress || '--';
+
+            }
+
+
+
+            // æ›´æ–°é¡¶éƒ¨è¿�æ�¥状态�显示
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusDot = connectionStatus.querySelector('.status-dot');
+
+            const statusText = connectionStatus.querySelector('.status-text');
+
+            
+
+            if (deviceStatus.wifiConnected) {
+
+                statusDot.className = 'status-dot live';
+
+                statusText.textContent = 'å·²è¿�æ�¥';
+
+                statusText.style.color = '#10b981';
+
+            } else {
+
+                statusDot.className = 'status-dot';
+
+                statusText.textContent = 'æœªè¿�æ�¥';
+
+                statusText.style.color = '#ef4444';
+
+            }
+
+
+
+            // æ›´æ–°å›ºä»¶ç‰ˆæœ¬显示
+
+            updateFirmwareDisplay();
+
+
+
+            // æ›´æ–°æ¸©åº¦æ�§åˆ¶é�¢æ�¿显示
+
+            updateTemperatureControlDisplay();
+
+            
+
+            // æ›´æ–°æ ¡å‡†显示
+
+            updateCalibrationDisplay();
+
+        }
+
+
+
+        // æ›´æ–°æ ¡å‡†显示
+
+        function updateCalibrationDisplay() {
+
+            if (deviceStatus.calibration) {
+
+                currentCalibration = deviceStatus.calibration;
+
+                // è¿™é‡Œå�¯ä»¥æ·»åŠ æ ¡å‡†状态�显示é€»è¾‘
+
+                console.log(getTranslation('currentCalibrationParams'), currentCalibration);
+
+            }
+
+        }
+
+        
+
+        // å…¨å±€å�˜é‡�
+        let currentCalibration = { offset: 0, scale: 1.0 };
+
+
+
+        // 显示æ¼”ç¤ºæ•°æ�®ï¼ˆç½‘ç»œè¿�æ�¥å¤±è´¥æ—¶ï¼‰
+
+        function showDemoData() {
+
+            const demoData = {
+
+                temperature: 25.0,
+
+                target_temperature: 180.0,
+
+                heating_enabled: false,
+
+                wifi_connected: true,
+
+                wifiSSID: 'SmartOven_AP',
+
+                ip_address: '192.168.4.1',
+
+                device_id: 'SmartOven_001',
+
+                firmware_version: '0.8.6'
+
+            };
+
+
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusText = connectionStatus ? connectionStatus.querySelector('.status-text') : null;
+
+
+
+            if (statusText) {
+
+                statusText.textContent = 'æ¼”ç¤ºæ¨¡å¼�';
+
+                statusText.style.color = '#f59e0b';
+
+            }
+
+
+
+            updateStatusDisplay(demoData);
+
+        }
+
+
+
+        // åˆ·æ–°设备æ•°æ�®
+
+        async function refreshData() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.status);
+
+                if (response.ok) {
+
+                    const data = await response.json();
+
+                    updateStatusDisplay(data);
+
+                } else {
+
+                    console.error('è�·å�–设备状态�å¤±è´¥');
+
+                    showDemoData();
+
+                }
+
+            } catch (error) {
+
+                console.error('ç½‘ç»œè¿�æ�¥å¤±è´¥:', error);
+
+                showDemoData();
+
+            }
+
+        }
+
+
+
+        // åˆ‡æ�¢åŠ çƒ­状态�
+
+        async function toggleHeating() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.control, {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        heating_enabled: !deviceStatus.heatingEnabled
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('æ�§åˆ¶å‘½ä»¤å�‘é€�å¤±è´¥');
+
+                }
+
+            } catch (error) {
+
+                console.error('æ�§åˆ¶设备å¤±è´¥:', error);
+
+                alert(getTranslation('networkFailed'))
+
+            }
+
+        }
+
+
+
+        // çƒ˜ç„™æ¨¡å¼�é¢„è®¾
+
+        const bakingPresets = config.bakingPresets || {
+
+            'bread': { temperature: 180, time: 30, name: getTranslation('presetBread') },
+
+            'cake': { temperature: 160, time: 45, name: getTranslation('presetCake') },
+
+            'pizza': { temperature: 220, time: 15, name: getTranslation('presetPizza') },
+
+            'roast': { temperature: 200, time: 60, name: getTranslation('presetRoast') },
+
+            'defrost': { temperature: 80, time: 10, name: getTranslation('presetDefrost') },
+
+            'custom': { temperature: 180, time: 30, name: getTranslation('presetCustom') }
+
+        };
+
+
+
+        // æ�§åˆ¶æ¨¡å¼�å�˜é‡�
+        let controlMode = 'auto';
+        let targetTemperature = config.defaultTemp;
+        let bakingTime = config.defaultTime;
+        let bakingMode = 'bread';
+        let isHeating = false;
+
+        // å¿«é€Ÿ设置æ¸©åº¦
+
+        async function quickSetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert(getTranslation('tempSettingFailed'))
+
+                }
+
+            } catch (error) {
+
+                console.error('设置æ¸©åº¦å¤±è´¥:', error);
+
+                alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+            }
+
+        }
+
+
+
+        // é‡�å�¯设备
+
+        async function restartDevice() {
+
+            if (confirm('ç¡®å®šè¦�é‡�å�¯设备å�—ï¼Ÿ设备å°†åœ¨5ç§’å��é‡�å�¯ã€‚')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.restart, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('设备é‡�å�¯å‘½ä»¤å·²å�‘é€�ï¼Œè¯·ç­‰å¾…çº¦30ç§’å��é‡�æ–°è¿�æ�¥');
+
+                    } else {
+
+                        alert(getTranslation('restartFailed'));
+
+                    }
+
+                } catch (error) {
+
+                    console.error('é‡�å�¯设备å¤±è´¥:', error);
+
+                    alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+                }
+
+            }
+
+        }
+
+
+
+        // æ�¢å¤�å‡ºå�‚设置
+
+        async function factoryReset() {
+
+            if (confirm('ç¡®å®šè¦�æ�¢å¤�å‡ºå�‚设置å�—ï¼Ÿæ‰€æœ‰é…�ç½®willbe清除ï¼Œ设备å°†é‡�å�¯ã€‚')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.factoryReset, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('æ�¢å¤�å‡ºå�‚设置å‘½ä»¤å·²å�‘é€�ï¼Œ设备å°†é‡�å�¯å¹¶è¿›å…¥é…�ç½‘æ¨¡å¼�');
+
+                    } else {
+
+                        alert('æ�¢å¤�å‡ºå�‚设置å‘½ä»¤å�‘é€�å¤±è´¥');
+
+                    }
+
+                } catch (error) {
+
+                    console.error('æ�¢å¤�å‡ºå�‚设置å¤±è´¥:', error);
+
+                    alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+                }
+
+            }
+
+        }
+
+
+
+        
+
+
+
+
+
+
+
+        // å¤„ç�†æ–‡ä»¶é€‰æ‹©
+
+        
+
+        
+
+
+
+        
+
+
+
+        // æ›´æ–°å›ºä»¶ç‰ˆæœ¬显示
+
+        function updateFirmwareDisplay() {
+
+            const firmwareElement = document.getElementById('current-firmware');
+
+            if (firmwareElement && deviceStatus.firmwareVersion) {
+
+                firmwareElement.textContent = deviceStatus.firmwareVersion;
+
+            }
+
+        }
+
+
+
+
+
+
+        // æ›´æ–°æ¸©åº¦æ�§åˆ¶é�¢æ�¿显示
+
+        function updateTemperatureControlDisplay() {
+
+            // æ›´æ–°å½“å‰�æ¸©åº¦显示
+
+            const currentTempDisplay = document.getElementById('current-temp-display');
+
+            if (currentTempDisplay) {
+
+                currentTempDisplay.textContent = deviceStatus.currentTemp.toFixed(1) + 'Â°C';
+
+            }
+
+            
+
+            // æ›´æ–°ç›®æ ‡æ¸©åº¦显示
+
+            const targetTempDisplay = document.getElementById('target-temp-display');
+
+            if (targetTempDisplay) {
+
+                targetTempDisplay.textContent = deviceStatus.targetTemp.toFixed(1) + 'Â°C';
+
+            }
+
+            
+
+            // æ›´æ–°åŠ çƒ­æŒ‰é’®状态�
+
+            const heatingBtn = document.getElementById('heating-btn');
+
+            if (heatingBtn) {
+
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? 'å…³é—­åŠ çƒ­' : 'å¼€å�¯åŠ çƒ­';
+
+                heatingBtn.className = deviceStatus.heatingEnabled ? 
+
+                    'btn btn-secondary' : 'btn btn-primary';
+
+            }
+
+            
+
+            // æ›´æ–°åŠ çƒ­状态�æŒ‡ç¤ºå™¨
+
+            const heatingStatus = document.getElementById('heating-status');
+
+            if (heatingStatus) {
+
+                if (deviceStatus.heatingEnabled) {
+
+                    heatingStatus.textContent = getTranslation('heaterWorking');
+
+                    heatingStatus.className = 'status-indicator status-heating';
+
+                } else {
+
+                    heatingStatus.textContent = 'åŠ çƒ­å™¨å·²å…³é—­';
+
+                    heatingStatus.className = 'status-indicator status-idle';
+
+                }
+
+            }
+
+        }
+
+
+
+        // æ¸©åº¦è°ƒèŠ‚åŠŸèƒ½
+
+        function changeTemp(delta) {
+
+            const newTemp = deviceStatus.targetTemp + delta;
+
+            if (newTemp >= 0 && newTemp ": "
+
+        // 设备状态�å�˜é‡�
+
+        let deviceStatus = {
+
+            currentTemp: 0,
+
+            targetTemp: 180,
+
+            heatingEnabled: false,
+
+            wifiConnected: false,
+
+            wifiSSID: '',
+
+            ipAddress: '',
+
+            deviceId: '',
+
+            firmwareVersion: ''
+
+        };
+
+
+
+        // æ›´æ–°设备状态�显示
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifi_ssid || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || '',
+
+                calibration: data.calibration || { offset: 0, scale: 1.0 }
+
+            };
+
+
+
+            // å®‰å…¨åœ°æ›´æ–°状态�显示
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+
+
+            if (statusItems.length == 4) {
+
+                // æ›´æ–°å½“å‰�æ¸©åº¦
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + 'Â°C';
+
+                
+
+                // æ›´æ–°åŠ çƒ­状态�
+
+                const heatingStatus = deviceStatus.heatingEnabled ? 'åŠ çƒ­ä¸­' : 'å·²å�œæ­¢';
+
+                statusItems[1].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[1].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // æ›´æ–°WiFi状态� - 显示å®�é™…WiFiå��ç§°
+
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || 'å·²è¿�æ�¥') : 'æœªè¿�æ�¥';
+
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+                
+
+                // æ›´æ–°IPåœ°å�€
+
+                statusItems[3].querySelector('.status-value').textContent = 
+
+                    deviceStatus.ipAddress || '--';
+
+            }
+
+
+
+            // æ›´æ–°é¡¶éƒ¨è¿�æ�¥状态�显示
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusDot = connectionStatus.querySelector('.status-dot');
+
+            const statusText = connectionStatus.querySelector('.status-text');
+
+            
+
+            if (deviceStatus.wifiConnected) {
+
+                statusDot.className = 'status-dot live';
+
+                statusText.textContent = 'å·²è¿�æ�¥';
+
+                statusText.style.color = '#10b981';
+
+            } else {
+
+                statusDot.className = 'status-dot';
+
+                statusText.textContent = 'æœªè¿�æ�¥';
+
+                statusText.style.color = '#ef4444';
+
+            }
+
+
+
+            // æ›´æ–°å›ºä»¶ç‰ˆæœ¬显示
+
+            updateFirmwareDisplay();
+
+
+
+            // æ›´æ–°æ¸©åº¦æ�§åˆ¶é�¢æ�¿显示
+
+            updateTemperatureControlDisplay();
+
+            
+
+            // æ›´æ–°æ ¡å‡†显示
+
+            updateCalibrationDisplay();
+
+        }
+
+
+
+        // æ›´æ–°æ ¡å‡†显示
+
+        function updateCalibrationDisplay() {
+
+            if (deviceStatus.calibration) {
+
+                currentCalibration = deviceStatus.calibration;
+
+                // è¿™é‡Œå�¯ä»¥æ·»åŠ æ ¡å‡†状态�显示é€»è¾‘
+
+                console.log(getTranslation('currentCalibrationParams'), currentCalibration);
+
+            }
+
+        }
+
+        
+
+        // å…¨å±€å�˜é‡�
+        let currentCalibration = { offset: 0, scale: 1.0 };
+
+
+
+        // 显示æ¼”ç¤ºæ•°æ�®ï¼ˆç½‘ç»œè¿�æ�¥å¤±è´¥æ—¶ï¼‰
+
+        function showDemoData() {
+
+            const demoData = {
+
+                temperature: 25.0,
+
+                target_temperature: 180.0,
+
+                heating_enabled: false,
+
+                wifi_connected: true,
+
+                wifiSSID: 'SmartOven_AP',
+
+                ip_address: '192.168.4.1',
+
+                device_id: 'SmartOven_001',
+
+                firmware_version: '0.8.6'
+
+            };
+
+
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusText = connectionStatus ? connectionStatus.querySelector('.status-text') : null;
+
+
+
+            if (statusText) {
+
+                statusText.textContent = 'æ¼”ç¤ºæ¨¡å¼�';
+
+                statusText.style.color = '#f59e0b';
+
+            }
+
+
+
+            updateStatusDisplay(demoData);
+
+        }
+
+
+
+        // åˆ·æ–°设备æ•°æ�®
+
+        async function refreshData() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.status);
+
+                if (response.ok) {
+
+                    const data = await response.json();
+
+                    updateStatusDisplay(data);
+
+                } else {
+
+                    console.error('è�·å�–设备状态�å¤±è´¥');
+
+                    showDemoData();
+
+                }
+
+            } catch (error) {
+
+                console.error('ç½‘ç»œè¿�æ�¥å¤±è´¥:', error);
+
+                showDemoData();
+
+            }
+
+        }
+
+
+
+        // åˆ‡æ�¢åŠ çƒ­状态�
+
+        async function toggleHeating() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.control, {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        heating_enabled: !deviceStatus.heatingEnabled
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('æ�§åˆ¶å‘½ä»¤å�‘é€�å¤±è´¥');
+
+                }
+
+            } catch (error) {
+
+                console.error('æ�§åˆ¶设备å¤±è´¥:', error);
+
+                alert(getTranslation('networkFailed'))
+
+            }
+
+        }
+
+
+
+        // çƒ˜ç„™æ¨¡å¼�é¢„è®¾
+
+        const bakingPresets = config.bakingPresets || {
+
+            'bread': { temperature: 180, time: 30, name: getTranslation('presetBread') },
+
+            'cake': { temperature: 160, time: 45, name: getTranslation('presetCake') },
+
+            'pizza': { temperature: 220, time: 15, name: getTranslation('presetPizza') },
+
+            'roast': { temperature: 200, time: 60, name: getTranslation('presetRoast') },
+
+            'defrost': { temperature: 80, time: 10, name: getTranslation('presetDefrost') },
+
+            'custom': { temperature: 180, time: 30, name: getTranslation('presetCustom') }
+
+        };
+
+
+
+        // æ�§åˆ¶æ¨¡å¼�å�˜é‡�
+        let controlMode = 'auto';
+        let targetTemperature = config.defaultTemp;
+        let bakingTime = config.defaultTime;
+        let bakingMode = 'bread';
+        let isHeating = false;
+
+        // å¿«é€Ÿ设置æ¸©åº¦
+
+        async function quickSetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert(getTranslation('tempSettingFailed'))
+
+                }
+
+            } catch (error) {
+
+                console.error('设置æ¸©åº¦å¤±è´¥:', error);
+
+                alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+            }
+
+        }
+
+
+
+        // é‡�å�¯设备
+
+        async function restartDevice() {
+
+            if (confirm('ç¡®å®šè¦�é‡�å�¯设备å�—ï¼Ÿ设备å°†åœ¨5ç§’å��é‡�å�¯ã€‚')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.restart, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('设备é‡�å�¯å‘½ä»¤å·²å�‘é€�ï¼Œè¯·ç­‰å¾…çº¦30ç§’å��é‡�æ–°è¿�æ�¥');
+
+                    } else {
+
+                        alert(getTranslation('restartFailed'));
+
+                    }
+
+                } catch (error) {
+
+                    console.error('é‡�å�¯设备å¤±è´¥:', error);
+
+                    alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+                }
+
+            }
+
+        }
+
+
+
+        // æ�¢å¤�å‡ºå�‚设置
+
+        async function factoryReset() {
+
+            if (confirm('ç¡®å®šè¦�æ�¢å¤�å‡ºå�‚设置å�—ï¼Ÿæ‰€æœ‰é…�ç½®将被清除ï¼Œ设备å°†é‡�å�¯ã€‚')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.factoryReset, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('æ�¢å¤�å‡ºå�‚设置å‘½ä»¤å·²å�‘é€�ï¼Œ设备å°†é‡�å�¯å¹¶è¿›å…¥é…�ç½‘æ¨¡å¼�');
+
+                    } else {
+
+                        alert('æ�¢å¤�å‡ºå�‚设置å‘½ä»¤å�‘é€�å¤±è´¥');
+
+                    }
+
+                } catch (error) {
+
+                    console.error('æ�¢å¤�å‡ºå�‚设置å¤±è´¥:', error);
+
+                    alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+                }
+
+            }
+
+        }
+
+
+
+        
+
+
+
+
+
+
+
+        // å¤„ç�†æ–‡ä»¶é€‰æ‹©
+
+        
+
+        
+
+
+
+        
+
+
+
+        // æ›´æ–°å›ºä»¶ç‰ˆæœ¬显示
+
+        function updateFirmwareDisplay() {
+
+            const firmwareElement = document.getElementById('current-firmware');
+
+            if (firmwareElement && deviceStatus.firmwareVersion) {
+
+                firmwareElement.textContent = deviceStatus.firmwareVersion;
+
+            }
+
+        }
+
+
+
+
+
+
+        // æ›´æ–°æ¸©åº¦æ�§åˆ¶é�¢æ�¿显示
+
+        function updateTemperatureControlDisplay() {
+
+            // æ›´æ–°å½“å‰�æ¸©åº¦显示
+
+            const currentTempDisplay = document.getElementById('current-temp-display');
+
+            if (currentTempDisplay) {
+
+                currentTempDisplay.textContent = deviceStatus.currentTemp.toFixed(1) + 'Â°C';
+
+            }
+
+            
+
+            // æ›´æ–°ç›®æ ‡æ¸©åº¦显示
+
+            const targetTempDisplay = document.getElementById('target-temp-display');
+
+            if (targetTempDisplay) {
+
+                targetTempDisplay.textContent = deviceStatus.targetTemp.toFixed(1) + 'Â°C';
+
+            }
+
+            
+
+            // æ›´æ–°åŠ çƒ­æŒ‰é’®状态�
+
+            const heatingBtn = document.getElementById('heating-btn');
+
+            if (heatingBtn) {
+
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? 'å…³é—­åŠ çƒ­' : 'å¼€å�¯åŠ çƒ­';
+
+                heatingBtn.className = deviceStatus.heatingEnabled ? 
+
+                    'btn btn-secondary' : 'btn btn-primary';
+
+            }
+
+            
+
+            // æ›´æ–°åŠ çƒ­状态�æŒ‡ç¤ºå™¨
+
+            const heatingStatus = document.getElementById('heating-status');
+
+            if (heatingStatus) {
+
+                if (deviceStatus.heatingEnabled) {
+
+                    heatingStatus.textContent = getTranslation('heaterWorking');
+
+                    heatingStatus.className = 'status-indicator status-heating';
+
+                } else {
+
+                    heatingStatus.textContent = 'åŠ çƒ­å™¨å·²å…³é—­';
+
+                    heatingStatus.className = 'status-indicator status-idle';
+
+                }
+
+            }
+
+        }
+
+
+
+        // æ¸©åº¦è°ƒèŠ‚åŠŸèƒ½
+
+        function changeTemp(delta) {
+
+            const newTemp = deviceStatus.targetTemp + delta;
+
+            if (newTemp >= 0 && newTemp ",
+    "è�·å�–设备状态�ä¿¡æ�¯": "è�·å�–设备状态�ä¿¡æ�¯",
+    "æ­£åœ¨è¿�æ�¥设备...": "æ­£åœ¨è¿�æ�¥设备...",
+    "æ�¢å¤�å‡ºå�‚设置": "æ�¢å¤�å‡ºå�‚设置",
+    "é‡�å�¯设备": "é‡�å�¯设备",
+    "设置ä¸�å¸®åŠ©": "设置ä¸�å¸®åŠ©",
+    "设备状态�": "设备状态�",
+    "çƒ˜ç„™æ—¶é—´ (分钟)": "çƒ˜ç„™æ—¶é—´ (分钟)",
+    "æ‰‹åŠ¨æ¨¡å¼�设置": "æ‰‹åŠ¨æ¨¡å¼�设置",
+    "è‡ªåŠ¨æ¨¡å¼�设置": "è‡ªåŠ¨æ¨¡å¼�设置",
+    "æœªè�·å�–å½“å‰�è¿�æ�¥状态�": "æœªè�·å�–å½“å‰�è¿�æ�¥状态�",
+    "WiFi状态�": "WiFi状态�",
+    "æœªè�·å�–åŠ çƒ­状态�": "æœªè�·å�–åŠ çƒ­状态�",
+    "åŠ çƒ­状态�": "åŠ çƒ­状态�",
+    "çƒ¤ç®±状态�": "çƒ¤ç®±状态�",
+        "chineseEnglish": "中/En",
+        "connecting_to_device": "正在连接设备...",
+        "api_endpoint": "API端点",
+        "ip_address": "IP地址",
+        "ota_firmware_update": "OTA固件升级",
+        "wifi_status": "WiFi状态",
+        "deviceStatusTitle": "设备状态监控",
+        "ovenControlPanelTitle": "智能烤箱 - 管理员控制面板",
+        "loginTitle": "智能电烤箱 - 管理员登录",
+        "wifiConfigTitle": "设备配网",
+        "deviceNetworkConfig": "智能烤箱控制器 - WiFi配置页面",
+        "wifiNetworkConfig": "WiFi网络连接设置",
+        "wifi_configuration": "WiFi配置",
+        "custom_mode": "自定义模式",
+        "change_password": "修改密码",
+        "heating_status": "加热状态",
+        "firmware_update": "固件更新",
+        "start": "开始",
+        "current_temperature": "当前温度",
+        "factory_reset": "恢复出厂设置",
+        "manual_mode_settings": "手动模式设置",
+        "control_heater_switch": "控制加热器开关",
+        "smart_oven": "智能烤箱",
+        "system_monitoring": "系统监控",
+        "system_status": "系统状态",
+        "normal": "正常",
+        "celsius": "℃",
+        "minutes": "分钟",
+        "stop_heating": "停止加热",
+        "turn_off_heating": "关闭加热",
+        "heater_off": "加热器已关闭",
+        "heater_working": "加热器正在工作",
+        "heating_stopped": "加热已停止",
+        "start_heating": "启动加热",
+        "stopped": "已停止",
+        "switched_to_manual_mode": "已切换到手动模式，请设置温度和时间",
+        "switched_to_automatic_mode": "已切换到自动模式",
+        "switched_to_custom_mode": "已切换到自定义模式，您可以手动调整温度和时间",
+        "connected": "已连接",
+        "turn_on_heating": "开启加热",
+        "pizza": "披萨",
+        "bbq": "烤肉",
+        "custom": "自定义",
+        "cake": "蛋糕",
+        "defrost": "解冻",
+        "bread": "面包",
+        "logout_confirmation": "确定要退出登录吗？",
+        "restart_confirmation": "确定要重启设备吗？设备将在5秒后重启。",
+        "network_restored": "网络已恢复",
+        "network_disconnected": "网络已断开",
+        "network_request_failed": "网络请求失败，请检查连接",
+        "network_connection_failed": "网络连接失败",
+        "failed_to_get_system_health_data": "获取系统健康数据失败:",
+        "device_restart_command_sent_wait": "设备重启命令已发送，请等待约30秒后重新连接",
+        "device_restart_command_sent": "设备重启命令已发送，设备将在几秒钟后重启。",
+        "password_changed_successfully": "密码修改成功",
+        "password_change_failed": "密码修改失败，请检查当前密码是否正确",
+        "new_passwords_do_not_match": "新密码输入不一致",
+        "logout_failed": "退出登录失败",
+        "demo_mode": "演示模式",
+        "data_refreshed": "数据已刷新",
+        "failed_to_set_heating_status": "设置加热状态失败",
+        "control_command_sending_failed": "控制命令发送失败",
+        "device_control_failed": "控制设备失败:",
+        "heating_control_function": "加热控制功能",
+        "temperature_adjustment_function": "温度调节功能",
+        "network_connection_failed_colon": "网络连接失败:",
+        "failed_to_read_data": "读取数据失败:",
+        "failed_to_load_settings": "加载设置失败:",
+        "failed_to_delete_data": "删除数据失败:",
+        "temperature_setting_failed": "温度设置失败",
+        "failed_to_disconnect_wifi": "断开WiFi失败",
+        "failed_to_disconnect_wifi_colon": "断开WiFi失败:",
+        "failed_to_restart_device": "重启设备失败",
+        "failed_to_restart_device_colon": "重启设备失败:",
+        "factory_reset_failed": "恢复出厂设置失败",
+        "factory_reset_failed_colon": "恢复出厂设置失败:",
+        "factory_reset_failed_password": "恢复出厂设置失败，密码可能不正确",
+        "failed_to_send_factory_reset_command": "恢复出厂设置命令发送失败",
+        "factory_reset_command_sent": "恢复出厂设置命令已发送，设备将重启并进入配网模式",
+        "device_has_been_restored": "设备已恢复出厂设置，系统将自动重启。",
+        "vibration_function_not_available": "振动功能不可用:",
+        "unhandled_promise_rejection": "未处理的Promise拒绝:",
+        "unknown_error": "未知错误",
+        "no_temp_data": "暂无温度数据",
+        "heating_active": "加热中",
+        "heating_inactive": "未加热",
+        "last_refresh_time": "最后刷新时间: ",
+        "status_update_error": "获取状态更新失败"
+        "no_target_temp_data": "无目标温度数据",
+        "not_connected": "未连接",
+        "temperature_range_should_be_50_to_250": "温度范围应为 50-250°C",
+        "time_range_should_be_1_to_120": "时间范围应为 1-120 分钟",
+        "smart_electric_oven_admin_page_loaded": "智能电烤箱管理员页面已加载",
+        "factory_reset_confirmation": "确定要恢复出厂设置吗？所有配置将被清除，设备将重启。",
+        "request_timeout": "请求超时",
+        "please_enter_temperature_first": "请先输入要设置的温度",
+        "please_enter_current_password": "请输入当前密码：",
+        "please_enter_new_password": "请输入新密码：",
+        "please_confirm_new_password": "请确认新密码：",
+        "please_enter_admin_password": "请输入管理员密码确认操作：",
+        "failed_to_get_device_status": "获取设备状态失败:",
+        "failed_to_set_temperature": "设置温度失败:",
+        "failed_to_send_restart_command": "重启命令发送失败",
+        "logout_failed_colon": "退出登录失败:",
+        "connection_check_failed": "连接检查失败:",
+        "page_error": "页面错误:",
+        "page_error_occurred": "页面出现错误，请刷新重试",
+        "cookies": "饼干",
+        "device_rebooting": "设备正在重启",
+        "factory_reset_in_progress": "设备正在恢复出厂设置",
+        "connecting": "正在连接设备...",
+        "heater_is_working": "加热器正在工作",
+        "device_is_restarting": "设备正在重启",
+        "device_has_been_restored_to_factory_settings": "设备已恢复出厂设置，系统将自动重启。",
+        "please_wait_a_few_minutes": "请等待几分钟后重新连接。",
+        "settings_saved": "设置已保存",
+        "settings_save_failed": "设置保存失败",
+        "invalid_input": "输入无效",
+        "input_out_of_range": "输入超出范围",
+        "required_field": "必填字段",
+        "min_value": "最小值",
+        "max_value": "最大值",
+        "enter_value": "请输入值",
+        "select_option": "请选择选项",
+        "operation_successful": "操作成功",
+        "operation_failed": "操作失败",
+        "connection_lost": "连接丢失",
+        "connection_restored": "连接已恢复",
+        "device_offline": "设备离线",
+        "device_online": "设备在线",
+        "low_battery": "电量不足",
+        "battery_level": "电池电量",
+        "charging": "充电中",
+        "fully_charged": "已充满",
+        "maintenance_required": "需要维护",
+        "error_occurred": "发生错误",
+        "warning_detected": "检测到警告",
+        "notification_received": "收到通知",
+        "alert_triggered": "触发警报",
+        "system_alert": "系统警报",
+        "security_alert": "安全警报",
+        "maintenance_alert": "维护警报",
+        "performance_alert": "性能警报",
+        "temperature_alert": "温度警报",
+        "humidity_alert": "湿度警报",
+        "pressure_alert": "压力警报",
+        "voltage_alert": "电压警报",
+        "current_alert": "电流警报",
+        "power_alert": "功率警报",
+        "frequency_alert": "频率警报",
+        "signal_alert": "信号警报",
+        "network_alert": "网络警报",
+        "storage_alert": "存储警报",
+        "memory_alert": "内存警报",
+        "cpu_alert": "CPU警报",
+        "gpu_alert": "GPU警报",
+        "disk_alert": "磁盘警报",
+        "fan_alert": "风扇警报",
+        "sensor_alert": "传感器警报",
+        "actuator_alert": "执行器警报",
+        "controller_alert": "控制器警报",
+        "module_alert": "模块警报",
+        "component_alert": "组件警报",
+        "device_alert": "设备警报",
+        "device_status": "设备状态",
+        "network_status": "网络状态",
+        "security_status": "安全状态",
+        "maintenance_status": "维护状态",
+        "performance_status": "性能状态",
+        "temperature_status": "温度状态",
+        "humidity_status": "湿度状态",
+        "pressure_status": "压力状态",
+        "voltage_status": "电压状态",
+        "current_status": "电流状态",
+        "power_status": "功率状态",
+        "frequency_status": "频率状态",
+        "signal_status": "信号状态",
+        "storage_status": "存储状态",
+        "memory_status": "内存状态",
+        "cpu_status": "CPU状态",
+        "gpu_status": "GPU状态",
+        "disk_status": "磁盘状态",
+        "fan_status": "风扇状态",
+        "sensor_status": "传感器状态",
+        "actuator_status": "执行器状态",
+        "controller_status": "控制器状态",
+        "module_status": "模块状态",
+        "component_status": "组件状态",
+        "device_health": "设备健康",
+        "system_health": "系统健康",
+        "network_health": "网络健康",
+        "security_health": "安全健康",
+        "maintenance_health": "维护健康",
+        "performance_health": "性能健康",
+        "temperature_health": "温度健康",
+        "humidity_health": "湿度健康",
+        "pressure_health": "压力健康",
+        "voltage_health": "电压健康",
+        "current_health": "电流健康",
+        "power_health": "功率健康",
+        "frequency_health": "频率健康",
+        "signal_health": "信号健康",
+        "storage_health": "存储健康",
+        "memory_health": "内存健康",
+        "cpu_health": "CPU健康",
+        "gpu_health": "GPU健康",
+        "disk_health": "磁盘健康",
+        "fan_health": "风扇健康",
+        "sensor_health": "传感器健康",
+        "actuator_health": "执行器健康",
+        "controller_health": "控制器健康",
+        "module_health": "模块健康",
+        "component_health": "组件健康",
+        "realtime_data": "实时数据",
+        "historical_data": "历史数据",
+        "statistical_data": "统计数据",
+        "analytical_data": "分析数据",
+        "predictive_data": "预测数据",
+        "prescriptive_data": "规范数据",
+        "diagnostic_data": "诊断数据",
+        "prognostic_data": "预测性数据",
+        "operational_data": "操作数据",
+        "configuration_data": "配置数据",
+        "calibration_data": "校准数据",
+        "measurement_data": "测量数据",
+        "test_data": "测试数据",
+        "validation_data": "验证数据",
+        "verification_data": "确认数据",
+        "debug_data": "调试数据",
+        "log_data": "日志数据",
+        "event_data": "事件数据",
+        "alarm_data": "报警数据",
+        "alert_data": "警报数据",
+        "notification_data": "通知数据",
+        "report_data": "报告数据",
+        "dashboard_data": "仪表板数据",
+        "widget_data": "小部件数据",
+        "chart_data": "图表数据",
+        "graph_data": "图形数据",
+        "table_data": "表格数据",
+        "list_data": "列表数据",
+        "grid_data": "网格数据",
+        "tree_data": "树形数据",
+        "map_data": "地图数据",
+        "image_data": "图像数据",
+        "video_data": "视频数据",
+        "audio_data": "音频数据",
+        "document_data": "文档数据",
+        "file_data": "文件数据",
+        "folder_data": "文件夹数据",
+        "database_data": "数据库数据",
+        "api_data": "API数据",
+        "web_data": "网页数据",
+        "cloud_data": "云数据",
+        "edge_data": "边缘数据",
+        "iot_data": "物联网数据",
+        "big_data": "大数据",
+        "ai_data": "AI数据",
+        "ml_data": "机器学习数据",
+        "dl_data": "深度学习数据",
+        "nn_data": "神经网络数据",
+        "data_analytics": "数据分析",
+        "data_visualization": "数据可视化",
+        "data_mining": "数据挖掘",
+        "data_processing": "数据处理",
+        "data_storage": "数据存储",
+        "data_backup": "数据备份",
+        "data_recovery": "数据恢复",
+        "data_security": "数据安全",
+        "data_privacy": "数据隐私",
+        "data_governance": "数据治理",
+        "data_quality": "数据质量",
+        "data_integration": "数据集成",
+        "data_transformation": "数据转换",
+        "data_migration": "数据迁移",
+        "data_archiving": "数据归档",
+        "data_retention": "数据保留",
+        "data_compliance": "数据合规",
+        "data_audit": "数据审计",
+        "data_lineage": "数据谱系",
+        "data_catalog": "数据目录",
+        "data_lake": "数据湖",
+        "data_warehouse": "数据仓库",
+        "data_mart": "数据集市",
+        "data_stream": "数据流",
+        "data_pipeline": "数据管道",
+        "data_workflow": "数据工作流",
+        "data_orchestration": "数据编排",
+        "data_automation": "数据自动化",
+        "data_monitoring": "数据监控",
+        "data_alerting": "数据警报",
+        "data_reporting": "数据报告",
+        "data_dashboard": "数据仪表板",
+        "data_insights": "数据洞察",
+        "data_discovery": "数据发现",
+        "data_exploration": "数据探索",
+        "data_analysis": "数据分析",
+        "data_modeling": "数据建模",
+        "data_simulation": "数据模拟",
+        "data_forecasting": "数据预测",
+        "data_optimization": "数据优化",
+        "data_decisioning": "数据决策",
+        "data_science": "数据科学",
+        "data_engineering": "数据工程",
+        "data_architecture": "数据架构",
+        "data_strategy": "数据战略",
+        "project_name": "智能电烤箱",
+        "project_description": "专业级智能电烤箱控制系统",
+        "version": "0.8.7",
+        "firmware_version": "固件版本",
+        "connection_status": "连接状态",
+        "temperature_control": "温度控制",
+        "target_temperature": "目标温度",
+        "targetTemperatureLabel": "目标温度 (°C)",
+        "bakingTimeLabel": "烘焙时间 (分钟)",
+        "wifi_info": "WiFi信息",
+        "device_id": "设备ID",
+        "system_management": "系统管理",
+        "temperature_calibration": "温度校准",
+        "device_settings": "设备设置",
+        "language": "语言",
+        "theme": "主题",
+        "dark_mode": "深色模式",
+        "light_mode": "浅色模式",
+        "sound": "声音",
+        "notifications": "通知",
+        "help_and_support": "帮助与支持",
+        "user_manual": "用户手册",
+        "faq": "常见问题",
+        "technical_support": "技术支持",
+        "about": "关于",
+        "copyright": "版权所有",
+        "all_rights_reserved": "保留所有权利",
+        "status_update_failed": "状态更新失败",
+        "retrying": "正在重试...",
+        "loading": "加载中...",
+        "save": "保存",
+        "cancel": "取消",
+        "confirm": "确认",
+        "close": "关闭",
+        "success": "成功",
+        "error": "错误",
+        "warning": "警告",
+        "info": "信息",
+        "ok": "确定",
+        "yes": "是",
+        "no": "否",
+        "on": "开启",
+        "off": "关闭",
+        "enable": "启用",
+        "disable": "禁用",
+        "apply": "应用",
+        "reset": "重置",
+        "update": "更新",
+        "delete": "删除",
+        "add": "添加",
+        "edit": "编辑",
+        "remove": "移除",
+        "select": "选择",
+        "browse": "浏览",
+        "upload": "上传",
+        "download": "下载",
+        "install": "安装",
+        "upgrade": "升级",
+        "configure": "配置",
+        "test": "测试",
+        "calibrate": "校准",
+        "measure": "测量",
+        "adjust": "调整",
+        "validate": "验证",
+        "verify": "验证",
+        "confirm_action": "确认操作",
+        "are_you_sure": "您确定要执行此操作吗？",
+        "please_wait": "请稍候...",
+        "processing": "处理中...",
+        "completed": "已完成",
+        "failed": "失败",
+        "cancelled": "已取消",
+        "not_available": "不可用",
+        "unknown": "未知",
+        "none": "无",
+        "all": "全部",
+        "default": "默认",
+        "advanced": "高级",
+        "basic": "基础",
+        "expert": "专家",
+        "beginner": "初学者",
+        "intermediate": "中级",
+        "breadMode": "面包",
+    "cakeMode": "蛋糕",
+    "pizzaMode": "披萨",
+    "cookiesMode": "饼干",
+    "roastMode": "烤肉",
+    "defrostMode": "解冻",
+    "minutes10": "10分钟",
+    "minutes15": "15分钟",
+    "minutes20": "20分钟",
+    "minutes30": "30分钟",
+    "minutes45": "45分钟",
+    "minutes60": "60分钟",
+        "smartOvenProject": "智能烤箱项目",
+        "advancedBakingController": "高级烘焙控制器",
+        "ovenController": "烤箱控制器",
+        "ovenStatus": "烤箱状态",
+        "temperature_history": "温度历史图表",
+        "refreshingStatus": "正在刷新状态...",
+        "exportData": "导出数据",
+        "resetStats": "重置统计"
+        "bakingControl": "烘焙控制",
+        "autoMode": "自动模式",
+        "manualMode": "手动模式",
+        "presetMode": "预设模式",
+        "systemManagement": "系统管理",
+        "settingsHelp": "设置与帮助",
+        "logout": "退出登录",
+        "wifiConfig": "WiFi配置",
+        "restartDevice": "重启设备",
+        "apiEndpoints": "API Endpoints",
+        "getDeviceStatusInfo": "获取设备状态信息",
+        "controlHeaterSwitch": "控制加热器开关",
+        "configureWiFiConnection": "配置WiFi网络连接",
+        "otaFirmwareUpgrade": "OTA固件升级",
+        "ovenControlPanelTitle": "智能烤箱 - 管理员控制面板"
+    },
+    "en": {
+    " 0) {
+                    // å�‘å�³æ»‘åŠ¨ - åˆ·æ–°æ•°æ�®
+                    refreshData();
+                    showToast('æ•°æ�®å·²åˆ·æ–°');
+                }
+            }
+        }, { passive: true });
+        
+        // 显示Toastæ��ç¤º
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // æ·»åŠ CSSåŠ¨ç”»
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes highlight {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+            
+            /* ç§»åŠ¨ç«¯æŒ‰é’®ç‚¹å‡»æ•ˆæ�œ */
+            .control-btn:active, .nav-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+            
+            /* ç§»åŠ¨ç«¯ä¼˜åŒ–æ»šåŠ¨ */
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        `;
+        document.head.appendChild(style);
+
+    ": " 0) {
+                    // ???????????? - ????????????
+                    refreshData();
+                    showToast('???????????????');
+                }
+            }
+        }, { passive: true });
+        
+        // ??Toast??????
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // ??????CSS??????
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes highlight {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+            
+            /* ??????????????????????????? */
+            .control-btn:active, .nav-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+            
+            /* ????????????????????? */
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        `;
+        document.head.appendChild(style);
+
+    ",
+    "
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // 5ç§’å��è‡ªåŠ¨åˆ·æ–°é¡µé�¢
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        }
+
+        // åŠ çƒ­æ�§åˆ¶åŠŸèƒ½
+        let currentTemperature = 0;
+
+        // åˆ‡æ�¢åˆ°è‡ªåŠ¨æ¨¡å¼�
+        function switchToAutoMode() {
+            controlMode = 'auto';
+            
+            // æ›´æ–°æŒ‰é’®状态�
+            document.getElementById('auto-mode-btn').classList.add('active');
+            document.getElementById('manual-mode-btn').classList.remove('active');
+            
+            // 显示è‡ªåŠ¨æ¨¡å¼�éƒ¨åˆ†ï¼Œéš�è—�æ‰‹åŠ¨æ¨¡å¼�éƒ¨åˆ†
+            document.getElementById('auto-mode-section').style.display = 'block';
+            document.getElementById('manual-mode-section').style.display = 'none';
+            
+            // å¦‚æ�œå½“å‰�æ˜¯è‡ªå®šä¹‰æ¨¡å¼�ï¼Œåˆ‡æ�¢å›�æ ‡å‡†æ¨¡å¼�
+            const modeSelect = document.getElementById('baking-mode-select');
+            if (modeSelect.value === 'custom') {
+                modeSelect.value = 'bread';
+                onBakingModeChange();
+            }
+            
+            showToast(getTranslation('switchedToAutoMode'))
+        }
+
+        // åˆ‡æ�¢åˆ°æ‰‹åŠ¨æ¨¡å¼�
+        function switchToManualMode() {
+            controlMode = 'manual';
+            
+            // æ›´æ–°æŒ‰é’®状态�
+            document.getElementById('manual-mode-btn').classList.add('active');
+            document.getElementById('auto-mode-btn').classList.remove('active');
+            
+            // 显示æ‰‹åŠ¨æ¨¡å¼�éƒ¨åˆ†ï¼Œéš�è—�è‡ªåŠ¨æ¨¡å¼�éƒ¨åˆ†
+            document.getElementById('manual-mode-section').style.display = 'block';
+            document.getElementById('auto-mode-section').style.display = 'none';
+            
+            // 设置æ‰‹åŠ¨æ¨¡å¼�çš„é»˜è®¤å€¼ï¼ˆé��é›¶å€¼ï¼‰
+            document.getElementById('target-temp').value = config.defaultTemp;
+            document.getElementById('baking-time').value = config.defaultTime;
+            targetTemperature = 180;
+            bakingTime = 30;
+            
+            showToast(getTranslation('switchedToManualMode'))
+        }
+
+        // çƒ˜ç„™æ¨¡å¼�é€‰æ‹©å�˜åŒ–å¤„ç�†
+        function onBakingModeChange() {
+            const modeSelect = document.getElementById('baking-mode-select');
+            const selectedMode = modeSelect.value;
+            const preset = bakingPresets[selectedMode];
+            
+            if (preset) {
+                // æ›´æ–°æ¸©åº¦å’Œæ—¶é—´è¾“å…¥æ¡†
+                document.getElementById('target-temp').value = preset.temperature;
+                document.getElementById('baking-time').value = preset.time;
+                
+                // æ›´æ–°å…¨å±€å�˜é‡�
+                targetTemperature = preset.temperature;
+                bakingTime = preset.time;
+                bakingMode = selectedMode;
+                
+                if (selectedMode === 'custom') {
+                    showToast(getTranslation('switchedToCustomMode'));
+                } else {
+                    showToast(getTranslation('switchedToPresetMode', {name: preset.name, temperature: preset.temperature, time: preset.time}));
+                }
+            }
+        }
+
+        // æ¸©åº¦è¾“å…¥éªŒè¯�
+        function validateTemperature() {
+            const tempInput = document.getElementById('target-temp');
+            const temp = parseInt(tempInput.value);
+            
+            if (temp >= 50 && temp ": "
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // 5????????????????????????
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        }
+
+        // ??????????????????
+        let currentTemperature = 0;
+
+        // ?????????????????????
+        function switchToAutoMode() {
+            controlMode = 'auto';
+            
+            // ???????????????
+            document.getElementById('auto-mode-btn').classList.add('active');
+            document.getElementById('manual-mode-btn').classList.remove('active');
+            
+            // ???????????????????????????????????????????????
+            document.getElementById('auto-mode-section').style.display = 'block';
+            document.getElementById('manual-mode-section').style.display = 'none';
+            
+            // ??????????????????????????????????????????????????????
+            const modeSelect = document.getElementById('baking-mode-select');
+            if (modeSelect.value === 'custom') {
+                modeSelect.value = 'bread';
+                onBakingModeChange();
+            }
+            
+            showToast(getTranslation('switchedToAutoMode'))
+        }
+
+        // ?????????????????????
+        function switchToManualMode() {
+            controlMode = 'manual';
+            
+            // ???????????????
+            document.getElementById('manual-mode-btn').classList.add('active');
+            document.getElementById('auto-mode-btn').classList.remove('active');
+            
+            // ???????????????????????????????????????????????
+            document.getElementById('manual-mode-section').style.display = 'block';
+            document.getElementById('auto-mode-section').style.display = 'none';
+            
+            // ?????????????????????????????????????????
+            document.getElementById('target-temp').value = config.defaultTemp;
+            document.getElementById('baking-time').value = config.defaultTime;
+            targetTemperature = 180;
+            bakingTime = 30;
+            
+            showToast(getTranslation('switchedToManualMode'))
+        }
+
+        // ??????????????????????????????
+        function onBakingModeChange() {
+            const modeSelect = document.getElementById('baking-mode-select');
+            const selectedMode = modeSelect.value;
+            const preset = bakingPresets[selectedMode];
+            
+            if (preset) {
+                // ??????????????????????????????
+                document.getElementById('target-temp').value = preset.temperature;
+                document.getElementById('baking-time').value = preset.time;
+                
+                // ??????????????????
+                targetTemperature = preset.temperature;
+                bakingTime = preset.time;
+                bakingMode = selectedMode;
+                
+                if (selectedMode === 'custom') {
+                    showToast(getTranslation('switchedToCustomMode'));
+                } else {
+                    showToast(getTranslation('switchedToPresetMode', {name: preset.name, temperature: preset.temperature, time: preset.time}));
+                }
+            }
+        }
+
+        // ??????????????????
+        function validateTemperature() {
+            const tempInput = document.getElementById('target-temp');
+            const temp = parseInt(tempInput.value);
+            
+            if (temp >= 50 && temp ",
+    "
+                    æ‰€æœ‰设置willbe清除ï¼Œ设备å°†é‡�å�¯å¹¶æ�¢å¤�å‡ºå�‚状态�ã€‚
+                ": "
+                    ???????????????????????????????????????????????
+                ",
+    "设备æ­£åœ¨æ�¢å¤�å‡ºå�‚设置": "??????????????????????",
+    "
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            
+
+            // 5ç§’å��è‡ªåŠ¨åˆ·æ–°é¡µé�¢
+
+            setTimeout(() => {
+
+                window.location.reload();
+
+            }, 5000);
+
+        }
+
+        
+
+        // æ�¢å¤�å‡ºå�‚设置
+
+        async function factoryReset() {
+
+            const confirmed = confirm(getTranslation('confirmFactoryReset'));
+
+            if (!confirmed) return;
+
+            
+
+            const password = prompt(getTranslation('enterAdminPassword'));
+
+            if (!password) return;
+
+            
+
+            try {
+
+                const response = await fetch('/factoryreset', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        password: password
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert(getTranslation('factoryResetComplete'));
+
+                    // 显示æ�¢å¤�å‡ºå�‚设置æ��ç¤º
+
+                    showFactoryResetMessage();
+
+                } else {
+
+                    alert(getTranslation('factoryResetFailedInvalidPassword'));
+
+                }
+
+            } catch (error) {
+
+                console.error('æ�¢å¤�å‡ºå�‚设置å¤±è´¥:', error);
+
+                alert(getTranslation('networkFailedFactoryReset'));
+
+            }
+
+        }
+
+        
+
+        // 显示æ�¢å¤�å‡ºå�‚设置æ��ç¤º
+        function showFactoryResetMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 1000;
+                font-size: 16px;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                ": "
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            
+
+            // 5????????????????????????
+
+            setTimeout(() => {
+
+                window.location.reload();
+
+            }, 5000);
+
+        }
+
+        
+
+        // ??????????????
+
+        async function factoryReset() {
+
+            const confirmed = confirm(getTranslation('confirmFactoryReset'));
+
+            if (!confirmed) return;
+
+            
+
+            const password = prompt(getTranslation('enterAdminPassword'));
+
+            if (!password) return;
+
+            
+
+            try {
+
+                const response = await fetch('/factoryreset', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        password: password
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert(getTranslation('factoryResetComplete'));
+
+                    // ??????????????????????
+
+                    showFactoryResetMessage();
+
+                } else {
+
+                    alert(getTranslation('factoryResetFailedInvalidPassword'));
+
+                }
+
+            } catch (error) {
+
+                console.error('????????????????????:', error);
+
+                alert(getTranslation('networkFailedFactoryReset'));
+
+            }
+
+        }
+
+        
+
+        // ??????????????????????
+        function showFactoryResetMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 1000;
+                font-size: 16px;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                ",
+    "ï¼Œè¯·ç­‰å¾…å‡ 分钟å��é‡�æ–°è¿�æ�¥ã€‚
+                ": "???????????????????????????????????
+                ",
+    "设备æ­£åœ¨é‡�å�¯": "??????????????",
+    "
+
+        // 设备状态�å�˜é‡�
+
+        let deviceStatus = {
+
+            currentTemp: 0,
+
+            targetTemp: 180,
+
+            heatingEnabled: false,
+
+            wifiConnected: false,
+
+            wifiSSID: '',
+
+            ipAddress: '',
+
+            deviceId: '',
+
+            firmwareVersion: ''
+
+        };
+
+
+
+        // æ›´æ–°设备状态�显示
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifi_ssid || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || '',
+
+                calibration: data.calibration || { offset: 0, scale: 1.0 }
+
+            };
+
+
+
+            // å®‰å…¨åœ°æ›´æ–°状态�显示
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+
+
+            if (statusItems.length == 4) {
+
+                // æ›´æ–°å½“å‰�æ¸©åº¦
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + 'Â°C';
+
+                
+
+                // æ›´æ–°åŠ çƒ­状态�
+
+                const heatingStatus = deviceStatus.heatingEnabled ? 'åŠ çƒ­ä¸­' : 'å·²å�œæ­¢';
+
+                statusItems[1].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[1].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // æ›´æ–°WiFi状态� - 显示å®�é™…WiFiå��ç§°
+
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || 'å·²è¿�æ�¥') : 'æœªè¿�æ�¥';
+
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+                
+
+                // æ›´æ–°IPåœ°å�€
+
+                statusItems[3].querySelector('.status-value').textContent = 
+
+                    deviceStatus.ipAddress || '--';
+
+            }
+
+
+
+            // æ›´æ–°é¡¶éƒ¨è¿�æ�¥状态�显示
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusDot = connectionStatus.querySelector('.status-dot');
+
+            const statusText = connectionStatus.querySelector('.status-text');
+
+            
+
+            if (deviceStatus.wifiConnected) {
+
+                statusDot.className = 'status-dot live';
+
+                statusText.textContent = 'å·²è¿�æ�¥';
+
+                statusText.style.color = '#10b981';
+
+            } else {
+
+                statusDot.className = 'status-dot';
+
+                statusText.textContent = 'æœªè¿�æ�¥';
+
+                statusText.style.color = '#ef4444';
+
+            }
+
+
+
+            // æ›´æ–°å›ºä»¶ç‰ˆæœ¬显示
+
+            updateFirmwareDisplay();
+
+
+
+            // æ›´æ–°æ¸©åº¦æ�§åˆ¶é�¢æ�¿显示
+
+            updateTemperatureControlDisplay();
+
+            
+
+            // æ›´æ–°æ ¡å‡†显示
+
+            updateCalibrationDisplay();
+
+        }
+
+
+
+        // æ›´æ–°æ ¡å‡†显示
+
+        function updateCalibrationDisplay() {
+
+            if (deviceStatus.calibration) {
+
+                currentCalibration = deviceStatus.calibration;
+
+                // è¿™é‡Œå�¯ä»¥æ·»åŠ æ ¡å‡†状态�显示é€»è¾‘
+
+                console.log(getTranslation('currentCalibrationParams'), currentCalibration);
+
+            }
+
+        }
+
+        
+
+        // å…¨å±€å�˜é‡�
+        let currentCalibration = { offset: 0, scale: 1.0 };
+
+
+
+        // 显示æ¼”ç¤ºæ•°æ�®ï¼ˆç½‘ç»œè¿�æ�¥å¤±è´¥æ—¶ï¼‰
+
+        function showDemoData() {
+
+            const demoData = {
+
+                temperature: 25.0,
+
+                target_temperature: 180.0,
+
+                heating_enabled: false,
+
+                wifi_connected: true,
+
+                wifiSSID: 'SmartOven_AP',
+
+                ip_address: '192.168.4.1',
+
+                device_id: 'SmartOven_001',
+
+                firmware_version: '0.8.6'
+
+            };
+
+
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusText = connectionStatus ? connectionStatus.querySelector('.status-text') : null;
+
+
+
+            if (statusText) {
+
+                statusText.textContent = 'æ¼”ç¤ºæ¨¡å¼�';
+
+                statusText.style.color = '#f59e0b';
+
+            }
+
+
+
+            updateStatusDisplay(demoData);
+
+        }
+
+
+
+        // åˆ·æ–°设备æ•°æ�®
+
+        async function refreshData() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.status);
+
+                if (response.ok) {
+
+                    const data = await response.json();
+
+                    updateStatusDisplay(data);
+
+                } else {
+
+                    console.error('è�·å�–设备状态�å¤±è´¥');
+
+                    showDemoData();
+
+                }
+
+            } catch (error) {
+
+                console.error('ç½‘ç»œè¿�æ�¥å¤±è´¥:', error);
+
+                showDemoData();
+
+            }
+
+        }
+
+
+
+        // åˆ‡æ�¢åŠ çƒ­状态�
+
+        async function toggleHeating() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.control, {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        heating_enabled: !deviceStatus.heatingEnabled
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('æ�§åˆ¶å‘½ä»¤å�‘é€�å¤±è´¥');
+
+                }
+
+            } catch (error) {
+
+                console.error('æ�§åˆ¶设备å¤±è´¥:', error);
+
+                alert(getTranslation('networkFailed'))
+
+            }
+
+        }
+
+
+
+        // çƒ˜ç„™æ¨¡å¼�é¢„è®¾
+
+        const bakingPresets = config.bakingPresets || {
+
+            'bread': { temperature: 180, time: 30, name: getTranslation('presetBread') },
+
+            'cake': { temperature: 160, time: 45, name: getTranslation('presetCake') },
+
+            'pizza': { temperature: 220, time: 15, name: getTranslation('presetPizza') },
+
+            'roast': { temperature: 200, time: 60, name: getTranslation('presetRoast') },
+
+            'defrost': { temperature: 80, time: 10, name: getTranslation('presetDefrost') },
+
+            'custom': { temperature: 180, time: 30, name: getTranslation('presetCustom') }
+
+        };
+
+
+
+        // æ�§åˆ¶æ¨¡å¼�å�˜é‡�
+        let controlMode = 'auto';
+        let targetTemperature = config.defaultTemp;
+        let bakingTime = config.defaultTime;
+        let bakingMode = 'bread';
+        let isHeating = false;
+
+        // å¿«é€Ÿ设置æ¸©åº¦
+
+        async function quickSetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert(getTranslation('tempSettingFailed'))
+
+                }
+
+            } catch (error) {
+
+                console.error('设置æ¸©åº¦å¤±è´¥:', error);
+
+                alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+            }
+
+        }
+
+
+
+        // é‡�å�¯设备
+
+        async function restartDevice() {
+
+            if (confirm('ç¡®å®šè¦�é‡�å�¯设备å�—ï¼Ÿ设备å°†åœ¨5ç§’å��é‡�å�¯ã€‚')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.restart, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('设备é‡�å�¯å‘½ä»¤å·²å�‘é€�ï¼Œè¯·ç­‰å¾…çº¦30ç§’å��é‡�æ–°è¿�æ�¥');
+
+                    } else {
+
+                        alert(getTranslation('restartFailed'));
+
+                    }
+
+                } catch (error) {
+
+                    console.error('é‡�å�¯设备å¤±è´¥:', error);
+
+                    alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+                }
+
+            }
+
+        }
+
+
+
+        // æ�¢å¤�å‡ºå�‚设置
+
+        async function factoryReset() {
+
+            if (confirm('ç¡®å®šè¦�æ�¢å¤�å‡ºå�‚设置å�—ï¼Ÿæ‰€æœ‰é…�ç½®willbe清除ï¼Œ设备å°†é‡�å�¯ã€‚')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.factoryReset, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('æ�¢å¤�å‡ºå�‚设置å‘½ä»¤å·²å�‘é€�ï¼Œ设备å°†é‡�å�¯å¹¶è¿›å…¥é…�ç½‘æ¨¡å¼�');
+
+                    } else {
+
+                        alert('æ�¢å¤�å‡ºå�‚设置å‘½ä»¤å�‘é€�å¤±è´¥');
+
+                    }
+
+                } catch (error) {
+
+                    console.error('æ�¢å¤�å‡ºå�‚设置å¤±è´¥:', error);
+
+                    alert('ç½‘ç»œè¿�æ�¥å¤±è´¥');
+
+                }
+
+            }
+
+        }
+
+
+
+        
+
+
+
+
+
+
+
+        // å¤„ç�†æ–‡ä»¶é€‰æ‹©
+
+        
+
+        
+
+
+
+        
+
+
+
+        // æ›´æ–°å›ºä»¶ç‰ˆæœ¬显示
+
+        function updateFirmwareDisplay() {
+
+            const firmwareElement = document.getElementById('current-firmware');
+
+            if (firmwareElement && deviceStatus.firmwareVersion) {
+
+                firmwareElement.textContent = deviceStatus.firmwareVersion;
+
+            }
+
+        }
+
+
+
+
+
+
+        // æ›´æ–°æ¸©åº¦æ�§åˆ¶é�¢æ�¿显示
+
+        function updateTemperatureControlDisplay() {
+
+            // æ›´æ–°å½“å‰�æ¸©åº¦显示
+
+            const currentTempDisplay = document.getElementById('current-temp-display');
+
+            if (currentTempDisplay) {
+
+                currentTempDisplay.textContent = deviceStatus.currentTemp.toFixed(1) + 'Â°C';
+
+            }
+
+            
+
+            // æ›´æ–°ç›®æ ‡æ¸©åº¦显示
+
+            const targetTempDisplay = document.getElementById('target-temp-display');
+
+            if (targetTempDisplay) {
+
+                targetTempDisplay.textContent = deviceStatus.targetTemp.toFixed(1) + 'Â°C';
+
+            }
+
+            
+
+            // æ›´æ–°åŠ çƒ­æŒ‰é’®状态�
+
+            const heatingBtn = document.getElementById('heating-btn');
+
+            if (heatingBtn) {
+
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? 'å…³é—­åŠ çƒ­' : 'å¼€å�¯åŠ çƒ­';
+
+                heatingBtn.className = deviceStatus.heatingEnabled ? 
+
+                    'btn btn-secondary' : 'btn btn-primary';
+
+            }
+
+            
+
+            // æ›´æ–°åŠ çƒ­状态�æŒ‡ç¤ºå™¨
+
+            const heatingStatus = document.getElementById('heating-status');
+
+            if (heatingStatus) {
+
+                if (deviceStatus.heatingEnabled) {
+
+                    heatingStatus.textContent = getTranslation('heaterWorking');
+
+                    heatingStatus.className = 'status-indicator status-heating';
+
+                } else {
+
+                    heatingStatus.textContent = 'åŠ çƒ­å™¨å·²å…³é—­';
+
+                    heatingStatus.className = 'status-indicator status-idle';
+
+                }
+
+            }
+
+        }
+
+
+
+        // æ¸©åº¦è°ƒèŠ‚åŠŸèƒ½
+
+        function changeTemp(delta) {
+
+            const newTemp = deviceStatus.targetTemp + delta;
+
+            if (newTemp >= 0 && newTemp ": "
+
+        // ???????????
+
+        let deviceStatus = {
+
+            currentTemp: 0,
+
+            targetTemp: 180,
+
+            heatingEnabled: false,
+
+            wifiConnected: false,
+
+            wifiSSID: '',
+
+            ipAddress: '',
+
+            deviceId: '',
+
+            firmwareVersion: ''
+
+        };
+
+
+
+        // ?????????????
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifi_ssid || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || '',
+
+                calibration: data.calibration || { offset: 0, scale: 1.0 }
+
+            };
+
+
+
+            // ????????????????????
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+
+
+            if (statusItems.length == 4) {
+
+                // ??????????????????
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + '??C';
+
+                
+
+                // ???????????????
+
+                const heatingStatus = deviceStatus.heatingEnabled ? '?????????' : '?????????';
+
+                statusItems[1].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[1].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // ??????WiFi??? - ????????WiFi??????
+
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '?????????') : '?????????';
+
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+                
+
+                // ??????IP??????
+
+                statusItems[3].querySelector('.status-value').textContent = 
+
+                    deviceStatus.ipAddress || '--';
+
+            }
+
+
+
+            // ???????????????????????
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusDot = connectionStatus.querySelector('.status-dot');
+
+            const statusText = connectionStatus.querySelector('.status-text');
+
+            
+
+            if (deviceStatus.wifiConnected) {
+
+                statusDot.className = 'status-dot live';
+
+                statusText.textContent = '?????????';
+
+                statusText.style.color = '#10b981';
+
+            } else {
+
+                statusDot.className = 'status-dot';
+
+                statusText.textContent = '?????????';
+
+                statusText.style.color = '#ef4444';
+
+            }
+
+
+
+            // ????????????????????
+
+            updateFirmwareDisplay();
+
+
+
+            // ??????????????????????????
+
+            updateTemperatureControlDisplay();
+
+            
+
+            // ??????????????
+
+            updateCalibrationDisplay();
+
+        }
+
+
+
+        // ??????????????
+
+        function updateCalibrationDisplay() {
+
+            if (deviceStatus.calibration) {
+
+                currentCalibration = deviceStatus.calibration;
+
+                // ???????????????????????????????????
+
+                console.log(getTranslation('currentCalibrationParams'), currentCalibration);
+
+            }
+
+        }
+
+        
+
+        // ????????????
+        let currentCalibration = { offset: 0, scale: 1.0 };
+
+
+
+        // ?????????????????????????????????????????
+
+        function showDemoData() {
+
+            const demoData = {
+
+                temperature: 25.0,
+
+                target_temperature: 180.0,
+
+                heating_enabled: false,
+
+                wifi_connected: true,
+
+                wifiSSID: 'SmartOven_AP',
+
+                ip_address: '192.168.4.1',
+
+                device_id: 'SmartOven_001',
+
+                firmware_version: '0.8.6'
+
+            };
+
+
+
+            const connectionStatus = document.querySelector('.connection-status');
+
+            const statusText = connectionStatus ? connectionStatus.querySelector('.status-text') : null;
+
+
+
+            if (statusText) {
+
+                statusText.textContent = '????????????';
+
+                statusText.style.color = '#f59e0b';
+
+            }
+
+
+
+            updateStatusDisplay(demoData);
+
+        }
+
+
+
+        // ??????????????
+
+        async function refreshData() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.status);
+
+                if (response.ok) {
+
+                    const data = await response.json();
+
+                    updateStatusDisplay(data);
+
+                } else {
+
+                    console.error('?????????????????');
+
+                    showDemoData();
+
+                }
+
+            } catch (error) {
+
+                console.error('??????????????????:', error);
+
+                showDemoData();
+
+            }
+
+        }
+
+
+
+        // ???????????????
+
+        async function toggleHeating() {
+
+            try {
+
+                const response = await fetch(apiEndpoints.control, {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        heating_enabled: !deviceStatus.heatingEnabled
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('????????????????????????');
+
+                }
+
+            } catch (error) {
+
+                console.error('??????????????:', error);
+
+                alert(getTranslation('networkFailed'))
+
+            }
+
+        }
+
+
+
+        // ??????????????????
+
+        const bakingPresets = config.bakingPresets || {
+
+            'bread': { temperature: 180, time: 30, name: getTranslation('presetBread') },
+
+            'cake': { temperature: 160, time: 45, name: getTranslation('presetCake') },
+
+            'pizza': { temperature: 220, time: 15, name: getTranslation('presetPizza') },
+
+            'roast': { temperature: 200, time: 60, name: getTranslation('presetRoast') },
+
+            'defrost': { temperature: 80, time: 10, name: getTranslation('presetDefrost') },
+
+            'custom': { temperature: 180, time: 30, name: getTranslation('presetCustom') }
+
+        };
+
+
+
+        // ??????????????????
+        let controlMode = 'auto';
+        let targetTemperature = config.defaultTemp;
+        let bakingTime = config.defaultTime;
+        let bakingMode = 'bread';
+        let isHeating = false;
+
+        // ??????????????
+
+        async function quickSetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert(getTranslation('tempSettingFailed'))
+
+                }
+
+            } catch (error) {
+
+                console.error('??????????????:', error);
+
+                alert('??????????????????');
+
+            }
+
+        }
+
+
+
+        // ????????
+
+        async function restartDevice() {
+
+            if (confirm('???????????????????????????????5???????????????')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.restart, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('??????????????????????????????????????30??????????????????');
+
+                    } else {
+
+                        alert(getTranslation('restartFailed'));
+
+                    }
+
+                } catch (error) {
+
+                    console.error('??????????????:', error);
+
+                    alert('??????????????????');
+
+                }
+
+            }
+
+        }
+
+
+
+        // ??????????????
+
+        async function factoryReset() {
+
+            if (confirm('??????????????????????????????????????????????????????????????')) {
+
+                try {
+
+                    const response = await fetch(apiEndpoints.factoryReset, {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('????????????????????????????????????????????????????????????????');
+
+                    } else {
+
+                        alert('????????????????????????????????');
+
+                    }
+
+                } catch (error) {
+
+                    console.error('????????????????????:', error);
+
+                    alert('??????????????????');
+
+                }
+
+            }
+
+        }
+
+
+
+        
+
+
+
+
+
+
+
+        // ??????????????????
+
+        
+
+        
+
+
+
+        
+
+
+
+        // ????????????????????
+
+        function updateFirmwareDisplay() {
+
+            const firmwareElement = document.getElementById('current-firmware');
+
+            if (firmwareElement && deviceStatus.firmwareVersion) {
+
+                firmwareElement.textContent = deviceStatus.firmwareVersion;
+
+            }
+
+        }
+
+
+
+
+
+
+        // ??????????????????????????
+
+        function updateTemperatureControlDisplay() {
+
+            // ????????????????????
+
+            const currentTempDisplay = document.getElementById('current-temp-display');
+
+            if (currentTempDisplay) {
+
+                currentTempDisplay.textContent = deviceStatus.currentTemp.toFixed(1) + '??C';
+
+            }
+
+            
+
+            // ????????????????????
+
+            const targetTempDisplay = document.getElementById('target-temp-display');
+
+            if (targetTempDisplay) {
+
+                targetTempDisplay.textContent = deviceStatus.targetTemp.toFixed(1) + '??C';
+
+            }
+
+            
+
+            // ?????????????????????
+
+            const heatingBtn = document.getElementById('heating-btn');
+
+            if (heatingBtn) {
+
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? '????????????' : '????????????';
+
+                heatingBtn.className = deviceStatus.heatingEnabled ? 
+
+                    'btn btn-secondary' : 'btn btn-primary';
+
+            }
+
+            
+
+            // ????????????????????????
+
+            const heatingStatus = document.getElementById('heating-status');
+
+            if (heatingStatus) {
+
+                if (deviceStatus.heatingEnabled) {
+
+                    heatingStatus.textContent = getTranslation('heaterWorking');
+
+                    heatingStatus.className = 'status-indicator status-heating';
+
+                } else {
+
+                    heatingStatus.textContent = '??????????????????';
+
+                    heatingStatus.className = 'status-indicator status-idle';
+
+                }
+
+            }
+
+        }
+
+
+
+        // ??????????????????
+
+        function changeTemp(delta) {
+
+            const newTemp = deviceStatus.targetTemp + delta;
+
+            if (newTemp >= 0 && newTemp ",
+    "è�·å�–设备状态�ä¿¡æ�¯": "?????????????????",
+    "æ­£åœ¨è¿�æ�¥设备...": "??????????????...",
+    "æ�¢å¤�å‡ºå�‚设置": "??????????????",
+    "é‡�å�¯设备": "????????",
+    "设置ä¸�å¸®åŠ©": "???????????",
+    "设备状态�": "?????",
+    "çƒ˜ç„™æ—¶é—´ (分钟)": "???????????? (??)",
+    "æ‰‹åŠ¨æ¨¡å¼�设置": "??????????????",
+    "è‡ªåŠ¨æ¨¡å¼�设置": "??????????????",
+    "æœªè�·å�–å½“å‰�è¿�æ�¥状态�": "????????????????????????",
+    "WiFi状态�": "WiFi???",
+    "æœªè�·å�–åŠ çƒ­状态�": "??????????????????",
+    "åŠ çƒ­状态�": "?????????",
+    "çƒ¤ç®±状态�": "?????????",
+        "chineseEnglish": "Zh/En",
+        "connecting_to_device": "Connecting to device...",
+        "api_endpoint": "API Endpoint",
+        "ip_address": "IP Address",
+        "ota_firmware_update": "OTA Firmware Update",
+        "wifi_status": "WiFi Status",
+        "wifi_configuration": "WiFi Configuration",
+        "custom_mode": "Custom Mode",
+        "change_password": "Change Password",
+        "heating_status": "Heating Status",
+        "firmware_update": "Firmware Update",
+        "start": "Start",
+        "current_temperature": "Current Temperature",
+        "factory_reset": "Factory Reset",
+        "manual_mode_settings": "Manual Mode Settings",
+        "control_heater_switch": "Control Heater Switch",
+        "smart_oven": "Smart Oven",
+        "system_monitoring": "System Monitoring",
+        "system_status": "System Status",
+        "normal": "Normal",
+        "celsius": "°C",
+        "minutes": "minutes",
+        "stop_heating": "Stop Heating",
+        "turn_off_heating": "Turn Off Heating",
+        "heater_off": "Heater Off",
+        "heater_working": "Heater Working",
+        "heating_stopped": "Heating Stopped",
+        "start_heating": "Start Heating",
+        "stopped": "Stopped",
+        "switched_to_manual_mode": "Switched to manual mode, please set temperature and time",
+        "switched_to_automatic_mode": "Switched to automatic mode",
+        "switched_to_custom_mode": "Switched to custom mode, you can manually adjust temperature and time",
+        "connected": "Connected",
+        "turn_on_heating": "Turn On Heating",
+        "pizza": "Pizza",
+        "bbq": "BBQ",
+        "custom": "Custom",
+        "cake": "Cake",
+        "defrost": "Defrost",
+        "bread": "Bread",
+        "logout_confirmation": "Are you sure you want to logout?",
+        "restart_confirmation": "Are you sure you want to restart the device? It will restart in 5 seconds.",
+        "network_restored": "Network restored",
+        "network_disconnected": "Network disconnected",
+        "network_request_failed": "Network request failed, please check connection",
+        "network_connection_failed": "Network connection failed",
+        "failed_to_get_system_health_data": "Failed to get system health data:",
+        "device_restart_command_sent_wait": "Device restart command sent, please wait about 30 seconds to reconnect",
+        "device_restart_command_sent": "Device restart command sent, device will restart in a few seconds.",
+        "password_changed_successfully": "Password changed successfully",
+        "password_change_failed": "Password change failed, please check if current password is correct",
+        "new_passwords_do_not_match": "New passwords do not match",
+        "logout_failed": "Logout failed",
+        "demo_mode": "Demo Mode",
+        "data_refreshed": "Data refreshed",
+        "failed_to_set_heating_status": "Failed to set heating status",
+        "control_command_sending_failed": "Control command sending failed",
+        "device_control_failed": "Device control failed:",
+        "heating_control_function": "Heating Control Function",
+        "temperature_adjustment_function": "Temperature Adjustment Function",
+        "network_connection_failed_colon": "Network connection failed:",
+        "failed_to_read_data": "Failed to read data:",
+        "failed_to_load_settings": "Failed to load settings:",
+        "failed_to_delete_data": "Failed to delete data:",
+        "temperature_setting_failed": "Temperature setting failed",
+        "failed_to_disconnect_wifi": "Failed to disconnect WiFi",
+        "failed_to_disconnect_wifi_colon": "Failed to disconnect WiFi:",
+        "failed_to_restart_device": "Failed to restart device",
+        "failed_to_restart_device_colon": "Failed to restart device:",
+        "factory_reset_failed": "Factory reset failed",
+        "factory_reset_failed_colon": "Factory reset failed:",
+        "factory_reset_failed_password": "Factory reset failed, password may be incorrect",
+        "failed_to_send_factory_reset_command": "Failed to send factory reset command",
+        "factory_reset_command_sent": "Factory reset command sent, device will restart and enter configuration mode",
+        "device_has_been_restored": "Device has been restored to factory settings, system will automatically restart.",
+        "vibration_function_not_available": "Vibration function not available:",
+        "unhandled_promise_rejection": "Unhandled Promise rejection:",
+        "unknown_error": "Unknown error",
+    "no_temp_data": "No temperature data",
+    "heating_active": "Heating Active",
+    "heating_inactive": "Heating Inactive",
+    "last_refresh_time": "Last Refresh Time: ",
+    "status_update_error": "Failed to update status"
+    "no_target_temp_data": "No target temperature data",
+        "not_connected": "Not connected",
+        "temperature_range_should_be_50_to_250": "Temperature range should be 50-250°C",
+        "time_range_should_be_1_to_120": "Time range should be 1-120 minutes",
+        "smart_electric_oven_admin_page_loaded": "Smart electric oven admin page loaded",
+        "factory_reset_confirmation": "Are you sure you want to restore factory settings? All configurations will be cleared and the device will restart.",
+        "request_timeout": "Request timeout",
+        "please_enter_temperature_first": "Please enter the temperature to set first",
+        "please_enter_current_password": "Please enter current password:",
+        "please_enter_new_password": "Please enter new password:",
+        "please_confirm_new_password": "Please confirm new password:",
+        "please_enter_admin_password": "Please enter admin password to confirm operation:",
+        "failed_to_get_device_status": "Failed to get device status:",
+        "failed_to_set_temperature": "Failed to set temperature:",
+        "failed_to_send_restart_command": "Failed to send restart command",
+        "logout_failed_colon": "Logout failed:",
+        "connection_check_failed": "Connection check failed:",
+        "page_error": "Page error:",
+        "page_error_occurred": "Page error occurred, please refresh and try again",
+        "cookies": "Cookies",
+        "device_rebooting": "Device rebooting",
+        "factory_reset_in_progress": "Factory reset in progress",
+        "connecting": "Connecting to device...",
+        "heater_is_working": "Heater is working",
+        "device_is_restarting": "Device is restarting",
+        "device_has_been_restored_to_factory_settings": "Device has been restored to factory settings, system will automatically restart.",
+        "please_wait_a_few_minutes": "Please wait a few minutes to reconnect.",
+        "settings_saved": "Settings saved",
+        "settings_save_failed": "Settings save failed",
+        "invalid_input": "Invalid input",
+        "input_out_of_range": "Input out of range",
+        "required_field": "Required field",
+        "min_value": "Min value",
+        "max_value": "Max value",
+        "enter_value": "Please enter value",
+        "select_option": "Please select option",
+        "operation_successful": "Operation successful",
+        "operation_failed": "Operation failed",
+        "connection_lost": "Connection lost",
+        "connection_restored": "Connection restored",
+        "device_offline": "Device offline",
+        "device_online": "Device online",
+        "low_battery": "Low battery",
+        "battery_level": "Battery level",
+        "charging": "Charging",
+        "fully_charged": "Fully charged",
+        "maintenance_required": "Maintenance required",
+        "error_occurred": "Error occurred",
+        "warning_detected": "Warning detected",
+        "notification_received": "Notification received",
+        "alert_triggered": "Alert triggered",
+        "system_alert": "System alert",
+        "security_alert": "Security alert",
+        "maintenance_alert": "Maintenance alert",
+        "performance_alert": "Performance alert",
+        "temperature_alert": "Temperature alert",
+        "humidity_alert": "Humidity alert",
+        "pressure_alert": "Pressure alert",
+        "voltage_alert": "Voltage alert",
+        "current_alert": "Current alert",
+        "power_alert": "Power alert",
+        "frequency_alert": "Frequency alert",
+        "signal_alert": "Signal alert",
+        "network_alert": "Network alert",
+        "storage_alert": "Storage alert",
+        "memory_alert": "Memory alert",
+        "cpu_alert": "CPU alert",
+        "gpu_alert": "GPU alert",
+        "disk_alert": "Disk alert",
+        "fan_alert": "Fan alert",
+        "sensor_alert": "Sensor alert",
+        "actuator_alert": "Actuator alert",
+        "controller_alert": "Controller alert",
+        "module_alert": "Module alert",
+        "component_alert": "Component alert",
+        "device_alert": "Device alert",
+        "device_status": "Device status",
+        "network_status": "Network status",
+        "security_status": "Security status",
+        "maintenance_status": "Maintenance status",
+        "performance_status": "Performance status",
+        "temperature_status": "Temperature status",
+        "humidity_status": "Humidity status",
+        "pressure_status": "Pressure status",
+        "voltage_status": "Voltage status",
+        "current_status": "Current status",
+        "power_status": "Power status",
+        "frequency_status": "Frequency status",
+        "signal_status": "Signal status",
+        "storage_status": "Storage status",
+        "memory_status": "Memory status",
+        "cpu_status": "CPU status",
+        "gpu_status": "GPU status",
+        "disk_status": "Disk status",
+        "fan_status": "Fan status",
+        "sensor_status": "Sensor status",
+        "actuator_status": "Actuator status",
+        "controller_status": "Controller status",
+        "module_status": "Module status",
+        "component_status": "Component status",
+        "device_health": "Device health",
+        "system_health": "System health",
+        "network_health": "Network health",
+        "security_health": "Security health",
+        "maintenance_health": "Maintenance health",
+        "performance_health": "Performance health",
+        "temperature_health": "Temperature health",
+        "humidity_health": "Humidity health",
+        "pressure_health": "Pressure health",
+        "voltage_health": "Voltage health",
+        "current_health": "Current health",
+        "power_health": "Power health",
+        "frequency_health": "Frequency health",
+        "signal_health": "Signal health",
+        "storage_health": "Storage health",
+        "memory_health": "Memory health",
+        "cpu_health": "CPU health",
+        "gpu_health": "GPU health",
+        "disk_health": "Disk health",
+        "fan_health": "Fan health",
+        "sensor_health": "Sensor health",
+        "actuator_health": "Actuator health",
+        "controller_health": "Controller health",
+        "module_health": "Module health",
+        "component_health": "Component health",
+        "realtime_data": "Real-time data",
+        "historical_data": "Historical data",
+        "statistical_data": "Statistical data",
+        "analytical_data": "Analytical data",
+        "predictive_data": "Predictive data",
+        "prescriptive_data": "Prescriptive data",
+        "diagnostic_data": "Diagnostic data",
+        "prognostic_data": "Prognostic data",
+        "operational_data": "Operational data",
+        "configuration_data": "Configuration data",
+        "calibration_data": "Calibration data",
+        "measurement_data": "Measurement data",
+        "test_data": "Test data",
+        "validation_data": "Validation data",
+        "verification_data": "Verification data",
+        "debug_data": "Debug data",
+        "log_data": "Log data",
+        "event_data": "Event data",
+        "alarm_data": "Alarm data",
+        "alert_data": "Alert data",
+        "notification_data": "Notification data",
+        "report_data": "Report data",
+        "dashboard_data": "Dashboard data",
+        "widget_data": "Widget data",
+        "chart_data": "Chart data",
+        "graph_data": "Graph data",
+        "table_data": "Table data",
+        "list_data": "List data",
+        "grid_data": "Grid data",
+        "tree_data": "Tree data",
+        "map_data": "Map data",
+        "image_data": "Image data",
+        "video_data": "Video data",
+        "audio_data": "Audio data",
+        "document_data": "Document data",
+        "file_data": "File data",
+        "folder_data": "Folder data",
+        "database_data": "Database data",
+        "api_data": "API data",
+        "web_data": "Web data",
+        "cloud_data": "Cloud data",
+        "edge_data": "Edge data",
+        "iot_data": "IoT data",
+        "big_data": "Big data",
+        "ai_data": "AI data",
+        "ml_data": "Machine learning data",
+        "dl_data": "Deep learning data",
+        "nn_data": "Neural network data",
+        "data_analytics": "Data analytics",
+        "data_visualization": "Data visualization",
+        "data_mining": "Data mining",
+        "data_processing": "Data processing",
+        "data_storage": "Data storage",
+        "data_backup": "Data backup",
+        "data_recovery": "Data recovery",
+        "data_security": "Data security",
+        "data_privacy": "Data privacy",
+        "data_governance": "Data governance",
+        "data_quality": "Data quality",
+        "data_integration": "Data integration",
+        "data_transformation": "Data transformation",
+        "data_migration": "Data migration",
+        "data_archiving": "Data archiving",
+        "data_retention": "Data retention",
+        "data_compliance": "Data compliance",
+        "data_audit": "Data audit",
+        "data_lineage": "Data lineage",
+        "data_catalog": "Data catalog",
+        "data_lake": "Data lake",
+        "data_warehouse": "Data warehouse",
+        "data_mart": "Data mart",
+        "data_stream": "Data stream",
+        "data_pipeline": "Data pipeline",
+        "data_workflow": "Data workflow",
+        "data_orchestration": "Data orchestration",
+        "data_automation": "Data automation",
+        "data_monitoring": "Data monitoring",
+        "data_alerting": "Data alerting",
+        "data_reporting": "Data reporting",
+        "data_dashboard": "Data dashboard",
+        "data_insights": "Data insights",
+        "data_discovery": "Data discovery",
+        "data_exploration": "Data exploration",
+        "data_analysis": "Data analysis",
+        "data_modeling": "Data modeling",
+        "data_simulation": "Data simulation",
+        "data_forecasting": "Data forecasting",
+        "data_optimization": "Data optimization",
+        "data_decisioning": "Data decisioning",
+        "data_science": "Data science",
+        "data_engineering": "Data engineering",
+        "data_architecture": "Data architecture",
+        "data_strategy": "Data strategy",
+        "project_name": "Smart Electric Oven",
+        "project_description": "Professional Smart Electric Oven Control System",
+        "version": "0.8.7",
+        "firmware_version": "Firmware Version",
+        "connection_status": "Connection Status",
+        "temperature_control": "Temperature Control",
+        "target_temperature": "Target Temperature",
+        "targetTemperatureLabel": "Target Temperature (°C)",
+        "bakingTimeLabel": "Baking Time (minutes)",
+        "wifi_info": "WiFi Info",
+        "device_id": "Device ID",
+        "system_management": "System Management",
+        "temperature_calibration": "Temperature Calibration",
+        "device_settings": "Device Settings",
+        "language": "Language",
+        "theme": "Theme",
+        "dark_mode": "Dark Mode",
+        "light_mode": "Light Mode",
+        "sound": "Sound",
+        "notifications": "Notifications",
+        "help_and_support": "Help & Support",
+        "user_manual": "User Manual",
+        "faq": "FAQ",
+        "technical_support": "Technical Support",
+        "about": "About",
+        "copyright": "Copyright",
+        "all_rights_reserved": "All Rights Reserved",
+        "status_update_failed": "Status update failed",
+        "retrying": "Retrying...",
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "close": "Close",
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Info",
+        "ok": "OK",
+        "yes": "Yes",
+        "no": "No",
+        "on": "On",
+        "off": "Off",
+        "enable": "Enable",
+        "disable": "Disable",
+        "apply": "Apply",
+        "reset": "Reset",
+        "update": "Update",
+        "delete": "Delete",
+        "add": "Add",
+        "edit": "Edit",
+        "remove": "Remove",
+        "select": "Select",
+        "browse": "Browse",
+        "upload": "Upload",
+        "download": "Download",
+        "install": "Install",
+        "upgrade": "Upgrade",
+        "configure": "Configure",
+        "test": "Test",
+        "calibrate": "Calibrate",
+        "measure": "Measure",
+        "adjust": "Adjust",
+        "validate": "Validate",
+        "verify": "Verify",
+        "confirm_action": "Confirm Action",
+        "are_you_sure": "Are you sure you want to perform this action?",
+        "please_wait": "Please wait...",
+        "processing": "Processing...",
+        "completed": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "not_available": "Not Available",
+        "unknown": "Unknown",
+        "none": "None",
+        "all": "All",
+        "default": "Default",
+        "advanced": "Advanced",
+        "basic": "Basic",
+        "expert": "Expert",
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+    "breadMode": "Bread",
+    "cakeMode": "Cake",
+    "pizzaMode": "Pizza",
+    "cookiesMode": "Cookies",
+    "roastMode": "Roast",
+    "defrostMode": "Defrost",
+    "minutes10": "10 minutes",
+    "minutes15": "15 minutes",
+    "minutes20": "20 minutes",
+    "minutes30": "30 minutes",
+    "minutes45": "45 minutes",
+    "minutes60": "60 minutes",
+        "smartOvenProject": "Smart Oven Project",
+        "advancedBakingController": "Advanced Baking Controller",
+        "ovenController": "Oven Controller",
+        "ovenStatus": "Oven Status",
+        "bakingControl": "Baking Control",
+        "autoMode": "Auto Mode",
+        "manualMode": "Manual Mode",
+        "presetMode": "Preset Mode",
+        "systemManagement": "System Management",
+        "settingsHelp": "Settings & Help",
+        "logout": "Logout",
+        "wifiConfig": "WiFi Configuration",
+        "restartDevice": "Restart Device",
+        "apiEndpoints": "API Endpoints",
+        "getDeviceStatusInfo": "Get Device Status Info",
+        "controlHeaterSwitch": "Control Heater Switch",
+        "configureWiFiConnection": "Configure WiFi Connection",
+        "otaFirmwareUpgrade": "OTA Firmware Upgrade",
+        "ovenControlPanelTitle": "Smart Oven - Admin Control Panel"
+    }
+};
+
+// 获取当前语言
+function getCurrentLanguage() {
+    return localStorage.getItem('language') || 'zh';
+}
+
+// 设置语言
+function setLanguage(lang) {
+    localStorage.setItem('language', lang);
+    applyTranslations();
+}
+
+// 获取翻译文本
+function getTranslation(key) {
+    const currentLang = getCurrentLanguage();
+    return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][key] : key;
+}
+
+// 应用翻译到页面元素
+function applyTranslations() {
+    // 统一翻译所有带有data-lang属性的元素
+    document.querySelectorAll('[data-lang]').forEach(element => {
+        const key = element.getAttribute('data-lang');
+        if (key && translations[getCurrentLanguage()] && translations[getCurrentLanguage()][key]) {
+            // 处理placeholder特殊情况
+            if (element.tagName.toLowerCase() === 'input' && element.hasAttribute('placeholder')) {
+                element.setAttribute('placeholder', translations[getCurrentLanguage()][key]);
+            } else {
+                // 使用递归函数替换所有文本节点，包括深层嵌套的
+            const translation = translations[getCurrentLanguage()][key];
+            function replaceTextNodes(element, translation) {
+                if (element.nodeType === Node.TEXT_NODE) {
+                    if (element.textContent.trim() !== '') {
+                        element.textContent = translation;
+                    }
+                    return;
+                }
+                if (element.nodeType === Node.ELEMENT_NODE) {
+                    // 跳过已经处理过的input元素的placeholder
+                    if (element.tagName.toLowerCase() === 'input' && element.hasAttribute('placeholder')) {
+                        return;
+                    }
+                    element.childNodes.forEach(child => replaceTextNodes(child, translation));
+                }
+            }
+            replaceTextNodes(element, translation);
+            }
+        }
+    });
+}
+
+// 切换语言
+function switchLanguage() {
+    const currentLang = getCurrentLanguage();
+    const newLang = currentLang === 'zh' ? 'en' : 'zh';
+    setLanguage(newLang);
+    applyTranslations(); // 切换语言后重新应用翻译
+    // 移除硬编码设置，让applyTranslations函数处理所有元素的翻译
+}
+
+// 页面加载完成后应用翻译
+document.addEventListener('DOMContentLoaded', function() {
+    // 设置语言切换按钮事件监听器
+    const langButton = document.getElementById('lang-toggle');
+    if (langButton) {
+        langButton.addEventListener('click', switchLanguage);
+    }
+    
+    // 应用翻译（必须在设置事件监听器后调用，确保所有元素都能正确翻译）
+    applyTranslations();
+});

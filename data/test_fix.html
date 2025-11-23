@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语言切换测试</title>
+    <script src="lang.js"></script>
+</head>
+<body>
+    <h1 data-lang="smartOvenProject"><span data-lang="smartOven">智能烤箱</span></h1>
+    <p data-lang="advancedBakingController">高级烘焙控制器</p>
+    
+    <button id="lang-toggle" data-lang="chineseEnglish">中/En</button>
+    
+    <script>
+        // 等待DOM加载完成后再绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            
+            // 应用初始翻译
+            applyTranslations();
+            
+            // 绑定语言切换按钮事件
+            const langButton = document.getElementById('lang-toggle');
+            if (langButton) {
+                console.log('Found lang button, binding event');
+                langButton.addEventListener('click', function() {
+                    console.log('Language button clicked');
+                    switchLanguage();
+                });
+                // 初始化按钮文本
+                langButton.textContent = getCurrentLanguage() === 'zh' ? '中/En' : 'Zh/En';
+            } else {
+                console.log('Lang button not found');
+            }
+        });
+    </script>
+</body>
+</html>

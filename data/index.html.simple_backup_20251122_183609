@@ -1,0 +1,4254 @@
+﻿<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>鏅鸿兘鐑ょ - 绠＄悊鍛樻帶鍒堕潰鏉?/title>
+
+    <script>
+
+        // 椤甸潰鍔犺浇鏃舵鏌ョ櫥褰曠姸鎬?
+
+        window.addEventListener('load', function() {
+
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+
+            if (!isLoggedIn) {
+
+                // 鏈櫥褰曪紝璺宠浆鍒扮櫥褰曢〉闈?
+
+                window.location.href = 'login.html';
+
+            }
+
+        });
+
+        
+
+        // 鐧诲嚭鍔熻兘
+
+        function logout() {
+
+            sessionStorage.removeItem('isLoggedIn');
+
+            window.location.href = 'login.html';
+
+        }
+
+        
+
+        // 淇敼瀵嗙爜鍔熻兘
+
+        function changePassword() {
+
+            const newPassword = prompt('璇疯緭鍏ユ柊瀵嗙爜锛堣嚦灏?浣嶏級:');
+
+            if (newPassword && newPassword.length >= 8) {
+
+                localStorage.setItem('adminPassword', newPassword);
+
+                alert('瀵嗙爜淇敼鎴愬姛锛?);
+
+            } else if (newPassword) {
+
+                alert('瀵嗙爜闀垮害鑷冲皯闇€瑕?浣嶏紒');
+
+            }
+
+        }
+
+    </script>
+
+    <link rel="stylesheet" href="css/title-styles.css">
+    <script src="lang.js"></script>
+    <style>
+
+        * {
+
+            margin: 0;
+
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+
+
+        body {
+
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            min-height: 100vh;
+
+            color: white;
+
+            overflow-x: hidden;
+
+        }
+
+
+
+        .container {
+
+            max-width: 100%;
+
+            padding: 20px;
+
+            margin: 0 auto;
+
+        }
+
+
+
+        .header {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .language-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lang-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.5);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.live {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        @keyframes pulse {
+
+            0%, 100% { transform: scale(1); }
+
+            50% { transform: scale(1.1); }
+
+        }
+
+
+
+        .status-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .status-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-value.temperature {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+
+        .connected {
+            color: #51cf66;
+        }
+
+
+
+        .control-section {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+
+
+        .quick-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            padding: 16px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-height: 80px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .control-btn.secondary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .control-btn.tertiary {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .btn-icon {
+            font-size: 20px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+
+
+        .admin-section {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+
+
+        .admin-title {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 15px;
+
+            text-align: center;
+
+        }
+
+
+
+        .admin-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .logout-btn, .change-password-btn {
+            padding: 16px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-height: 80px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .change-password-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .logout-btn:active, .change-password-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* 鍔犵儹鎺у埗鍖哄煙鏍峰紡 */
+        .heating-control-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .heating-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .temp-time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .temp-time-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .temp-time-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .temp-time-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+        }
+
+        .temp-time-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .baking-mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .mode-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23ffffff' d='m0 0 4 4 4-4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+
+        .mode-select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mode-select option {
+            background: #2d3748;
+            color: white;
+        }
+
+        .temperature-control, .heating-mode, .heating-action {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .temp-label, .mode-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .temp-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .temp-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .temp-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .temp-set-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .temp-set-btn:active {
+            transform: scale(0.95);
+        }
+
+        .time-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .time-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .time-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .time-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .time-set-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-set-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            color: #cbd5e1;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+            color: white;
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .mode-btn:active {
+            transform: scale(0.97);
+        }
+
+        .mode-icon {
+            font-size: 18px;
+        }
+
+        .mode-icon {
+            font-size: 16px;
+        }
+
+        .heating-toggle-btn {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .heating-toggle-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .heating-icon {
+            font-size: 20px;
+        }
+
+        /* 瀵艰埅鍗＄墖鏍峰紡 */
+        .navigation-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-decoration: none;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 100px;
+            justify-content: center;
+        }
+
+        .nav-card:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.98);
+        }
+
+        .nav-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .nav-desc {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        
+
+
+
+        .api-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .api-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #f8fafc;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .api-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            border-radius: 2px;
+        }
+
+        .api-endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        }
+
+        .api-endpoint {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .api-endpoint:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .endpoint-method {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .endpoint-method.get {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .endpoint-method.post {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .endpoint-path {
+            font-size: 14px;
+            color: #e2e8f0;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .endpoint-description {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .endpoint-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* API绔偣鍝嶅簲寮忎紭鍖?*/
+        @media (max-width: 768px) {
+            .api-endpoints {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .api-endpoint {
+                padding: 12px;
+                gap: 10px;
+            }
+            
+            .endpoint-path {
+                font-size: 13px;
+            }
+            
+            .endpoint-description {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .api-section {
+                padding: 20px 15px;
+            }
+            
+            .api-title {
+                font-size: 18px;
+            }
+            
+            .api-endpoint {
+                padding: 10px;
+                gap: 8px;
+            }
+            
+            .endpoint-method {
+                min-width: 45px;
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+            
+            .endpoint-path {
+                font-size: 12px;
+            }
+        }
+
+
+
+
+
+
+
+        /* 椤甸潰澶撮儴鏍峰紡 - 鐜颁唬璁捐 */
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .status-dot.live {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 璁惧鐘舵€佸崱鐗囨牱寮?- 鐜颁唬璁捐 */
+        .status-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .status-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .status-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .temperature {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 鍔犵儹鎺у埗鍖哄煙鏍峰紡 - 鐜颁唬璁捐 */
+        .heating-control-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .heating-control-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .heating-control-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 25px 70px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .heating-control-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .heating-control-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #ef4444, #dc2626, #ef4444);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.6);
+        }
+
+        .temp-time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .temp-time-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .temp-time-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .temp-time-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 16px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .temp-time-input:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .temp-time-input::-webkit-outer-spin-button,
+        .temp-time-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .temp-time-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .baking-mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .mode-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 16px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        .mode-select:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3), 0 6px 12px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .mode-select option {
+            background: #1e293b;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .heating-action {
+            text-align: center;
+        }
+
+        .heating-toggle-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            border-radius: 20px;
+            padding: 20px 45px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .heating-toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .heating-toggle-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.7);
+        }
+
+        .heating-toggle-btn:hover::before {
+            left: 100%;
+        }
+
+        .heating-toggle-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .heating-icon {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heating-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .heating-text {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* 鑷姩妯″紡鍜屾墜鍔ㄦā寮忓尯鍩熸牱寮?*/
+        .auto-mode-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .manual-mode-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mode-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 鎸夐挳鏍峰紡浼樺寲 */
+        .logout-btn, .change-password-btn {
+            padding: 14px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            color: white;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logout-btn::before, .change-password-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .logout-btn:hover, .change-password-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .logout-btn:hover::before, .change-password-btn:hover::before {
+            left: 100%;
+        }
+
+        .logout-btn:active, .change-password-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-icon {
+            font-size: 18px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            font-size: 14px;
+            opacity: 0.8;
+            color: #94a3b8;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 绯荤粺绠＄悊鍔熻兘鍖烘牱寮?- 鐜颁唬璁捐 */
+        .system-management-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-management-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .system-management-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            letter-spacing: 0.8px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .system-management-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #60a5fa, #3b82f6, #60a5fa);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+        }
+
+        .system-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .system-management-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .system-management-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.8s ease;
+            transform: skewX(-15deg);
+        }
+
+        .system-management-card:hover {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .system-management-card:hover::before {
+            left: 150%;
+        }
+
+        .system-management-icon {
+            font-size: 42px;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+            transition: all 0.4s ease;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .system-management-card:hover .system-management-icon {
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+        }
+
+        .system-management-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: 0.4px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .system-management-description {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        /* 楂樼骇绠＄悊鍔熻兘鍖烘牱寮?- 鐜颁唬璁捐 */
+        .advanced-management-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .advanced-management-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .advanced-management-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            letter-spacing: 0.8px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .advanced-management-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #d97706, #f59e0b);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.6);
+        }
+
+        .advanced-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+        }
+
+        .advanced-management-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .advanced-management-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.8s ease;
+            transform: skewX(-15deg);
+        }
+
+        .advanced-management-card:hover {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .advanced-management-card:hover::before {
+            left: 150%;
+        }
+
+        .advanced-management-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .advanced-management-icon {
+            font-size: 32px;
+            filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+            transition: all 0.4s ease;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .advanced-management-card:hover .advanced-management-icon {
+            transform: scale(1.15) rotate(5deg);
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+        }
+
+        .advanced-management-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        .advanced-management-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .system-btn {
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .system-btn:hover {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .system-btn:hover::before {
+            left: 100%;
+        }
+
+        .system-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* 鍝嶅簲寮忎紭鍖?*/
+        @media (max-width: 768px) {
+            .system-management-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+            }
+            
+            .advanced-management-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .system-management-card {
+                padding: 15px;
+            }
+            
+            .advanced-management-card {
+                padding: 15px;
+            }
+            
+            .system-btn {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .system-management-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .system-management-card {
+                padding: 12px;
+            }
+            
+            .advanced-management-card {
+                padding: 12px;
+            }
+            
+            .system-management-icon {
+                font-size: 28px;
+            }
+            
+            .advanced-management-icon {
+                font-size: 20px;
+            }
+        }
+
+        }
+
+
+
+        /* 娓╁害鎺у埗闈㈡澘鏍峰紡 */
+
+        .temperature-display {
+
+            display: flex;
+
+            justify-content: space-around;
+
+            margin-bottom: 20px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 15px;
+
+            padding: 15px;
+
+        }
+
+
+
+        .temp-display-item {
+
+            text-align: center;
+
+            flex: 1;
+
+        }
+
+
+
+        .temp-label {
+
+            font-size: 14px;
+
+            opacity: 0.8;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .current-temp, .target-temp {
+
+            font-size: 32px;
+
+            font-weight: 600;
+
+        }
+
+
+
+        .current-temp {
+
+            color: #ff6b6b;
+
+        }
+
+
+
+        .target-temp {
+
+            color: #3b82f6;
+
+        }
+
+
+
+        .temp-controls {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .temp-btn {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            background: rgba(255, 255, 255, 0.2);
+
+            color: white;
+
+            min-width: 60px;
+
+        }
+
+
+
+        .temp-btn.large {
+
+            min-width: 80px;
+
+            background: rgba(255, 255, 255, 0.3);
+
+        }
+
+
+
+        .temp-btn:active {
+
+            transform: scale(0.95);
+
+            background: rgba(255, 255, 255, 0.4);
+
+        }
+
+
+
+        .temp-input-group {
+
+            margin-bottom: 20px;
+
+            text-align: center;
+
+        }
+
+
+
+        .temp-input-label {
+
+            display: block;
+
+            font-size: 14px;
+
+            opacity: 0.8;
+
+            margin-bottom: 8px;
+
+        }
+
+
+
+        .temp-input {
+
+            width: 200px;
+
+            padding: 12px;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: white;
+
+            font-size: 16px;
+
+            text-align: center;
+
+            margin-right: 10px;
+
+        }
+
+
+
+        .temp-input::placeholder {
+
+            color: rgba(255, 255, 255, 0.5);
+
+        }
+
+
+
+        .temp-apply-btn {
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #10b981;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .temp-apply-btn:active {
+
+            transform: scale(0.95);
+
+        }
+
+
+
+        .temp-presets {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+        }
+
+
+
+        .preset-btn {
+
+            padding: 15px 10px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            color: white;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            text-align: center;
+
+        }
+
+
+
+        .preset-value {
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            margin-bottom: 5px;
+
+        }
+
+
+
+        .preset-label {
+
+            font-size: 12px;
+
+            opacity: 0.8;
+
+        }
+
+
+
+        .preset-btn:active {
+
+            transform: scale(0.95);
+
+            background: rgba(255, 255, 255, 0.25);
+
+        }
+
+
+
+        .action-buttons {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+
+        .btn {
+
+            padding: 15px 25px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            min-width: 140px;
+
+        }
+
+
+
+        .btn-primary {
+
+            background: #10b981;
+
+            color: white;
+
+        }
+
+
+
+        .btn-secondary {
+
+            background: rgba(255, 255, 255, 0.2);
+
+            color: white;
+
+            border: 1px solid rgba(255, 255, 255, 0.3);
+
+        }
+
+
+
+        .btn:active {
+
+            transform: scale(0.95);
+
+        }
+
+
+
+        .status-indicator {
+
+            text-align: center;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            margin-top: 10px;
+
+        }
+
+
+
+        .status-idle {
+
+            background: rgba(107, 114, 128, 0.3);
+
+            color: rgba(255, 255, 255, 0.8);
+
+        }
+
+
+
+        .status-heating {
+
+            background: rgba(239, 68, 68, 0.3);
+
+            color: #ff6b6b;
+
+        }
+
+
+
+        .status-cooling {
+
+            background: rgba(59, 130, 246, 0.3);
+
+            color: #3b82f6;
+
+        }
+
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: white;
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+        }
+
+
+
+        .logout-btn:hover, .change-password-btn:hover {
+
+            background: rgba(255, 255, 255, 0.2);
+
+            transform: translateY(-1px);
+
+        }
+
+
+
+        .logout-btn:active, .change-password-btn:active {
+
+            transform: translateY(0);
+
+        }
+
+
+
+        @media (max-width: 480px) {
+
+            .status-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            
+
+            .quick-controls {
+
+                flex-direction: column;
+
+            }
+
+            
+
+            .control-btn {
+
+                min-width: auto;
+
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        @media (max-width: 480px) {
+
+
+
+            
+
+
+
+            
+
+
+
+            
+
+
+
+            
+
+            /* 忙赂漏氓潞娄忙聨搂氓聢露茅聺垄忙聺驴氓聯聧氓潞聰氓录聫盲录聵氓聦聳 */
+
+            .temperature-display {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .temp-display-item {
+
+                text-align: center;
+
+            }
+
+            
+
+            .temp-controls {
+
+                flex-wrap: wrap;
+
+                justify-content: center;
+
+                gap: 8px;
+
+            }
+
+            
+
+            .temp-btn {
+
+                min-width: 60px;
+
+                font-size: 14px;
+
+                padding: 8px 12px;
+
+            }
+
+            
+
+            .temp-btn.large {
+
+                min-width: 70px;
+
+            }
+
+            
+
+            .temp-input-group {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .temp-input-label {
+
+                text-align: center;
+
+            }
+
+            
+
+            .temp-input {
+
+                width: 100%;
+
+                text-align: center;
+
+            }
+
+            
+
+            .temp-apply-btn {
+
+                width: 100%;
+
+            }
+
+            
+
+            .temp-presets {
+
+                grid-template-columns: repeat(2, 1fr);
+
+                gap: 8px;
+
+            }
+
+            
+
+            .preset-btn {
+
+                min-height: 60px;
+
+            }
+
+            
+
+            .action-buttons {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .btn {
+
+                width: 100%;
+
+            }
+
+            
+
+            .status-indicator {
+
+                font-size: 12px;
+
+                padding: 8px 12px;
+
+            }
+
+            
+
+            /* 莽庐隆莽聬聠氓聤聼猫聝陆氓聯聧氓潞聰氓录聫盲录聵氓聦聳 */
+
+            .admin-buttons {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .admin-btn {
+
+                width: 100%;
+
+                justify-content: center;
+
+            }
+
+            
+
+            /* OTA氓聤聼猫聝陆氓聯聧氓潞聰氓录聫盲录聵氓聦聳 */
+
+            .ota-upload {
+
+                flex-direction: column;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .ota-btn {
+
+                width: 100%;
+
+                justify-content: center;
+
+            }
+
+            
+
+            /* API莽芦炉莽聜鹿氓聯聧氓潞聰氓录聫盲录聵氓聦聳 */
+
+            .api-section {
+
+                padding: 15px;
+
+            }
+
+            
+
+            .api-endpoints {
+
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+
+            }
+
+            
+
+            .api-endpoint {
+
+                padding: 12px;
+
+            }
+
+            
+
+            .endpoint-method {
+
+                min-width: 60px;
+
+                font-size: 12px;
+
+            }
+
+            
+
+            .endpoint-path {
+
+                font-size: 12px;
+
+            }
+
+            
+
+            /* 氓聤聼猫聝陆莽陆聭忙聽录氓聯聧氓潞聰氓录聫盲录聵氓聦聳 */
+
+            .feature-grid {
+
+                grid-template-columns: 1fr;
+
+                gap: 15px;
+
+            }
+
+            
+
+            .feature-card {
+
+                padding: 15px;
+
+            }
+
+            
+
+            .feature-icon {
+
+                font-size: 24px;
+
+            }
+
+            
+
+            .feature-title {
+
+                font-size: 16px;
+
+            }
+
+            
+
+            .feature-description {
+
+                font-size: 12px;
+
+            }
+
+        }
+
+        
+
+        @media (max-width: 768px) and (min-width: 481px) {
+
+            /* 氓鹿鲁忙聺驴莽聰碌猫聞聭氓聮聦氓陇搂氓卤聫氓鹿聲忙聣聥忙聹潞盲录聵氓聦聳 */
+
+            .temp-presets {
+
+                grid-template-columns: repeat(3, 1fr);
+
+            }
+
+            
+
+            .feature-grid {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+            
+
+            .api-endpoints {
+
+                grid-template-columns: repeat(2, 1fr);
+
+            }
+
+        }
+
+        
+
+        /* 绯荤粺绠＄悊鏍峰紡 */
+
+        .system-management {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(10px);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+        
+
+
+
+        
+
+        .management-grid {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+        }
+
+        
+
+        .management-card {
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 15px;
+
+            padding: 20px;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        }
+
+        
+
+        .management-card:hover {
+
+            background: rgba(255, 255, 255, 0.15);
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+        }
+
+        
+
+        .management-icon {
+
+            font-size: 32px;
+
+            margin-bottom: 10px;
+
+        }
+
+        
+
+        .management-title {
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+
+            color: white;
+
+        }
+
+        
+
+        .management-description {
+
+            font-size: 12px;
+
+            opacity: 0.8;
+
+            line-height: 1.4;
+
+            color: rgba(255, 255, 255, 0.9);
+
+        }
+
+        
+
+        /* 鍔熻兘鍖哄煙鏍峰紡 */
+        .function-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .function-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .function-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .function-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .function-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* 鍔熻兘鍖哄煙鍝嶅簲寮忎紭鍖?*/
+        @media (max-width: 1024px) {
+            .function-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .function-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .function-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .function-card {
+                padding: 20px 15px;
+                min-height: 100px;
+            }
+            
+            .function-icon {
+                font-size: 28px;
+            }
+            
+            .function-title {
+                font-size: 14px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="title-section">
+                    <h1 class="main-title">
+                        <span class="title-icon">馃崬</span> <span data-lang="smartOvenProject">鏅鸿兘鐑ょ</span>
+                    </h1>
+                    <p class="subtitle" data-lang="advancedBakingController">楂樼骇鐑樼剻鎺у埗鍣?/p>
+                </div>
+                <div class="language-switch">
+                    <button class="lang-toggle" id="lang-toggle" onclick="switchLanguage()">
+                        <span data-lang="chineseEnglish">涓?En</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 璁惧鐘舵€佸崱鐗?-->
+        <div class="status-card">
+            <div class="status-header">
+                <h2 class="status-title">鐑ょ鐘舵€?/h2>
+                <div class="connection-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">鏈繛鎺?/span>
+                </div>
+            </div>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">褰撳墠娓╁害</div>
+                    <div class="status-value temperature" id="current-temp-display">--掳C</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">鍔犵儹鐘舵€?/div>
+                    <div class="status-value heating-status">鏈幏鍙栧姞鐑姸鎬?/div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">WiFi鐘舵€?/div>
+                    <div class="status-value wifi-status">鏈幏鍙栧綋鍓嶈繛鎺ョ姸鎬?/div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">IP鍦板潃</div>
+                    <div class="status-value device-id">鏈幏鍙栫湡瀹濱P</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- 鍔犵儹鎺у埗鍖哄煙 -->
+        <div class="heating-control-section">
+            <h3>鐑樼剻鎺у埗</h3>
+            <div class="heating-controls">
+                <!-- 鐑樼剻妯″紡閫夋嫨 -->
+                <div class="baking-mode-control">
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" id="auto-mode-btn" onclick="switchToAutoMode()">
+                            <span class="mode-icon">馃</span>
+                            <span>鑷姩妯″紡</span>
+                        </button>
+                        <button class="mode-btn" id="manual-mode-btn" onclick="switchToManualMode()">
+                            <span class="mode-icon">鉁?/span>
+                            <span>鎵嬪姩妯″紡</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 鑷姩妯″紡 - 鐑樼剻妯″紡涓嬫媺閫夋嫨妗?-->
+                <div class="auto-mode-section" id="auto-mode-section">
+                    <div class="mode-section-title">鑷姩妯″紡璁剧疆</div>
+                    <div class="baking-mode-select">
+                        <label class="mode-label">棰勮妯″紡</label>
+                        <select class="mode-select" id="baking-mode-select" onchange="onBakingModeChange()">
+                            <option value="bread">馃崬 闈㈠寘 (180掳C, 30鍒嗛挓)</option>
+                            <option value="cake">馃巶 铔嬬硶 (160掳C, 45鍒嗛挓)</option>
+                            <option value="pizza">馃崟 鎶惃 (220掳C, 15鍒嗛挓)</option>
+                            <option value="cookies">馃崻 楗煎共 (170掳C, 20鍒嗛挓)</option>
+                            <option value="roast">馃崡 鐑よ倝 (200掳C, 60鍒嗛挓)</option>
+                            <option value="defrost">鉂勶笍 瑙ｅ喕 (80掳C, 10鍒嗛挓)</option>
+                            <option value="custom">鈿欙笍 鑷畾涔夋ā寮?/option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- 鎵嬪姩妯″紡 - 娓╁害鍜屾椂闂磋缃?-->
+                <div class="manual-mode-section" id="manual-mode-section" style="display: none;">
+                    <div class="mode-section-title">鎵嬪姩妯″紡璁剧疆</div>
+                    <div class="temp-time-row">
+                        <div class="temp-time-control">
+                            <label class="temp-time-label">鐩爣娓╁害 (掳C)</label>
+                            <input type="number" class="temp-time-input" id="target-temp" value="180" min="0" max="250" step="5" oninput="onManualTemperatureChange(this)" onblur="validateTemperature()">
+                        </div>
+                        <div class="temp-time-control">
+                            <label class="temp-time-label">鐑樼剻鏃堕棿 (鍒嗛挓)</label>
+                            <input type="number" class="temp-time-input" id="baking-time" value="30" min="0" max="120" step="1" oninput="onManualTimeChange(this)" onblur="validateTime()">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 鍚姩鍔犵儹鎸夐挳 -->
+                <div class="heating-action">
+                    <button class="heating-toggle-btn" id="heating-toggle" onclick="toggleHeating()">
+                        <span class="heating-icon">馃敟</span>
+                        <span class="heating-text">寮€濮?/span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 鍔熻兘鍖哄煙 -->
+        <div class="function-section">
+            <h3>绯荤粺绠＄悊</h3>
+            <div class="function-grid">
+                <!-- 璁惧鐘舵€?-->
+                <a href="device_status.html" class="function-card">
+                    <div class="function-icon">馃搳</div>
+                    <div class="function-title">璁惧鐘舵€?/div>
+                </a>
+                
+                <!-- 璁剧疆涓庡府鍔?-->
+                <a href="settings_help.html" class="function-card">
+                    <div class="function-icon">鈿欙笍</div>
+                    <div class="function-title">璁剧疆涓庡府鍔?/div>
+                </a>
+                
+                <!-- 淇敼瀵嗙爜 -->
+                <div class="function-card" onclick="changePassword()">
+                    <div class="function-icon">馃敀</div>
+                    <div class="function-title">淇敼瀵嗙爜</div>
+                </div>
+                
+                <!-- 閫€鍑虹櫥褰?-->
+                <div class="function-card" onclick="logout()">
+                    <div class="function-icon">馃毆</div>
+                    <div class="function-title">閫€鍑虹櫥褰?/div>
+                </div>
+                
+                <!-- 娓╁害鏍″噯 -->
+                <a href="temperature_calibration.html" class="function-card">
+                    <div class="function-icon">馃尅锔?/div>
+                    <div class="function-title">娓╁害鏍″噯</div>
+                </a>
+                
+                <!-- WiFi閰嶇疆 -->
+                <a href="wifi_config.html" class="function-card">
+                    <div class="function-icon">馃摱</div>
+                    <div class="function-title">WiFi閰嶇疆</div>
+                </a>
+                
+                <!-- 鍥轰欢鏇存柊 -->
+                <a href="/ota_update" class="function-card">
+                    <div class="function-icon">猬嗭笍</div>
+                    <div class="function-title">鍥轰欢鏇存柊</div>
+                </a>
+                
+                <!-- 閲嶅惎璁惧 -->
+                <div class="function-card" onclick="restartDevice()">
+                    <div class="function-icon">馃攧</div>
+                    <div class="function-title">閲嶅惎璁惧</div>
+                </div>
+
+                <!-- 鎭㈠鍑哄巶璁剧疆 -->
+                <div class="function-card" onclick="factoryReset()">
+                    <div class="function-icon">鈿狅笍</div>
+                    <div class="function-title">鎭㈠鍑哄巶璁剧疆</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- 鍔犺浇閬僵 -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>姝ｅ湪杩炴帴璁惧...</p>
+        </div>
+    </div>
+
+
+
+        </div>
+
+
+
+        <!-- API绔偣淇℃伅 -->
+        <div class="api-section">
+            <div class="api-title">API绔偣</div>
+            <div class="api-endpoints">
+                <div class="api-endpoint">
+                    <span class="endpoint-method get">GET</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/status</div>
+                        <div class="endpoint-description">鑾峰彇璁惧鐘舵€佷俊鎭?/div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/control</div>
+                        <div class="endpoint-description">鎺у埗鍔犵儹鍣ㄥ紑鍏?/div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/wificonfig</div>
+                        <div class="endpoint-description">閰嶇疆WiFi缃戠粶杩炴帴</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/restart</div>
+                        <div class="endpoint-description">閲嶅惎璁惧</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/factoryreset</div>
+                        <div class="endpoint-description">鎭㈠鍑哄巶璁剧疆</div>
+                    </div>
+                </div>
+                <div class="api-endpoint">
+                    <span class="endpoint-method post">POST</span>
+                    <div class="endpoint-info">
+                        <div class="endpoint-path">/ota_update</div>
+                        <div class="endpoint-description">OTA鍥轰欢鍗囩骇</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="footer">
+
+            <p>鏅鸿兘鐢电儰绠辨帶鍒跺櫒 v0.8.5</p>
+
+            <p>漏 2025 鏅鸿兘鐢电儰绠遍」鐩?/p>
+
+        </div>
+
+    </div>
+
+            <script>
+
+        // 璁惧鐘舵€佸彉閲?
+
+        let deviceStatus = {
+
+            currentTemp: 0,
+
+            targetTemp: 180,
+
+            heatingEnabled: false,
+
+            wifiConnected: false,
+
+            wifiSSID: '',
+
+            ipAddress: '',
+
+            deviceId: '',
+
+            firmwareVersion: ''
+
+        };
+
+
+
+        // 椤甸潰鍔犺浇瀹屾垚鍚庡垵濮嬪寲
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            console.log('鏅鸿兘鐢电儰绠辩鐞嗗憳椤甸潰宸插姞杞?);
+
+            refreshData();
+
+            
+
+            // 姣?绉掕嚜鍔ㄥ埛鏂版暟鎹?
+
+            setInterval(refreshData, 5000);
+
+            
+
+            // 鍒濆鍖栨枃浠堕€夋嫨浜嬩欢
+            const firmwareFileInput = document.getElementById('firmware-file');
+            if (firmwareFileInput) {
+                firmwareFileInput.addEventListener('change', handleFileSelect);
+            }
+            
+            // 鍒濆鍖栨枃浠剁郴缁熸枃浠堕€夋嫨浜嬩欢
+            const filesystemFileInput = document.getElementById('filesystem-file');
+            if (filesystemFileInput) {
+                filesystemFileInput.addEventListener('change', handleFilesystemFileSelect);
+            }
+            
+            // 鍒濆鍖栫儤鐒欐帶鍒舵ā寮?
+            switchToAutoMode(); // 榛樿杩涘叆鑷姩妯″紡
+
+        });
+
+
+
+        // 鍒锋柊璁惧鏁版嵁
+
+        async function refreshData() {
+
+            try {
+
+                const response = await fetch('/status');
+
+                if (response.ok) {
+
+                    const data = await response.json();
+
+                    updateStatusDisplay(data);
+
+                } else {
+
+                    console.error('鑾峰彇璁惧鐘舵€佸け璐?);
+
+                    showDemoData();
+
+                }
+
+            } catch (error) {
+
+                console.error('缃戠粶杩炴帴澶辫触:', error);
+
+                showDemoData();
+
+            }
+
+        }
+
+
+
+        // 鏇存柊鐘舵€佹樉绀?
+
+
+
+
+
+        // 鏄剧ず婕旂ず鏁版嵁锛堢綉缁滆繛鎺ュけ璐ユ椂锛?
+        function showDemoData() {
+            const demoData = {
+                temperature: 25.0,
+                target_temperature: 180.0,
+                heating_enabled: false,
+                wifi_connected: true,
+                wifiSSID: 'SmartOven_AP',
+                ip_address: '192.168.4.1',
+                device_id: 'SmartOven_001',
+                firmware_version: '0.8.5'
+            };
+
+            
+
+            const connectionStatus = document.querySelector('.connection-status');
+            const statusText = connectionStatus ? connectionStatus.querySelector('.status-text') : null;
+
+            if (statusText) {
+                statusText.textContent = '婕旂ず妯″紡';
+                statusText.style.color = '#f59e0b';
+            }
+
+            updateStatusDisplay(demoData);
+
+        }
+
+
+
+        // 鍒囨崲鍔犵儹鐘舵€?
+
+        async function toggleHeating() {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        heating_enabled: !deviceStatus.heatingEnabled
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('鎺у埗鍛戒护鍙戦€佸け璐?);
+
+                }
+
+            } catch (error) {
+
+                console.error('鎺у埗璁惧澶辫触:', error);
+
+                alert('缃戠粶杩炴帴澶辫触');
+
+            }
+
+        }
+
+
+
+        // 蹇€熻缃俯搴?
+
+        async function quickSetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('娓╁害璁剧疆澶辫触');
+
+                }
+
+            } catch (error) {
+
+                console.error('璁剧疆娓╁害澶辫触:', error);
+
+                alert('缃戠粶杩炴帴澶辫触');
+
+            }
+
+        }
+
+
+
+        // 閲嶅惎璁惧
+
+        async function restartDevice() {
+
+            if (confirm('纭畾瑕侀噸鍚澶囧悧锛熻澶囧皢鍦?绉掑悗閲嶅惎銆?)) {
+
+                try {
+
+                    const response = await fetch('/restart', {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('璁惧閲嶅惎鍛戒护宸插彂閫侊紝璇风瓑寰呯害30绉掑悗閲嶆柊杩炴帴');
+
+                    } else {
+
+                        alert('閲嶅惎鍛戒护鍙戦€佸け璐?);
+
+                    }
+
+                } catch (error) {
+
+                    console.error('閲嶅惎璁惧澶辫触:', error);
+
+                    alert('缃戠粶杩炴帴澶辫触');
+
+                }
+
+            }
+
+        }
+
+
+
+        // 鎭㈠鍑哄巶璁剧疆
+
+        async function factoryReset() {
+
+            if (confirm('纭畾瑕佹仮澶嶅嚭鍘傝缃悧锛熸墍鏈夐厤缃皢琚竻闄わ紝璁惧灏嗛噸鍚€?)) {
+
+                try {
+
+                    const response = await fetch('/factoryreset', {
+
+                        method: 'POST'
+
+                    });
+
+                    
+
+                    if (response.ok) {
+
+                        alert('鎭㈠鍑哄巶璁剧疆鍛戒护宸插彂閫侊紝璁惧灏嗛噸鍚苟杩涘叆閰嶇綉妯″紡');
+
+                    } else {
+
+                        alert('鎭㈠鍑哄巶璁剧疆鍛戒护鍙戦€佸け璐?);
+
+                    }
+
+                } catch (error) {
+
+                    console.error('鎭㈠鍑哄巶璁剧疆澶辫触:', error);
+
+                    alert('缃戠粶杩炴帴澶辫触');
+
+                }
+
+            }
+
+        }
+
+
+
+        
+
+
+
+
+
+
+
+        // 澶勭悊鏂囦欢閫夋嫨
+
+        
+
+        
+
+
+
+        
+
+
+
+        // 鏇存柊鍥轰欢鐗堟湰鏄剧ず
+
+        function updateFirmwareDisplay() {
+
+            const firmwareElement = document.getElementById('current-firmware');
+
+            if (firmwareElement && deviceStatus.firmwareVersion) {
+
+                firmwareElement.textContent = deviceStatus.firmwareVersion;
+
+            }
+
+        }
+
+
+
+        // 鍦ㄧ姸鎬佹洿鏂版椂涔熸洿鏂板浐浠剁増鏈樉绀?
+
+        function updateStatusDisplay(data) {
+
+            deviceStatus = {
+
+                currentTemp: data.temperature || 0,
+
+                targetTemp: data.target_temperature || 180,
+
+                heatingEnabled: data.heating_enabled || false,
+
+                wifiConnected: data.wifi_connected || false,
+
+                wifiSSID: data.wifi_ssid || '',
+
+                ipAddress: data.ip_address || '',
+
+                deviceId: data.device_id || '',
+
+                firmwareVersion: data.firmware_version || ''
+
+            };
+
+
+
+            // 瀹夊叏鍦版洿鏂版俯搴︽樉绀?
+
+            const statusItems = document.querySelectorAll('.status-item');
+
+            if (statusItems.length >= 4) {
+
+                statusItems[0].querySelector('.status-value').textContent = 
+
+                    deviceStatus.currentTemp.toFixed(1) + '掳C';
+
+                statusItems[1].querySelector('.status-value').textContent = 
+
+                    deviceStatus.targetTemp.toFixed(1) + '掳C';
+
+                
+
+                // 鏇存柊鍔犵儹鐘舵€?
+
+                const heatingStatus = deviceStatus.heatingEnabled ? '鍔犵儹涓? : '宸插仠姝?;
+
+                statusItems[2].querySelector('.status-value').textContent = heatingStatus;
+
+                statusItems[2].querySelector('.status-value').style.color = 
+
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+
+                
+
+                // 鏇存柊WiFi鐘舵€?
+
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '宸茶繛鎺?) : '鏈繛鎺?;
+
+                statusItems[3].querySelector('.status-value').textContent = wifiStatus;
+
+                statusItems[3].querySelector('.status-value').style.color = 
+
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+
+            }
+
+            
+
+            // 鏇存柊鍥轰欢鐗堟湰鏄剧ず
+
+            updateFirmwareDisplay();
+
+            
+
+            // 鏇存柊娓╁害鎺у埗闈㈡澘鏄剧ず
+
+            updateTemperatureControlDisplay();
+
+        }
+
+
+
+        // 鏇存柊娓╁害鎺у埗闈㈡澘鏄剧ず
+
+        function updateTemperatureControlDisplay() {
+
+            // 鏇存柊褰撳墠娓╁害鏄剧ず
+
+            const currentTempDisplay = document.getElementById('current-temp-display');
+
+            if (currentTempDisplay) {
+
+                currentTempDisplay.textContent = deviceStatus.currentTemp.toFixed(1) + '掳C';
+
+            }
+
+            
+
+            // 鏇存柊鐩爣娓╁害鏄剧ず
+
+            const targetTempDisplay = document.getElementById('target-temp-display');
+
+            if (targetTempDisplay) {
+
+                targetTempDisplay.textContent = deviceStatus.targetTemp.toFixed(1) + '掳C';
+
+            }
+
+            
+
+            // 鏇存柊鍔犵儹鎸夐挳鐘舵€?
+
+            const heatingBtn = document.getElementById('heating-btn');
+
+            if (heatingBtn) {
+
+                heatingBtn.textContent = deviceStatus.heatingEnabled ? '鍏抽棴鍔犵儹' : '寮€鍚姞鐑?;
+
+                heatingBtn.className = deviceStatus.heatingEnabled ? 
+
+                    'btn btn-secondary' : 'btn btn-primary';
+
+            }
+
+            
+
+            // 鏇存柊鍔犵儹鐘舵€佹寚绀哄櫒
+
+            const heatingStatus = document.getElementById('heating-status');
+
+            if (heatingStatus) {
+
+                if (deviceStatus.heatingEnabled) {
+
+                    heatingStatus.textContent = '鍔犵儹鍣ㄦ鍦ㄥ伐浣?;
+
+                    heatingStatus.className = 'status-indicator status-heating';
+
+                } else {
+
+                    heatingStatus.textContent = '鍔犵儹鍣ㄥ凡鍏抽棴';
+
+                    heatingStatus.className = 'status-indicator status-idle';
+
+                }
+
+            }
+
+        }
+
+
+
+        // 娓╁害璋冭妭鍔熻兘
+
+        function changeTemp(delta) {
+
+            const newTemp = deviceStatus.targetTemp + delta;
+
+            if (newTemp >= 0 && newTemp <= 300) {
+
+                setTargetTemp(newTemp);
+
+            } else {
+
+                alert('娓╁害鑼冨洿蹇呴』鍦?0掳C 鍒?300掳C 涔嬮棿');
+
+            }
+
+        }
+
+
+
+        // 璁剧疆鐩爣娓╁害
+
+        async function setTargetTemp(temp) {
+
+            try {
+
+                const response = await fetch('/control', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        target_temperature: temp
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    refreshData();
+
+                } else {
+
+                    alert('娓╁害璁剧疆澶辫触');
+
+                }
+
+            } catch (error) {
+
+                console.error('璁剧疆娓╁害澶辫触:', error);
+
+                alert('缃戠粶杩炴帴澶辫触');
+
+            }
+
+        }
+
+
+
+        // 棰勮娓╁害璁剧疆
+
+        function setPresetTemp(temp) {
+
+            setTargetTemp(temp);
+
+        }
+
+
+
+        // 搴旂敤鐩存帴杈撳叆鐨勬俯搴?
+
+        function applyTemperature() {
+
+            const tempInput = document.getElementById('temp-input');
+
+            if (tempInput && tempInput.value) {
+
+                const temp = parseInt(tempInput.value);
+
+                if (temp >= 0 && temp <= 300) {
+
+                    setTargetTemp(temp);
+
+                    tempInput.value = ''; // 娓呯┖杈撳叆妗?
+
+                } else {
+
+                    alert('璇疯緭鍏?0掳C 鍒?300掳C 涔嬮棿鐨勬俯搴﹀€?);
+
+                }
+
+            } else {
+
+                alert('璇峰厛杈撳叆瑕佽缃殑娓╁害');
+
+            }
+
+        }
+
+
+
+
+
+
+
+        // 鏇存柊璁惧鐘舵€佹樉绀?
+        function updateStatusDisplay(data) {
+            deviceStatus = {
+                currentTemp: data.temperature || 0,
+                targetTemp: data.target_temperature || 180,
+                heatingEnabled: data.heating_enabled || false,
+                wifiConnected: data.wifi_connected || false,
+                wifiSSID: data.wifi_ssid || '',
+                ipAddress: data.ip_address || '',
+                deviceId: data.device_id || '',
+                firmwareVersion: data.firmware_version || '',
+                calibration: data.calibration || { offset: 0, scale: 1.0 }
+            };
+
+            // 瀹夊叏鍦版洿鏂扮姸鎬佹樉绀?
+            const statusItems = document.querySelectorAll('.status-item');
+
+            if (statusItems.length >= 4) {
+                // 鏇存柊褰撳墠娓╁害
+                statusItems[0].querySelector('.status-value').textContent = 
+                    deviceStatus.currentTemp.toFixed(1) + '掳C';
+                
+                // 鏇存柊鍔犵儹鐘舵€?
+                const heatingStatus = deviceStatus.heatingEnabled ? '鍔犵儹涓? : '宸插仠姝?;
+                statusItems[1].querySelector('.status-value').textContent = heatingStatus;
+                statusItems[1].querySelector('.status-value').style.color = 
+                    deviceStatus.heatingEnabled ? '#10b981' : '#6b7280';
+                
+                // 鏇存柊WiFi鐘舵€?- 鏄剧ず瀹為檯WiFi鍚嶇О
+                const wifiStatus = deviceStatus.wifiConnected ? (deviceStatus.wifiSSID || '宸茶繛鎺?) : '鏈繛鎺?;
+                statusItems[2].querySelector('.status-value').textContent = wifiStatus;
+                statusItems[2].querySelector('.status-value').style.color = 
+                    deviceStatus.wifiConnected ? '#10b981' : '#ef4444';
+                
+                // 鏇存柊IP鍦板潃
+                statusItems[3].querySelector('.status-value').textContent = 
+                    deviceStatus.ipAddress || '--';
+            }
+
+            // 鏇存柊椤堕儴杩炴帴鐘舵€佹樉绀?
+            const connectionStatus = document.querySelector('.connection-status');
+            const statusDot = connectionStatus.querySelector('.status-dot');
+            const statusText = connectionStatus.querySelector('.status-text');
+            
+            if (deviceStatus.wifiConnected) {
+                statusDot.className = 'status-dot live';
+                statusText.textContent = '宸茶繛鎺?;
+                statusText.style.color = '#10b981';
+            } else {
+                statusDot.className = 'status-dot';
+                statusText.textContent = '鏈繛鎺?;
+                statusText.style.color = '#ef4444';
+            }
+
+            
+
+            // 鏇存柊鍥轰欢鐗堟湰鏄剧ず
+
+            updateFirmwareDisplay();
+
+            
+
+            // 鏇存柊娓╁害鎺у埗闈㈡澘鏄剧ず
+            updateTemperatureControlDisplay();
+            
+            // 鏇存柊鏍″噯鏄剧ず
+            updateCalibrationDisplay();
+
+        }
+
+        // 鏇存柊鏍″噯鏄剧ず
+        function updateCalibrationDisplay() {
+            if (deviceStatus.calibration) {
+                currentCalibration = deviceStatus.calibration;
+                // 杩欓噷鍙互娣诲姞鏍″噯鐘舵€佹樉绀洪€昏緫
+                console.log('褰撳墠鏍″噯鍙傛暟:', currentCalibration);
+            }
+        }
+        
+        // 鍏ㄥ眬鍙橀噺
+        let currentCalibration = { offset: 0, scale: 1.0 };
+
+
+
+        // 绯荤粺绠＄悊鍔熻兘鍑芥暟
+
+        
+
+        // 鎵撳紑WiFi閰嶇疆椤甸潰
+
+        function openWifiConfig() {
+
+            window.open('wifi_config.html', '_blank');
+
+        }
+
+        
+
+        // 閲嶅惎璁惧
+
+        async function restartDevice() {
+
+            const confirmed = confirm('纭畾瑕侀噸鍚澶囧悧锛熼噸鍚繃绋嬪彲鑳介渶瑕佸嚑鍒嗛挓鏃堕棿銆?);
+
+            if (!confirmed) return;
+
+            
+
+            try {
+
+                const response = await fetch('/restart', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    }
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert('璁惧閲嶅惎鍛戒护宸插彂閫侊紝璁惧灏嗗湪鍑犵閽熷悗閲嶅惎銆?);
+
+                    // 鏄剧ず閲嶅惎鎻愮ず
+
+                    showRestartMessage();
+
+                } else {
+
+                    alert('閲嶅惎鍛戒护鍙戦€佸け璐?);
+
+                }
+
+            } catch (error) {
+
+                console.error('閲嶅惎璁惧澶辫触:', error);
+
+                alert('缃戠粶杩炴帴澶辫触锛屾棤娉曢噸鍚澶?);
+
+            }
+
+        }
+
+        
+
+        // 鏄剧ず閲嶅惎鎻愮ず
+
+        function showRestartMessage() {
+
+            const messageDiv = document.createElement('div');
+
+            messageDiv.style.cssText = `
+
+                position: fixed;
+
+                top: 50%;
+
+                left: 50%;
+
+                transform: translate(-50%, -50%);
+
+                background: rgba(0, 0, 0, 0.9);
+
+                color: white;
+
+                padding: 30px;
+
+                border-radius: 15px;
+
+                text-align: center;
+
+                z-index: 1000;
+
+                font-size: 16px;
+
+                max-width: 300px;
+
+            `;
+
+            messageDiv.innerHTML = `
+
+                <div style="font-size: 24px; margin-bottom: 15px;">馃攧</div>
+
+                <div style="font-weight: 600; margin-bottom: 10px;">璁惧姝ｅ湪閲嶅惎</div>
+
+                <div style="font-size: 14px; opacity: 0.8;">
+
+                    璁惧姝ｅ湪閲嶅惎锛岃绛夊緟鍑犲垎閽熷悗閲嶆柊杩炴帴銆?
+
+                </div>
+
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            
+
+            // 5绉掑悗鑷姩鍒锋柊椤甸潰
+
+            setTimeout(() => {
+
+                window.location.reload();
+
+            }, 5000);
+
+        }
+
+        
+
+        // 鎭㈠鍑哄巶璁剧疆
+
+        async function factoryReset() {
+
+            const confirmed = confirm('鈿狅笍 璀﹀憡锛氭鎿嶄綔灏嗘竻闄ゆ墍鏈夎缃苟鎭㈠璁惧鍒板嚭鍘傜姸鎬侊紒\n\n纭畾瑕佺户缁悧锛?);
+
+            if (!confirmed) return;
+
+            
+
+            const password = prompt('璇疯緭鍏ョ鐞嗗憳瀵嗙爜纭鎿嶄綔锛?);
+
+            if (!password) return;
+
+            
+
+            try {
+
+                const response = await fetch('/factoryreset', {
+
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type': 'application/json',
+
+                    },
+
+                    body: JSON.stringify({
+
+                        password: password
+
+                    })
+
+                });
+
+                
+
+                if (response.ok) {
+
+                    alert('璁惧宸叉仮澶嶅嚭鍘傝缃紝绯荤粺灏嗚嚜鍔ㄩ噸鍚€?);
+
+                    // 鏄剧ず鎭㈠鍑哄巶璁剧疆鎻愮ず
+
+                    showFactoryResetMessage();
+
+                } else {
+
+                    alert('鎭㈠鍑哄巶璁剧疆澶辫触锛屽瘑鐮佸彲鑳戒笉姝ｇ‘');
+
+                }
+
+            } catch (error) {
+
+                console.error('鎭㈠鍑哄巶璁剧疆澶辫触:', error);
+
+                alert('缃戠粶杩炴帴澶辫触锛屾棤娉曟仮澶嶅嚭鍘傝缃?);
+
+            }
+
+        }
+
+        
+
+        // 鏄剧ず鎭㈠鍑哄巶璁剧疆鎻愮ず
+        function showFactoryResetMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.9);
+                color: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                z-index: 1000;
+                font-size: 16px;
+                max-width: 300px;
+            `;
+            messageDiv.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 15px;">鈿狅笍</div>
+                <div style="font-weight: 600; margin-bottom: 10px;">璁惧姝ｅ湪鎭㈠鍑哄巶璁剧疆</div>
+                <div style="font-size: 14px; opacity: 0.8;">
+                    鎵€鏈夎缃皢琚竻闄わ紝璁惧灏嗛噸鍚苟鎭㈠鍑哄巶鐘舵€併€?
+                </div>
+            `;
+            document.body.appendChild(messageDiv);
+            
+            // 5绉掑悗鑷姩鍒锋柊椤甸潰
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        }
+
+        // 鍔犵儹鎺у埗鍔熻兘
+        let isHeating = false;
+        let currentTemperature = 0;
+        let targetTemperature = 180;
+        let bakingTime = 30;
+        let bakingMode = 'standard';
+        let controlMode = 'auto'; // 'auto' or 'manual'
+
+        // 鐑樼剻妯″紡棰勮鍙傛暟
+        const bakingPresets = {
+            'bread': { temperature: 180, time: 30, name: '闈㈠寘' },
+            'cake': { temperature: 160, time: 45, name: '铔嬬硶' },
+            'pizza': { temperature: 220, time: 15, name: '鎶惃' },
+            'cookies': { temperature: 170, time: 20, name: '楗煎共' },
+            'roast': { temperature: 200, time: 60, name: '鐑よ倝' },
+            'defrost': { temperature: 80, time: 10, name: '瑙ｅ喕' },
+            'custom': { temperature: 180, time: 30, name: '鑷畾涔? }
+        };
+
+        // 鍒囨崲鍒拌嚜鍔ㄦā寮?
+        function switchToAutoMode() {
+            controlMode = 'auto';
+            
+            // 鏇存柊鎸夐挳鐘舵€?
+            document.getElementById('auto-mode-btn').classList.add('active');
+            document.getElementById('manual-mode-btn').classList.remove('active');
+            
+            // 鏄剧ず鑷姩妯″紡閮ㄥ垎锛岄殣钘忔墜鍔ㄦā寮忛儴鍒?
+            document.getElementById('auto-mode-section').style.display = 'block';
+            document.getElementById('manual-mode-section').style.display = 'none';
+            
+            // 濡傛灉褰撳墠鏄嚜瀹氫箟妯″紡锛屽垏鎹㈠洖鏍囧噯妯″紡
+            const modeSelect = document.getElementById('baking-mode-select');
+            if (modeSelect.value === 'custom') {
+                modeSelect.value = 'bread';
+                onBakingModeChange();
+            }
+            
+            showToast('宸插垏鎹㈠埌鑷姩妯″紡');
+        }
+
+        // 鍒囨崲鍒版墜鍔ㄦā寮?
+        function switchToManualMode() {
+            controlMode = 'manual';
+            
+            // 鏇存柊鎸夐挳鐘舵€?
+            document.getElementById('manual-mode-btn').classList.add('active');
+            document.getElementById('auto-mode-btn').classList.remove('active');
+            
+            // 鏄剧ず鎵嬪姩妯″紡閮ㄥ垎锛岄殣钘忚嚜鍔ㄦā寮忛儴鍒?
+            document.getElementById('manual-mode-section').style.display = 'block';
+            document.getElementById('auto-mode-section').style.display = 'none';
+            
+            // 璁剧疆鎵嬪姩妯″紡鐨勯粯璁ゅ€硷紙闈為浂鍊硷級
+            document.getElementById('target-temp').value = 180;
+            document.getElementById('baking-time').value = 30;
+            targetTemperature = 180;
+            bakingTime = 30;
+            
+            showToast('宸插垏鎹㈠埌鎵嬪姩妯″紡锛岃璁剧疆娓╁害鍜屾椂闂?);
+        }
+
+        // 鐑樼剻妯″紡閫夋嫨鍙樺寲澶勭悊
+        function onBakingModeChange() {
+            const modeSelect = document.getElementById('baking-mode-select');
+            const selectedMode = modeSelect.value;
+            const preset = bakingPresets[selectedMode];
+            
+            if (preset) {
+                // 鏇存柊娓╁害鍜屾椂闂磋緭鍏ユ
+                document.getElementById('target-temp').value = preset.temperature;
+                document.getElementById('baking-time').value = preset.time;
+                
+                // 鏇存柊鍏ㄥ眬鍙橀噺
+                targetTemperature = preset.temperature;
+                bakingTime = preset.time;
+                bakingMode = selectedMode;
+                
+                if (selectedMode === 'custom') {
+                    showToast('宸插垏鎹㈠埌鑷畾涔夋ā寮忥紝鎮ㄥ彲浠ユ墜鍔ㄨ皟鏁存俯搴﹀拰鏃堕棿');
+                } else {
+                    showToast(`宸插垏鎹㈠埌${preset.name}妯″紡锛?{preset.temperature}掳C锛?{preset.time}鍒嗛挓`);
+                }
+            }
+        }
+
+        // 娓╁害杈撳叆楠岃瘉
+        function validateTemperature() {
+            const tempInput = document.getElementById('target-temp');
+            const temp = parseInt(tempInput.value);
+            
+            if (temp >= 50 && temp <= 250) {
+                targetTemperature = temp;
+                // 鍙湁鍦ㄨ嚜鍔ㄦā寮忎笅鎵嬪姩璋冩暣鏃舵墠鍒囨崲鍒拌嚜瀹氫箟妯″紡
+                if (controlMode === 'auto') {
+                    bakingMode = 'custom'; // 鎵嬪姩璋冩暣鏃跺垏鎹㈠埌鑷畾涔夋ā寮?
+                    document.getElementById('baking-mode-select').value = 'custom';
+                }
+                return true;
+            } else {
+                showToast('娓╁害鑼冨洿搴斾负 50-250掳C');
+                tempInput.value = targetTemperature; // 鎭㈠鍘熷€?
+                return false;
+            }
+        }
+
+        // 鏃堕棿杈撳叆楠岃瘉
+        function validateTime() {
+            const timeInput = document.getElementById('baking-time');
+            const time = parseInt(timeInput.value);
+            
+            if (time >= 1 && time <= 120) {
+                bakingTime = time;
+                // 鍙湁鍦ㄨ嚜鍔ㄦā寮忎笅鎵嬪姩璋冩暣鏃舵墠鍒囨崲鍒拌嚜瀹氫箟妯″紡
+                if (controlMode === 'auto') {
+                    bakingMode = 'custom'; // 鎵嬪姩璋冩暣鏃跺垏鎹㈠埌鑷畾涔夋ā寮?
+                    document.getElementById('baking-mode-select').value = 'custom';
+                }
+                return true;
+            } else {
+                showToast('鏃堕棿鑼冨洿搴斾负 1-120 鍒嗛挓');
+                timeInput.value = bakingTime; // 鎭㈠鍘熷€?
+                return false;
+            }
+        }
+
+        // 娓╁害杈撳叆妗嗗け鍘荤劍鐐规椂楠岃瘉
+        function onTemperatureBlur() {
+            validateTemperature();
+        }
+
+        // 鏃堕棿杈撳叆妗嗗け鍘荤劍鐐规椂楠岃瘉
+        function onTimeBlur() {
+            validateTime();
+        }
+
+        // 褰撳湪鎵嬪姩妯″紡涓嬫洿鏀规俯搴︽椂鐨勫鐞?
+        function onManualTemperatureChange(element) {
+            // 鍙湁鍦ㄦ墜鍔ㄦā寮忎笅鎵嶆洿鏂版俯搴﹀€?
+            if (controlMode === 'manual') {
+                targetTemperature = parseInt(element.value) || 0;
+            } else if (controlMode === 'auto') {
+                // 鍦ㄨ嚜鍔ㄦā寮忎笅锛屽鏋滅敤鎴蜂慨鏀逛簡棰勮鍊硷紝鍒欒嚜鍔ㄥ垏鎹㈠埌鑷畾涔夋ā寮?
+                const modeSelect = document.getElementById('baking-mode-select');
+                if (modeSelect.value !== 'custom') {
+                    modeSelect.value = 'custom';
+                    onBakingModeChange();
+                }
+                targetTemperature = parseInt(element.value) || 0;
+            }
+        }
+
+        // 褰撳湪鎵嬪姩妯″紡涓嬫洿鏀规椂闂存椂鐨勫鐞?
+        function onManualTimeChange(element) {
+            // 鍙湁鍦ㄦ墜鍔ㄦā寮忎笅鎵嶆洿鏂版椂闂村€?
+            if (controlMode === 'manual') {
+                bakingTime = parseInt(element.value) || 0;
+            } else if (controlMode === 'auto') {
+                // 鍦ㄨ嚜鍔ㄦā寮忎笅锛屽鏋滅敤鎴蜂慨鏀逛簡棰勮鍊硷紝鍒欒嚜鍔ㄥ垏鎹㈠埌鑷畾涔夋ā寮?
+                const modeSelect = document.getElementById('baking-mode-select');
+                if (modeSelect.value !== 'custom') {
+                    modeSelect.value = 'custom';
+                    onBakingModeChange();
+                }
+                bakingTime = parseInt(element.value) || 0;
+            }
+        }
+
+        // 鎵嬪姩妯″紡涓嬫俯搴﹁緭鍏ユ澶卞幓鐒︾偣鏃剁殑澶勭悊
+        function onManualTemperatureBlur() {
+            if (controlMode === 'manual') {
+                validateTemperature();
+            }
+        }
+
+        // 鎵嬪姩妯″紡涓嬫椂闂磋緭鍏ユ澶卞幓鐒︾偣鏃剁殑澶勭悊
+        function onManualTimeBlur() {
+            if (controlMode === 'manual') {
+                validateTime();
+            }
+        }
+
+        function toggleHeating() {
+            const toggleBtn = document.getElementById('heating-toggle');
+            const heatingIcon = toggleBtn.querySelector('.heating-icon');
+            const heatingText = toggleBtn.querySelector('.heating-text');
+            
+            isHeating = !isHeating;
+            
+            if (isHeating) {
+                toggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                heatingIcon.textContent = '鉂勶笍';
+                heatingText.textContent = '鍋滄鍔犵儹';
+                
+                // 鏍规嵁褰撳墠妯″紡鏄剧ず涓嶅悓鐨勬彁绀轰俊鎭?
+                if (controlMode === 'manual') {
+                    showToast(`寮€濮嬫墜鍔ㄥ姞鐑埌 ${targetTemperature}掳C锛屾寔缁?${bakingTime} 鍒嗛挓`);
+                } else {
+                    const modeSelect = document.getElementById('baking-mode-select');
+                    const selectedMode = modeSelect.value;
+                    const preset = bakingPresets[selectedMode];
+                    if (preset) {
+                        showToast(`寮€濮嬪姞鐑埌 ${targetTemperature}掳C锛屾寔缁?${bakingTime} 鍒嗛挓 (${preset.name}妯″紡)`);
+                    } else {
+                        showToast(`寮€濮嬪姞鐑埌 ${targetTemperature}掳C锛屾寔缁?${bakingTime} 鍒嗛挓`);
+                    }
+                }
+                // 杩欓噷搴旇鍙戦€佸惎鍔ㄥ姞鐑殑璇锋眰鍒拌澶?
+                // startHeating(targetTemperature, bakingTime, bakingMode);
+            } else {
+                toggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                heatingIcon.textContent = '馃敟';
+                heatingText.textContent = '鍚姩鍔犵儹';
+                showToast('鍔犵儹宸插仠姝?);
+                // 杩欓噷搴旇鍙戦€佸仠姝㈠姞鐑殑璇锋眰鍒拌澶?
+                // stopHeating();
+            }
+        }
+
+        // 绉诲姩绔紭鍖栧姛鑳?
+        
+        // 閫€鍑虹櫥褰?
+        async function logout() {
+            if (confirm('纭畾瑕侀€€鍑虹櫥褰曞悧锛?)) {
+                try {
+                    const response = await fetch('/logout', {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    } else {
+                        alert('閫€鍑虹櫥褰曞け璐?);
+                    }
+                } catch (error) {
+                    console.error('閫€鍑虹櫥褰曞け璐?', error);
+                    alert('缃戠粶杩炴帴澶辫触');
+                }
+            }
+        }
+        
+        // 淇敼瀵嗙爜
+        async function changePassword() {
+            const oldPassword = prompt('璇疯緭鍏ュ綋鍓嶅瘑鐮侊細');
+            if (!oldPassword) return;
+
+            const newPassword = prompt('璇疯緭鍏ユ柊瀵嗙爜锛?);
+            if (!newPassword) return;
+
+            const confirmPassword = prompt('璇风‘璁ゆ柊瀵嗙爜锛?);
+            if (!confirmPassword) return;
+
+            if (newPassword !== confirmPassword) {
+                alert('鏂板瘑鐮佽緭鍏ヤ笉涓€鑷?);
+                return;
+            }
+
+            try {
+                const response = await fetch('/changepassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        old_password: oldPassword,
+                        new_password: newPassword
+                    })
+                });
+
+                if (response.ok) {
+                    alert('瀵嗙爜淇敼鎴愬姛');
+                } else {
+                    alert('瀵嗙爜淇敼澶辫触锛岃妫€鏌ュ綋鍓嶅瘑鐮佹槸鍚︽纭?);
+                }
+            } catch (error) {
+                console.error('淇敼瀵嗙爜澶辫触:', error);
+                alert('缃戠粶杩炴帴澶辫触');
+            }
+        }
+
+        
+        
+        // 绉诲姩绔Е鎽镐簨浠跺鐞?
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // 姘村钩婊戝姩瓒呰繃50px涓斿瀭鐩存粦鍔ㄥ皬浜?0px鏃惰Е鍙戝埛鏂?
+            if (Math.abs(deltaX) > 50 && Math.abs(deltaY) < 30) {
+                if (deltaX > 0) {
+                    // 鍚戝彸婊戝姩 - 鍒锋柊鏁版嵁
+                    refreshData();
+                    showToast('鏁版嵁宸插埛鏂?);
+                }
+            }
+        }, { passive: true });
+        
+        // 鏄剧ずToast鎻愮ず
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 14px;
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // 娣诲姞CSS鍔ㄧ敾
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translateX(-50%) translateY(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(-50%) translateY(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes highlight {
+                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            }
+            
+            /* 绉诲姩绔寜閽偣鍑绘晥鏋?*/
+            .control-btn:active, .nav-card:active {
+                transform: scale(0.95);
+                transition: transform 0.1s;
+            }
+            
+            /* 绉诲姩绔紭鍖栨粴鍔?*/
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
+        `;
+        document.head.appendChild(style);
+
+    </script>
+
+</body>
+
+</html>

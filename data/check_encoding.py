@@ -1,17 +1,31 @@
-import re
+import chardet
 
-# Read the file and check for invalid characters
-with open('index.html', 'rb') as f:
-    content = f.read()
+# 检查index.html文件编码
+import sys
 
-# Look for any invalid UTF-8 sequences
-try:
-    content.decode('utf-8')
-    print("File is valid UTF-8")
-except UnicodeDecodeError as e:
-    print(f"UTF-8 decode error: {e}")
+import os
+import glob
 
-# Look for any unusual characters in the first 1000 bytes
-text = content[:1000].decode('utf-8', errors='replace')
-print("First 200 characters:")
-print(repr(text[:200]))
+if len(sys.argv) != 2:
+    print("Usage:")
+    print("  Single file: python check_encoding.py <file_path>")
+    print("  Directory:   python check_encoding.py <directory_path>")
+    sys.exit(1)
+
+path = sys.argv[1]
+
+if os.path.isdir(path):
+    # 查找目录下所有HTML文件
+    html_files = glob.glob(os.path.join(path, '**', '*.html'), recursive=True)
+    if not html_files:
+        print(f"No HTML files found in directory: {path}")
+        sys.exit(0)
+else:
+    html_files = [path]
+for file_path in html_files:
+    with open(file_path, 'rb') as f:
+        raw_data = f.read()
+        encoding_info = chardet.detect(raw_data)
+        print(f"文件: {file_path}")
+        print(f"检测到的编码: {encoding_info['encoding']}")
+        print(f"可信度: {encoding_info['confidence']:.2f}")

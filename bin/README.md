@@ -5,10 +5,12 @@
 ### 固件文件 (Firmware)
 - `firmware-nodemcuv2.bin` - 完整版固件，包含MAX6675温度传感器支持
 - `firmware-nodemcuv2-fixed.bin` - 精简版固件，不使用MAX6675库
+- `firmware-nodemcuv2-updated.bin` - 最新版固件，包含语言切换和设备状态修复
 
 ### 文件系统镜像 (LittleFS)
 - `littlefs-nodemcuv2.bin` - 完整版文件系统镜像，包含所有Web界面文件
 - `littlefs-nodemcuv2-fixed.bin` - 精简版文件系统镜像
+- `littlefs-nodemcuv2-updated.bin` - 最新版文件系统镜像，包含修复的HTML文件（语言切换和设备状态获取）
 
 ## 烧录说明
 
