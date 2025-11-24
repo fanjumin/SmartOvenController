@@ -83,4 +83,44 @@
     <string name="device_discovered">发现新设备</string>
     <string name="no_devices_available">无可用设备</string>
 
+    <!-- 错误消息 -->
+    <string name="no_devices_found_check_network">未发现设备，请检查网络连接</string>
+    <string name="invalid_device_info">设备信息无效</string>
+    <string name="custom_temperature_not_implemented">自定义温度功能开发中</string>
+    <string name="advanced_settings_not_implemented">高级设置功能开发中</string>
+    <string name="no_devices_found_demo_mode">未发现设备，使用演示模式</string>
+    <string name="scan_failed">扫描失败</string>
+    <string name="network_connection_failed">网络连接失败</string>
+    <string name="device_status_fetch_failed">获取设备状态失败</string>
+    <string name="temperature_setting_failed">设置温度失败</string>
+    <string name="heating_control_failed">控制加热失败</string>
+    <string name="device_restart_failed">重启设备失败</string>
+    <string name="factory_reset_failed">恢复出厂设置失败</string>
+    <string name="pid_enable_failed">启用PID控制失败</string>
+    <string name="pid_disable_failed">禁用PID控制失败</string>
+    <string name="pid_settings_failed">设置PID参数失败</string>
+
+    <!-- 状态消息 -->
+    <string name="connected">已连接</string>
+    <string name="connection_failed">连接失败</string>
+    <string name="offline">离线</string>
+    <string name="device_restarting">设备重启中...</string>
+    <string name="factory_resetting">恢复出厂设置中...</string>
+
+    <!-- UI文本 -->
+    <string name="firmware_label">固件</string>
+    <string name="wifi_connected">已连接</string>
+    <string name="wifi_disconnected">未连接</string>
+    <string name="device_id_label">ID</string>
+    <string name="start_heating">开始加热</string>
+    <string name="stop_heating">停止加热</string>
+    <string name="heater_working">加热器工作中</string>
+    <string name="heater_stopped">加热器已关闭</string>
+
+    <!-- 对话框 -->
+    <string name="restart_device_title">重启设备</string>
+    <string name="restart_device_message">确定要重启设备吗？</string>
+    <string name="factory_reset_title">恢复出厂设置</string>
+    <string name="factory_reset_message">确定要恢复出厂设置吗？这将清除所有配置。</string>
+
 </resources>

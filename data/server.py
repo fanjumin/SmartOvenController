@@ -57,7 +57,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         # 返回模拟的设备状态数据
         status_data = {
             "deviceName": "Smart Oven",  # This should be translated on the client side
-            "firmwareVersion": "v0.8.5",
+            "firmwareVersion": "v0.8.7",
             "currentTemperature": 25,
             "targetTemperature": 180,
             "heatingTime": 0,

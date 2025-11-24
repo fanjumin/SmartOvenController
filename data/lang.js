@@ -149,7 +149,7 @@ const translations = {
         'adminPassword': '管理员密码',
         'enterAdminPassword': '请输入管理员密码',
         'login': '登录',
-        'versionInfo': '智能电烤箱控制器 v0.8.5',
+        'versionInfo': '智能电烤箱控制器 v0.8.7',
 
         // 烘焙模式
         'bread': '面包',
@@ -402,7 +402,7 @@ const translations = {
         'adminPassword': 'Admin Password',
         'enterAdminPassword': 'Please enter admin password',
         'login': 'Login',
-        'versionInfo': 'Smart Oven Controller v0.8.5',
+        'versionInfo': 'Smart Oven Controller v0.8.7',
 
         // Baking Modes
         'bread': 'Bread',
