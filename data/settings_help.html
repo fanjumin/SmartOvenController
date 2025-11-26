@@ -30,8 +30,38 @@
         .header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 20px 0;
             margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .language-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lang-toggle {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
         }
 
         .back-btn {
@@ -417,16 +447,23 @@
 <body>
     <div class="container">
         <div class="header">
-            <button class="back-btn" onclick="goBack()">←</button>
-            <h1 data-lang="settingsHelp">设置与帮助</h1>
+            <div class="header-left">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <h1 data-lang="settingsHelp">设置与帮助</h1>
+            </div>
+            <div class="language-switch">
+                <button class="lang-toggle" id="lang-toggle" onclick="switchLanguage()">
+                    <span data-lang="chineseEnglish">中/En</span>
+                </button>
+            </div>
         </div>
 
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('settings')" data-lang="settingsTab">⚙️ 设置</button>
-                <button class="tab-btn" onclick="switchTab('pid')" data-lang="pidSettingsTab">sPid PID</button>
-                <button class="tab-btn" onclick="switchTab('help')" data-lang="helpTab">❓ 帮助</button>
-                <button class="tab-btn" onclick="switchTab('about')" data-lang="aboutTab">ℹ️ 关于</button>
+                <button class="tab-btn active" onclick="switchTab('settings')" data-lang="settingsTab">⚙️</button>
+                <button class="tab-btn" onclick="switchTab('pid')" data-lang="pidSettingsTab">PID</button>
+                <button class="tab-btn" onclick="switchTab('help')" data-lang="helpTab">❓</button>
+                <button class="tab-btn" onclick="switchTab('about')" data-lang="aboutTab">ℹ️</button>
             </div>
 
             <!-- 设置标签页 -->
@@ -772,20 +809,20 @@
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label" data-lang="deviceModel">设备型号</div>
-                            <div class="info-value" id="device-model">未获取设备型号</div>
+                            <div class="info-label" data-lang="deviceModel">Device Model</div>
+                            <div class="info-value" id="device-model" data-lang="noDeviceIdData">Device ID not retrieved (available on real device)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-lang="firmwareVersion">固件版本</div>
-                            <div class="info-value" id="firmware-version">未获取固件版本</div>
+                            <div class="info-label" data-lang="firmwareVersion">Firmware Version</div>
+                            <div class="info-value" id="firmware-version" data-lang="noFirmwareData">Firmware version not retrieved (available on real device)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-lang="hardwareVersion">硬件版本</div>
-                            <div class="info-value" id="hardware-version">未获取硬件版本</div>
+                            <div class="info-label" data-lang="hardwareVersion">Hardware Version</div>
+                            <div class="info-value" id="hardware-version" data-lang="noFirmwareData">Hardware version not retrieved (available on real device)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-lang="serialNumber">序列号</div>
-                            <div class="info-value" id="serial-number">未获取序列号</div>
+                            <div class="info-label" data-lang="serialNumber">Serial Number</div>
+                            <div class="info-value" id="serial-number" data-lang="noDeviceIdData">Serial number not retrieved (available on real device)</div>
                         </div>
                     </div>
                 </div>
@@ -795,20 +832,20 @@
                     
                     <div class="info-grid">
                         <div class="info-item">
-                            <div class="info-label" data-lang="uptime">运行时间</div>
-                            <div class="info-value" id="uptime">未获取运行时间</div>
+                            <div class="info-label" data-lang="uptime">Uptime</div>
+                            <div class="info-value" id="uptime" data-lang="noUptimeData">Uptime not retrieved (available on real device)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-lang="memoryUsage">内存使用</div>
-                            <div class="info-value" id="memory-usage">未获取内存信息</div>
+                            <div class="info-label" data-lang="memoryUsage">Memory Usage</div>
+                            <div class="info-value" id="memory-usage" data-lang="noMemoryData">Memory usage not retrieved (available on real device)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-lang="lastBoot">最后启动</div>
-                            <div class="info-value" id="last-boot">未获取启动时间</div>
+                            <div class="info-label" data-lang="lastBoot">Last Boot</div>
+                            <div class="info-value" id="last-boot" data-lang="noLastUpdateData">Last update time not retrieved (available on real device)</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label" data-lang="networkStatus">网络状态</div>
-                            <div class="info-value" id="network-status">未获取网络状态</div>
+                            <div class="info-label" data-lang="networkStatus">Network Status</div>
+                            <div class="info-value" id="network-status" data-lang="notRetrievedCurrentConnection">Current connection not retrieved</div>
                         </div>
                     </div>
                 </div>
@@ -981,7 +1018,7 @@
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);
                     document.getElementById('memory-usage').textContent = (data.freeHeap || 0) + ' KB';
                     document.getElementById('last-boot').textContent = new Date(data.lastBoot || Date.now()).toLocaleString();
-                    document.getElementById('network-status').textContent = data.wifiConnected ? '已连接' : '未连接';
+                    document.getElementById('network-status').textContent = data.wifiConnected ? getTranslation('connected') : getTranslation('disconnected');
                 }
             } catch (error) {
                 console.error('获取设备信息失败:', error);
@@ -993,13 +1030,13 @@
             const days = Math.floor(seconds / 86400);
             const hours = Math.floor((seconds % 86400) / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
-            
+
             if (days > 0) {
-                return `${days}天 ${hours}小时`;
+                return `${days}${getTranslation('days')} ${hours}${getTranslation('hours')}`;
             } else if (hours > 0) {
-                return `${hours}小时 ${minutes}分钟`;
+                return `${hours}${getTranslation('hours')} ${minutes}${getTranslation('minutes')}`;
             } else {
-                return `${minutes}分钟`;
+                return `${minutes}${getTranslation('minutes')}`;
             }
         }
 

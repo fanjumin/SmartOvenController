@@ -450,7 +450,7 @@
 
         <!-- 温度趋势图 -->
         <div class="status-card">
-            <div class="card-title">📊 温度趋势</div>
+            <div class="card-title">📊 <span data-lang="temperatureTrend">温度趋势</span></div>
             
             <div class="chart-container">
                 <svg class="chart" viewBox="0 0 300 120" preserveAspectRatio="none">
@@ -465,19 +465,19 @@
                 </svg>
             </div>
             
-            <div class="timestamp" id="chart-timestamp">数据更新时间: --</div>
+            <div class="timestamp" id="chart-timestamp"><span data-lang="dataUpdateTime">数据更新时间</span>: --</div>
         </div>
 
         <div class="action-buttons">
-            <button class="btn btn-primary" onclick="exportData()">
+            <button class="btn btn-primary" onclick="exportData()" data-lang="exportData">
                 导出数据
             </button>
-            <button class="btn btn-secondary" onclick="resetStats()">
+            <button class="btn btn-secondary" onclick="resetStats()" data-lang="resetStats">
                 重置统计
             </button>
         </div>
 
-        <div class="timestamp" id="last-refresh">最后刷新: --</div>
+        <div class="timestamp" id="last-refresh"><span data-lang="lastRefresh">最后刷新</span>: --</div>
     </div>
 
     <div class="toast" id="toast"></div>

@@ -54,6 +54,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(json.dumps(wifi_data).encode())
     
     def handle_device_status(self):
+        print("Handling device status request")
         # 返回模拟的设备状态数据
         status_data = {
             "deviceName": "Smart Oven",  # This should be translated on the client side
@@ -96,7 +97,7 @@ class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
 # 创建服务器
-PORT = 8081
+PORT = 8083
 Handler = CustomHTTPRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:

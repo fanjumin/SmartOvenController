@@ -183,7 +183,7 @@
                 fetch('/factoryreset', { method: 'POST' })
                     .then(response => {
                         if (response.ok) {
-                            resetBtn.innerHTML = '<span data-lang="resetSuccess">重置成功...设备正在重启</span>';
+                            resetBtn.innerHTML = '<span data-lang="resetSuccess">' + getTranslation('resetSuccess') + '</span>';
                             resetBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
                         } else {
                             throw new Error('重置失败');

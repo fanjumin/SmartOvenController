@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title data-lang="temperatureCalibrationTitle">烤箱温度校准</title>
+    <title data-lang="temperatureCalibrationTitle">Oven Temperature Calibration</title>
     <link rel="stylesheet" href="css/title-styles.css">
     <script src="lang.js"></script>
     <style>
@@ -481,10 +481,10 @@
                 <div class="title-section">
                     <h1 class="main-title" data-lang="ovenTemperatureCalibration">
                         <span class="title-icon">🌡️</span>
-                        烤箱温度校准
+                        <span data-lang="ovenTemperatureCalibration">Oven Temperature Calibration</span>
                         <span class="title-badge">v0.8.7</span>
                     </h1>
-                    <p class="subtitle" data-lang="adjustSensorParameters">精确调整温度传感器参数，提高测量精度</p>
+                    <p class="subtitle" data-lang="adjustSensorParameters">Precisely adjust temperature sensor parameters to improve measurement accuracy</p>
                 </div>
                 <div class="language-switcher">
                     <button class="lang-toggle-btn" onclick="switchLanguage()">中/En</button>
@@ -495,7 +495,7 @@
         <div class="calibration-section">
             <h2 class="section-title">
                 <span class="section-icon">⚙️</span>
-                温度校准设置
+                <span data-lang="temperatureCalibrationSettings">Temperature Calibration Settings</span>
             </h2>
             
             <div id="message" class="message"></div>
@@ -517,15 +517,15 @@
             <div class="calibration-controls">
                 <button class="calibration-btn primary" onclick="performCalibration()" data-lang="calculateCalibration">
                     <span>📊</span>
-                    计算校准参数
+                    <span data-lang="calculateCalibration">Calculate Calibration Parameters</span>
                 </button>
                 <button class="calibration-btn secondary" onclick="applyCalibration()" data-lang="applyCalibration">
                     <span>✅</span>
-                    应用校准
+                    <span data-lang="applyCalibration">Apply Calibration</span>
                 </button>
                 <button class="calibration-btn danger" onclick="resetCalibration()" data-lang="resetParameters">
                     <span>🔄</span>
-                    重置参数
+                    <span data-lang="resetParameters">Reset Parameters</span>
                 </button>
             </div>
         </div>
@@ -533,11 +533,11 @@
         <div class="calibration-section">
             <h2 class="section-title">
                 <span class="section-icon">📊</span>
-                当前校准状态
+                <span data-lang="currentCalibrationStatus">Current Calibration Status</span>
             </h2>
             
             <div class="status-display">
-                <div class="status-title" data-lang="calibrationParameters">校准参数</div>
+                <div class="status-title" data-lang="calibrationParameters"></div>
                 <div class="status-grid">
                     <div class="status-item">
                         <div class="status-label" data-lang="temperatureOffsetLabel">温度偏移量</div>
@@ -548,8 +548,8 @@
                         <div id="scale-value" class="status-value scale-value">1.000</div>
                     </div>
                     <div class="status-item">
-                        <div class="status-label" data-lang="calibrationStatus">校准状态</div>
-                        <div id="calibration-status" class="status-value" data-lang="notCalibrated">未校准</div>
+                        <div class="status-label" data-lang="calibrationStatus"></div>
+                        <div id="calibration-status" class="status-value" data-lang="notCalibrated"></div>
                     </div>
                     <div class="status-item">
                         <div class="status-label" data-lang="lastUpdateTime">最后更新时间</div>
@@ -560,7 +560,7 @@
         </div>
 
         <div class="instructions">
-            <h3 class="instructions-title" data-lang="calibrationInstructions">校准步骤说明</h3>
+            <h3 class="instructions-title" data-lang="calibrationInstructions"></h3>
             <ol>
                 <li data-lang="instruction1">准备一个已知准确温度的标准温度计</li>
                 <li data-lang="instruction2">将温度计和设备放置在同一环境中</li>
@@ -576,15 +576,15 @@
         <div class="navigation">
             <a href="index.html" class="nav-btn" data-lang="returnHome">
                 <span>🏠</span>
-                返回主页
+                <span data-lang="returnHome">Return Home</span>
             </a>
             <a href="device_status.html" class="nav-btn" data-lang="deviceStatus">
                 <span>📈</span>
-                设备状态
+                <span data-lang="deviceStatus">Device Status</span>
             </a>
             <a href="settings_help.html" class="nav-btn" data-lang="settingsCenter">
                 <span>⚙️</span>
-                设置中心
+                <span data-lang="settingsCenter">Settings Center</span>
             </a>
         </div>
     </div>
@@ -608,24 +608,24 @@
             const measuredTemp = document.getElementById('measured-temp').value;
             
             if (!actualTemp || !measuredTemp) {
-                showMessage('请输入实际温度和测量温度', 'error');
+                showMessage(getTranslation('enterActualAndMeasuredTemp'), 'error');
                 return;
             }
             
             if (parseFloat(actualTemp) <= 0 || parseFloat(measuredTemp) <= 0) {
-                showMessage('温度值必须大于0°C', 'error');
+                showMessage(getTranslation('tempMustBeGreaterThanZero'), 'error');
                 return;
             }
             
             try {
-                showMessage('正在执行温度校准...', 'warning');
+                showMessage(getTranslation('performingCalibration'), 'warning');
                 
                 // 模拟API调用 - 实际使用时需要连接到设备
                 const response = await simulateCalibrationAPI(actualTemp, measuredTemp);
                 
                 if (response.success) {
                     updateCalibrationStatus(response.offset, response.scale);
-                    showMessage('温度校准成功！', 'success');
+                    showMessage(getTranslation('calibrationSuccessful'), 'success');
                 } else {
                     showMessage('校准失败：' + response.error, 'error');
                 }
@@ -636,12 +636,12 @@
 
         // 重置校准
         async function resetCalibration() {
-            if (!confirm('确定要重置温度校准参数吗？这将恢复默认设置。')) {
+            if (!confirm(getTranslation('confirmResetCalibration'))) {
                 return;
             }
             
             try {
-                showMessage('正在重置校准参数...', 'warning');
+                showMessage(getTranslation('resettingCalibration'), 'warning');
                 
                 // 调用真实的API
                 const response = await fetch('/reset_calibration', {
@@ -656,10 +656,10 @@
                     updateCalibrationStatus(data.offset, data.scale);
                     showMessage(data.message, 'success');
                 } else {
-                    showMessage('重置失败：' + response.statusText, 'error');
+                    showMessage(getTranslation('resetFailed') + response.statusText, 'error');
                 }
             } catch (error) {
-                showMessage('重置过程中发生错误：' + error.message, 'error');
+                showMessage(getTranslation('resetError') + error.message, 'error');
             }
         }
 
@@ -667,14 +667,14 @@
         function clearForm() {
             document.getElementById('actual-temp').value = '';
             document.getElementById('measured-temp').value = '';
-            showMessage('表单已清空', 'success');
+            showMessage(getTranslation('formCleared'), 'success');
         }
 
         // 更新校准状态显示
         function updateCalibrationStatus(offset, scale) {
             document.getElementById('offset-value').textContent = offset.toFixed(2) + '°C';
             document.getElementById('scale-value').textContent = scale.toFixed(3);
-            document.getElementById('calibration-status').textContent = '已校准';
+            document.getElementById('calibration-status').textContent = getTranslation('calibrated');
             document.getElementById('last-update').textContent = new Date().toLocaleString('zh-CN');
         }
 
@@ -693,7 +693,7 @@
                         success: true,
                         offset: offset,
                         scale: scale,
-                        message: `校准完成：偏移量=${offset.toFixed(2)}°C，缩放系数=${scale.toFixed(3)}`
+                        message: getTranslation('calibrationCompleted') + offset.toFixed(2) + '°C' + getTranslation('scaleFactor') + scale.toFixed(3)
                     });
                 }, 2000);
             });
@@ -762,9 +762,9 @@
                 // 模拟API调用
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                showSuccessModal('校准参数已成功应用');
+                showSuccessModal(getTranslation('calibrationApplied'));
             } catch (error) {
-                showErrorModal('应用校准参数失败: ' + error.message);
+                showErrorModal(getTranslation('applyCalibrationFailed') + error.message);
             }
         }
     </script>
