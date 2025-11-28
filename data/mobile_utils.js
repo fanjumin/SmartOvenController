@@ -166,7 +166,8 @@ class MobileOvenController {
     // 格式化设备状态
     formatDeviceStatus(data) {
         // 解析设备返回的实际数据格式
-        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.8.7","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"192.168.16.104"}
+        // 设备返回格式: {"device_id":"oven-8591756","firmware_version":"0.8.9","temperature":14.22,"target_temperature":180.00,"heating_enabled":false,"wifi_connected":true,"ip_address":"设备实际IP地址"}
+        // 注意：设备在AP模式下默认IP为192.168.4.1，连接WiFi后IP由路由器分配(如192.168.16.100)
         
         const currentTemp = data.temperature || data.currentTemp || 0;
         const targetTemp = data.target_temperature || data.targetTemp || 0;

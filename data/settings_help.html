@@ -856,7 +856,7 @@
                     <div class="setting-item">
                         <div class="setting-row">
                             <span class="setting-label" data-lang="appVersion">应用版本</span>
-                            <span class="setting-value">v0.8.7</span>
+                            <span class="setting-value">v0.8.9</span>
                         </div>
                         
                         <div class="setting-row">
@@ -1012,7 +1012,7 @@
                     const data = await response.json();
                     
                     document.getElementById('device-model').textContent = data.model || 'SmartOven Pro';
-                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.7';
+                    document.getElementById('firmware-version').textContent = data.firmware || '0.8.9';
                     document.getElementById('hardware-version').textContent = data.hardware || 'v2.1';
                     document.getElementById('serial-number').textContent = data.serial || 'SN001';
                     document.getElementById('uptime').textContent = formatUptime(data.uptime || 0);

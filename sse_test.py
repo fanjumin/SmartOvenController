@@ -1,0 +1,74 @@
+import requests
+import time
+
+# 服务器地址
+server_url = "http://192.168.16.100"
+
+# 创建一个更大的测试文件（满足最小大小要求）
+with open("test_firmware.bin", "wb") as f:
+    f.write(b"TEST_FIRMWARE_DATA_" * 128)  # 创建2048字节的测试固件
+
+with open("test_filesystem.bin", "wb") as f:
+    f.write(b"TEST_FILESYSTEM_DATA_" * 128)  # 创建2048字节的测试文件系统镜像
+
+print("Created test files with sufficient size")
+
+# 测试固件升级
+def test_firmware_upgrade():
+    print("\n=== Testing Firmware Upgrade ===")
+    try:
+        with open("test_firmware.bin", "rb") as firmware_file:
+            files = {"firmware": ("firmware.bin", firmware_file, "application/octet-stream")}
+            print("Sending firmware update request...")
+            
+            # 使用流式响应来处理SSE
+            response = requests.post(
+                f"{server_url}/firmware_update",
+                files=files,
+                stream=True,
+                timeout=30
+            )
+            
+            print(f"Response Status Code: {response.status_code}")
+            print(f"Response Headers: {response.headers}")
+            
+            # 逐行读取SSE响应
+            for line in response.iter_lines():
+                if line:
+                    decoded_line = line.decode('utf-8')
+                    print(f"SSE Event: {decoded_line}")
+                    
+    except Exception as e:
+        print(f"Firmware upgrade failed: {e}")
+
+# 测试文件系统更新
+def test_filesystem_update():
+    print("\n=== Testing Filesystem Update ===")
+    try:
+        with open("test_filesystem.bin", "rb") as fs_file:
+            files = {"filesystem": ("littlefs.bin", fs_file, "application/octet-stream")}
+            print("Sending filesystem update request...")
+            
+            # 使用流式响应来处理SSE
+            response = requests.post(
+                f"{server_url}/filesystem_update",
+                files=files,
+                stream=True,
+                timeout=30
+            )
+            
+            print(f"Response Status Code: {response.status_code}")
+            print(f"Response Headers: {response.headers}")
+            
+            # 逐行读取SSE响应
+            for line in response.iter_lines():
+                if line:
+                    decoded_line = line.decode('utf-8')
+                    print(f"SSE Event: {decoded_line}")
+                    
+    except Exception as e:
+        print(f"Filesystem update failed: {e}")
+
+if __name__ == "__main__":
+    test_firmware_upgrade()
+    test_filesystem_update()

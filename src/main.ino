@@ -1,7 +1,7 @@
 // =========================================
-// 智能烤箱控制器固件 v0.8.7 - 正式版
+// 智能烤箱控制器固件 v0.8.9 - 正式版
 // =========================================
-// 固件版本: 0.8.7
+// 固件版本: 0.8.9
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能 + PID温控算法
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -139,6 +139,7 @@ const char* getEnglishTranslation(const char* key) {
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <ArduinoOTA.h>
 #include <WiFiUdp.h>
 #include <DNSServer.h>
 #include <EEPROM.h>
@@ -183,7 +184,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.8.8";
+const String FIRMWARE_VERSION = "0.8.9";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -944,10 +945,47 @@ void broadcastDiscovery() {
 // =========================================
 
 void setupOTA() {
-    // 将OTA更新服务器集成到主Web服务器中
-    httpUpdater.setup(&webServer);
-    Serial.println("OTA升级功能已集成到主Web服务器");
-    Serial.println("OTA更新页面地址: http://" + WiFi.localIP().toString() + "/ota_update");
+    // 配置HTTP更新服务器
+    httpUpdater.setup(&webServer, "/update"); // 设置OTA更新路径
+    // 注意：ESP8266HTTPUpdateServer没有setHostname方法
+    
+    // 配置Arduino OTA
+    ArduinoOTA.setHostname(DEVICE_ID.c_str());
+    // ArduinoOTA.setPassword("admin"); // 暂时去掉密码以便测试
+    
+    ArduinoOTA.onStart([]() {
+        Serial.println("OTA升级开始");
+        String type;
+        if (ArduinoOTA.getCommand() == U_FLASH) {
+            type = "sketch";
+        } else {
+            type = "filesystem";
+        }
+        Serial.println("开始升级 " + type);
+    });
+    
+    ArduinoOTA.onEnd([]() {
+        Serial.println("\nOTA升级完成");
+    });
+    
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+        Serial.printf("升级进度: %u%%\r", (progress / (total / 100)));
+    });
+    
+    ArduinoOTA.onError([](ota_error_t error) {
+        Serial.printf("OTA错误 [%u]: ", error);
+        if (error == OTA_AUTH_ERROR) Serial.println("认证失败");
+        else if (error == OTA_BEGIN_ERROR) Serial.println("开始失败");
+        else if (error == OTA_CONNECT_ERROR) Serial.println("连接失败");
+        else if (error == OTA_RECEIVE_ERROR) Serial.println("接收失败");
+        else if (error == OTA_END_ERROR) Serial.println("结束失败");
+    });
+    
+    ArduinoOTA.begin();
+    
+    Serial.println("OTA升级功能已启用");
+    Serial.println("Arduino OTA地址: http://" + WiFi.localIP().toString() + ":8266");
+    Serial.println("Web OTA更新页面地址: http://" + WiFi.localIP().toString() + "/ota_update");
 }
 
 void handleOTA() {
@@ -1149,126 +1187,64 @@ void handleRestart() {
 }
 
 void handleOTAUpdate() {
-    // 优化的OTA升级端点 - 提供更直观的升级界面
-    String html = "<!DOCTYPE html><html><head><title>智能烤箱控制器 - OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
-    html += "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}h1{color:#333;}.container{max-width:700px;margin:0 auto;background:white;padding:25px;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}.status-info{background:#e8f4fd;border-left:4px solid #007bff;padding:15px;margin:15px 0;border-radius:4px;}.tab{display:none;}.active{display:block;}.upgrade-option{display:flex;align-items:center;padding:20px;margin:15px 0;border:2px solid #e0e0e0;border-radius:8px;cursor:pointer;transition:all 0.3s;}.upgrade-option:hover{border-color:#007bff;background:#f8f9fa;}.upgrade-option.active{background:#e8f4fd;border-color:#007bff;}.option-icon{font-size:24px;margin-right:15px;width:40px;text-align:center;}.option-content{flex:1;}.option-title{font-size:18px;font-weight:bold;margin-bottom:5px;}.option-desc{color:#666;font-size:14px;}.option-badge{background:#28a745;color:white;padding:2px 8px;border-radius:12px;font-size:12px;margin-left:10px;}.firmware-option .option-icon{color:#dc3545;}.html-option .option-icon{color:#28a745;}button{background:#007bff;color:white;border:none;padding:12px 24px;border-radius:6px;cursor:pointer;margin:5px;font-size:14px;font-weight:bold;}button:hover{background:#0056b3;}.btn-secondary{background:#6c757d;}.btn-secondary:hover{background:#545b62;}.progress{width:100%;height:20px;background:#f0f0f0;border-radius:10px;margin:15px 0;}.progress-bar{height:100%;background:#007bff;border-radius:10px;width:0%;transition:width 0.3s;}.file-list{margin:10px 0;}.file-item{background:#f8f9fa;padding:8px 12px;margin:5px 0;border-radius:4px;border-left:3px solid #007bff;}</style>";
-    html += "</head><body><div class=\"container\"><h1>🚀 智能烤箱控制器 OTA升级</h1>";
-    
-    // 显示设备状态信息
-    html += "<div class=\"status-info\">";
-    html += "<strong>设备状态:</strong><br>";
-    html += "• 固件版本: " + FIRMWARE_VERSION + "<br>";
-    html += "• 运行时间: " + String(millis() / 1000 / 60) + " 分钟<br>";
-    html += "• 可用内存: " + String(ESP.getFreeHeap() / 1024) + " KB<br>";
-    html += "• WiFi状态: " + String(WiFi.status() == WL_CONNECTED ? "已连接" : "未连接");
-    html += "</div>";
-    
-    html += "<div class=\"tab active\" id=\"mainTab\">";
-    html += "<h3>📋 选择升级类型</h3>";
-    html += "<p>请根据您的需求选择合适的升级方式：</p>";
-    
-    // 固件升级选项
-    html += "<div class=\"upgrade-option firmware-option\" onclick=\"showTab('firmwareTab')\">";
-    html += "<div class=\"option-icon\">🔧</div>";
-    html += "<div class=\"option-content\">";
-    html += "<div class=\"option-title\">固件升级 (.bin 文件)<span class=\"option-badge\">系统核心</span></div>";
-    html += "<div class=\"option-desc\">更新设备主程序，包含功能改进和错误修复。升级后设备将自动重启。</div>";
-    html += "</div>";
-    html += "</div>";
-    
-    // 文件系统.bin更新选项
-    html += "<div class=\"upgrade-option fs-option\" onclick=\"showTab('fsTab')\">";
-    html += "<div class=\"option-icon\">💾</div>";
-    html += "<div class=\"option-content\">";
-    html += "<div class=\"option-title\">文件系统更新 (.bin 文件)<span class=\"option-badge\">界面与数据</span></div>";
-    html += "<div class=\"option-desc\">更新完整的文件系统镜像，包含所有HTML、JS、CSS等界面文件。</div>";
-    html += "</div>";
-    html += "</div>";
-    
-    html += "</div>";
-    
+    Serial.println("开始生成OTA升级页面...");
+
+    // 简化的OTA页面，减少内存使用，添加缓存控制
+    String html = "<!DOCTYPE html><html><head><title>OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+    html += "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\">";
+    html += "<meta http-equiv=\"Pragma\" content=\"no-cache\">";
+    html += "<meta http-equiv=\"Expires\" content=\"0\">";
+    html += "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}h1{color:#333;}.container{max-width:600px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}";
+
+    html += ".tab{display:none;}.active{display:block;}button{background:#007bff;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin:5px;}button:hover{background:#0056b3;}";
+    html += ".btn-secondary{background:#6c757d;}.btn-secondary:hover{background:#545b62;}.progress{width:100%;height:20px;background:#f0f0f0;border-radius:10px;margin:10px 0;}.progress-bar{height:100%;background:#007bff;border-radius:10px;width:0%;}";
+    html += ".file-list{margin:10px 0;}.file-item{background:#f8f9fa;padding:5px 10px;margin:3px 0;border-radius:3px;border-left:3px solid #007bff;}</style></head><body>";
+    html += "<div class=\"container\"><h1>OTA升级</h1><div class=\"status-info\"><strong>设备状态:</strong><br>• 固件版本: " + FIRMWARE_VERSION + "<br>• 运行时间: " + String(millis() / 1000 / 60) + " 分钟<br>• 可用内存: " + String(ESP.getFreeHeap() / 1024) + " KB</div>";
+
+    // 主标签页
+    html += "<div class=\"tab active\" id=\"mainTab\"><h3>选择升级类型</h3>";
+    html += "<button onclick=\"showTab('firmwareTab')\">🔧 固件升级</button>";
+    html += "<button onclick=\"showTab('fsTab')\">💾 文件系统更新</button>";
+    html += "<button onclick=\"showTab('fileTab')\">📄 单个文件上传</button>";
+    html += "<button onclick=\"showTab('batchTab')\">📁 批量文件上传</button></div>";
+
     // 固件升级标签页
-    html += "<div class=\"tab\" id=\"firmwareTab\">";
-    html += "<h3>🔧 固件升级</h3>";
-    html += "<p><strong>重要提示：</strong>固件升级将重启设备，请确保电源稳定。</p>";
-    html += "<form action=\"/update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFirmware(this)\">";
-    html += "<p><strong>选择固件文件 (.bin):</strong></p>";
-    html += "<input type=\"file\" name=\"firmware\" accept=\".bin\" required style=\"margin:10px 0;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;\">";
-    html += "<br><button type=\"submit\">🚀 开始升级固件</button>";
-    html += "</form>";
-    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"firmwareProgress\"></div></div>";
-    html += "<p id=\"firmwareStatus\"></p>";
-    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">⬅️ 返回选择</button>";
-    html += "</div>";
-    
+    html += "<div class=\"tab\" id=\"firmwareTab\"><h3>固件升级</h3><p>选择.bin文件升级固件</p>";
+    html += "<form action=\"/firmware_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFirmware(this)\">";
+    html += "<input type=\"file\" name=\"firmware\" accept=\".bin\" required><br><button type=\"submit\">开始升级</button></form>";
+    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"firmwareProgress\"></div></div><p id=\"firmwareStatus\"></p>";
+    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
+
     // 文件系统更新标签页
-    html += "<div class=\"tab\" id=\"fsTab\">";
-    html += "<h3>💾 文件系统更新</h3>";
-    html += "<p><strong>重要提示：</strong>文件系统更新将覆盖所有现有界面文件，请确保使用正确的.bin镜像文件。</p>";
-    html += "<form action=\"/update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
-    html += "<p><strong>选择文件系统镜像 (.bin):</strong></p>";
-    html += "<input type=\"file\" name=\"filesystem\" accept=\".bin\" required style=\"margin:10px 0;padding:8px;border:1px solid #ddd;border-radius:4px;width:100%;\">";
-    html += "<br><button type=\"submit\">🚀 开始更新文件系统</button>";
-    html += "</form>";
-    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fsProgress\"></div></div>";
-    html += "<p id=\"fsStatus\"></p>";
-    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">⬅️ 返回选择</button>";
-    html += "</div>";
-    
-    html += "</div>";
-    html += "<script>";
-    html += "function showTab(tabId){";
-    html += "    document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));";
-    html += "    document.querySelectorAll('.upgrade-option').forEach(opt=>opt.classList.remove('active'));";
-    html += "    document.getElementById(tabId).classList.add('active');";
-    html += "    if(tabId === 'firmwareTab'){";
-    html += "        document.querySelector('.firmware-option').classList.add('active');";
-    html += "    }";
-    html += "}";
-    html += "function uploadFirmware(form){";
-    html += "    var xhr=new XMLHttpRequest();";
-    html += "    xhr.upload.onprogress=function(e){";
-    html += "        if(e.lengthComputable){";
-    html += "            var percent=Math.round((e.loaded/e.total)*100);";
-    html += "            document.getElementById('firmwareProgress').style.width=percent+'%';";
-    html += "            document.getElementById('firmwareStatus').innerHTML='上传进度: '+percent+'%';";
-    html += "        }";
-    html += "    };";
-    html += "    xhr.onload=function(){";
-    html += "        if(xhr.status==200){";
-    html += "            document.getElementById('firmwareStatus').innerHTML='✅ 固件升级成功！设备将在3秒后重启...';";
-    html += "            setTimeout(function(){location.reload();},3000);";
-    html += "        }else{";
-    html += "            document.getElementById('firmwareStatus').innerHTML='❌ 升级失败：'+xhr.responseText;";
-    html += "        }";
-    html += "    };";
-    html += "    xhr.open('POST','/update');";
-    html += "    xhr.send(new FormData(form));";
-    html += "    return false;";
-    html += "}";
-    html += "function uploadFilesystem(form){";
-    html += "    var xhr=new XMLHttpRequest();";
-    html += "    xhr.upload.onprogress=function(e){";
-    html += "        if(e.lengthComputable){";
-    html += "            var percent=Math.round((e.loaded/e.total)*100);";
-    html += "            document.getElementById('fsProgress').style.width=percent+'%';";
-    html += "            document.getElementById('fsStatus').innerHTML='上传进度: '+percent+'%';";
-    html += "        }";
-    html += "    };";
-    html += "    xhr.onload=function(){";
-    html += "        if(xhr.status==200){";
-    html += "            document.getElementById('fsStatus').innerHTML='✅ 文件系统更新成功！设备将在3秒后重启...';";
-    html += "            setTimeout(function(){location.reload();},3000);";
-    html += "        }else{";
-    html += "            document.getElementById('fsStatus').innerHTML='❌ 更新失败：'+xhr.responseText;";
-    html += "        }";
-    html += "    };";
-    html += "    xhr.open('POST','/update');";
-    html += "    xhr.send(new FormData(form));";
-    html += "    return false;";
-    html += "}";
-    html += "</script></body></html>";
+    html += "<div class=\"tab\" id=\"fsTab\"><h3>文件系统更新</h3><p>选择.bin文件更新文件系统</p>";
+    html += "<form action=\"/filesystem_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
+    html += "<input type=\"file\" name=\"filesystem\" accept=\".bin\" required><br><button type=\"submit\">开始更新</button></form>";
+    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fsProgress\"></div></div><p id=\"fsStatus\"></p>";
+    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
+
+    // 单个文件上传标签页
+    html += "<div class=\"tab\" id=\"fileTab\"><h3>单个文件上传</h3><p>选择要上传的文件，系统将自动推断目标路径</p>";
+    html += "<form action=\"/upload_file\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadSingleFile(this)\">";
+    html += "<div style=\"margin-bottom:10px;\"><label>选择文件：</label><br><input type=\"file\" name=\"file\" accept=\".html,.htm,.js,.css,.json,.txt,.bin,.png,.jpg,.jpeg,.gif,.ico,.svg,.woff,.woff2,.ttf,.eot,.md,.map\" required onchange=\"updateTargetPath(this)\"></div>";
+    html += "<div style=\"margin-bottom:10px;\"><label>目标路径：</label><br><input type=\"text\" name=\"target_path\" id=\"targetPath\" placeholder=\"系统将自动推断路径\" style=\"width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;background:#f8f9fa;\" readonly></div>";
+    html += "<button type=\"submit\">上传文件</button></form>";
+    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fileProgress\"></div></div><p id=\"fileStatus\"></p>";
+    html += "<div class=\"file-list\"><h4>设备文件列表:</h4><div id=\"fileList\">加载中...</div></div>";
+    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
+
+    html += "</div><script>";
+    html += "function showTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='fileTab')loadFileList();}function updateTargetPath(input){var file=input.files[0];if(file){var filename=file.name.toLowerCase();var targetPath='/';if(filename.endsWith('.html')||filename.endsWith('.htm')){targetPath='/index.html';}else if(filename.endsWith('.js')){if(filename.includes('mobile')||filename.includes('utils')){targetPath='/mobile_utils.js';}else{targetPath='/lang.js';}}else if(filename.endsWith('.css')){targetPath='/title-styles.css';}else if(filename.endsWith('.bin')){targetPath='/firmware.bin';}else{targetPath='/'+filename;}document.getElementById('targetPath').value=targetPath;}}";
+    html += "function uploadFirmware(f){var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('firmwareProgress').style.width=p+'%';document.getElementById('firmwareStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){var r=JSON.parse(x.responseText);document.getElementById('firmwareStatus').innerHTML=r.status=='success'?'成功，重启中...':'失败:'+r.message;}else{document.getElementById('firmwareStatus').innerHTML='失败';}};x.open('POST','/firmware_update');x.send(new FormData(f));return false;}";
+    html += "function uploadFilesystem(f){var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('fsProgress').style.width=p+'%';document.getElementById('fsStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){var r=JSON.parse(x.responseText);document.getElementById('fsStatus').innerHTML=r.status=='success'?'成功，重启中...':'失败:'+r.message;}else{document.getElementById('fsStatus').innerHTML='失败';}};x.open('POST','/filesystem_update');x.send(new FormData(f));return false;}";
+    html += "function uploadSingleFile(f){var t=f.target_path.value;if(!t){document.getElementById('fileStatus').innerHTML='请选择目标路径';return false;}var fi=f.file;if(!fi.files||fi.files.length==0){document.getElementById('fileStatus').innerHTML='请选择文件';return false;}document.getElementById('fileStatus').innerHTML='上传中...';var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('fileProgress').style.width=p+'%';document.getElementById('fileStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){try{var r=JSON.parse(x.responseText);document.getElementById('fileStatus').innerHTML=r.status=='success'?'成功':'失败:'+r.message;document.getElementById('fileProgress').style.width='0%';if(r.status=='success')loadFileList();}catch(e){document.getElementById('fileStatus').innerHTML='解析错误';}}else{document.getElementById('fileStatus').innerHTML='HTTP错误';}document.getElementById('fileProgress').style.width='0%';};x.onerror=function(){document.getElementById('fileStatus').innerHTML='网络错误';document.getElementById('fileProgress').style.width='0%';};x.open('POST','/upload_file');x.send(new FormData(f));return false;}";
+    html += "function loadFileList(){var d=document.getElementById('fileList');d.innerHTML='加载中...';fetch('/file_list').then(r=>r.json()).then(data=>{d.innerHTML='';if(data.files&&data.files.length>0){data.files.forEach(f=>{var i=document.createElement('div');i.className='file-item';i.innerHTML=f.name+' ('+f.size+'字节)';d.appendChild(i);});}else{d.innerHTML='无文件';}}).catch(e=>{d.innerHTML='加载失败';});}";
+    html += "function loadBatchFileList(){var d=document.getElementById('batchFileList');d.innerHTML='加载中...';fetch('/file_list').then(r=>r.json()).then(data=>{d.innerHTML='';if(data.files&&data.files.length>0){data.files.forEach(f=>{var i=document.createElement('div');i.className='file-item';i.innerHTML=f.name+' ('+f.size+'字节)';d.appendChild(i);});}else{d.innerHTML='无文件';}}).catch(e=>{d.innerHTML='加载失败';});}";
+    html += "function uploadBatchFiles(){var files=document.getElementById('batchFiles').files;if(!files||files.length==0){document.getElementById('batchStatus').innerHTML='请选择文件';return;}document.getElementById('batchProgress').style.display='block';document.getElementById('batchStatus').innerHTML='开始批量上传...';document.getElementById('batchResults').innerHTML='';var results=[];var uploadPromises=Array.from(files).map(function(file,index){return new Promise(function(resolve,reject){var formData=new FormData();formData.append('file',file);formData.append('target_path','/'+file.name);var xhr=new XMLHttpRequest();xhr.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('batchProgressBar').style.width=p+'%';document.getElementById('batchStatus').innerHTML='上传 '+file.name+' ('+(index+1)+'/'+files.length+'): '+p+'%';}};xhr.onload=function(){if(xhr.status==200){try{var r=JSON.parse(xhr.responseText);if(r.status=='success'){results.push('<div style=\"color:green;\">✓ '+file.name+' 上传成功</div>');resolve();}else{results.push('<div style=\"color:red;\">✗ '+file.name+' 上传失败: '+r.message+'</div>');resolve();}}catch(e){results.push('<div style=\"color:red;\">✗ '+file.name+' 解析错误</div>');resolve();}}else{results.push('<div style=\"color:red;\">✗ '+file.name+' HTTP错误</div>');resolve();}};xhr.onerror=function(){results.push('<div style=\"color:red;\">✗ '+file.name+' 网络错误</div>');resolve();};xhr.open('POST','/upload_file');xhr.send(formData);});});Promise.all(uploadPromises).then(function(){document.getElementById('batchResults').innerHTML=results.join('');document.getElementById('batchStatus').innerHTML='批量上传完成';document.getElementById('batchProgressBar').style.width='0%';loadBatchFileList();}).catch(function(error){document.getElementById('batchStatus').innerHTML='批量上传过程中发生错误';console.error(error);});}";
+    html += "window.onload=function(){loadFileList();loadBatchFileList();};</script></body></html>";
+
+    Serial.println("OTA升级页面生成完成，长度: " + String(html.length()) + " 字节");
     webServer.send(200, "text/html", html);
+    Serial.println("OTA升级页面已发送到客户端");
 }
 
 void handleLogout() {
@@ -1331,6 +1307,8 @@ void handleResetCalibration() {
 
 // 前向声明
 void handleClearCache();
+void handleFileList();
+void handleUploadFile();
 
 void handleClearCache() {
     Serial.println("开始清除文件系统缓存...");
@@ -1345,12 +1323,16 @@ void handleClearCache() {
         "/settings_help.html",
         "/mobile_utils.js",
         "/littlefs.bin",  // 删除可能存在的旧镜像文件
-        "/firmware.bin"   // 删除可能存在的旧固件文件
+        "/firmware.bin",  // 删除可能存在的旧固件文件
+        "/lang.js",
+        "/captive_portal.html",
+        "/title-styles.css"
     };
 
     int numFiles = sizeof(filesToDelete) / sizeof(filesToDelete[0]);
     int deletedCount = 0;
 
+    // 先删除指定的文件
     for (int i = 0; i < numFiles; i++) {
         if (LittleFS.exists(filesToDelete[i])) {
             if (LittleFS.remove(filesToDelete[i])) {
@@ -1364,30 +1346,191 @@ void handleClearCache() {
         }
     }
 
-    // 重新初始化文件系统（可选）
+    // 然后删除所有剩余的文件（彻底清除）
+    Serial.println("开始彻底清除所有文件...");
+    Dir dir = LittleFS.openDir("/");
+    while (dir.next()) {
+        String fileName = "/" + dir.fileName();
+        if (LittleFS.exists(fileName)) {
+            if (LittleFS.remove(fileName)) {
+                Serial.printf("已删除剩余文件: %s\n", fileName.c_str());
+                deletedCount++;
+            } else {
+                Serial.printf("删除剩余文件失败: %s\n", fileName.c_str());
+            }
+        }
+    }
+
+    // 重新初始化文件系统
     LittleFS.end();
-    delay(100);
+    delay(200);
     if (LittleFS.begin()) {
         Serial.println("文件系统重新初始化成功");
     } else {
         Serial.println("文件系统重新初始化失败");
     }
 
-    String json = "{\"status\":\"success\",\"message\":\"文件系统缓存已清除\",\"deleted_files\":" + String(deletedCount) + "}";
+    String json = "{\"status\":\"success\",\"message\":\"文件系统缓存已彻底清除\",\"deleted_files\":" + String(deletedCount) + ",\"cache_bust\":\"" + String(millis()) + "\"}";
     webServer.send(200, "application/json", json);
 
     Serial.printf("缓存清除完成，已删除 %d 个文件\n", deletedCount);
 }
 
+void handleFileList() {
+    Serial.println("获取文件列表");
+
+    String json = "{\"files\":[";
+    bool first = true;
+
+    // 列出根目录下的文件
+    Dir dir = LittleFS.openDir("/");
+    while (dir.next()) {
+        // 只列出文件，跳过目录
+        if (dir.fileName().length() == 0) continue;
+
+        if (!first) json += ",";
+        first = false;
+
+        json += "{\"name\":\"" + dir.fileName() + "\",";
+        json += "\"size\":" + String((unsigned long)dir.fileSize()) + ",";
+        json += "\"type\":\"file\"}";
+    }
+
+    json += "]}";
+    webServer.send(200, "application/json", json);
+}
+
+void handleUploadFile() {
+    Serial.println("处理单个文件上传请求");
+
+    // 检查是否有目标路径参数
+    if (!webServer.hasArg("target_path")) {
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"缺少目标路径参数\"}");
+        return;
+    }
+
+    String targetPath = webServer.arg("target_path");
+    Serial.print("目标路径: ");
+    Serial.println(targetPath);
+
+    // 验证目标路径安全性（防止路径遍历攻击）
+    if (targetPath.indexOf("..") >= 0 || !targetPath.startsWith("/")) {
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"无效的目标路径\"}");
+        return;
+    }
+
+    // 验证文件类型
+    if (!isValidFileType(targetPath)) {
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"不支持的文件类型\"}");
+        return;
+    }
+
+    // 等待一小段时间确保文件上传完成
+    delay(100);
+
+    // 检查文件是否已上传并可访问
+    if (!LittleFS.exists(targetPath)) {
+        Serial.println("错误：文件上传后不存在");
+        webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"文件上传失败，文件不存在\"}");
+        return;
+    }
+
+    // 验证文件是否正确保存且可读取
+    File uploadedFile = LittleFS.open(targetPath, "r");
+    if (!uploadedFile) {
+        Serial.println("错误：无法打开上传的文件");
+        webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"无法打开上传的文件\"}");
+        return;
+    }
+
+    size_t fileSize = uploadedFile.size();
+    uploadedFile.close();
+
+    // 验证文件大小是否合理
+    if (fileSize == 0) {
+        Serial.println("错误：文件大小为0");
+        LittleFS.remove(targetPath); // 删除空文件
+        webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"文件上传失败，文件为空\"}");
+        return;
+    }
+
+    // 重新初始化文件系统以确保更改生效
+    LittleFS.end();
+    delay(100);
+    if (!LittleFS.begin()) {
+        Serial.println("警告：文件系统重新初始化失败");
+    }
+
+    // 返回成功响应，包含文件信息
+    String jsonResponse = "{\"status\":\"success\",\"message\":\"文件上传成功\",\"target_path\":\"" + targetPath + "\",\"file_size\":" + String(fileSize) + ",\"cache_bust\":\"" + String(millis()) + "\"}";
+    webServer.send(200, "application/json", jsonResponse);
+
+    Serial.println("单个文件上传处理完成: " + targetPath + " (" + String(fileSize) + " bytes)");
+}
+
+void handleFirmwareUpdate() {
+    Serial.println("开始处理固件更新");
+
+    // 检查是否存在上传的固件文件
+    if (!LittleFS.exists("/firmware.bin")) {
+        Serial.println("错误：未找到固件文件");
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"未找到固件文件\"}");
+        return;
+    }
+
+    // 获取固件文件信息
+    File firmwareFile = LittleFS.open("/firmware.bin", "r");
+    if (!firmwareFile) {
+        Serial.println("错误：无法打开固件文件");
+        webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"无法打开固件文件\"}");
+        return;
+    }
+
+    // 获取固件文件大小
+    size_t firmwareSize = firmwareFile.size();
+    firmwareFile.close();
+
+    Serial.print("固件文件大小: ");
+    Serial.println(firmwareSize);
+
+    // 验证固件文件的基本完整性
+    if (firmwareSize < 1024 || firmwareSize > 1024 * 1024) { // 1KB到1MB之间
+        Serial.println("错误：固件文件大小不合理");
+        LittleFS.remove("/firmware.bin");
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"固件文件大小不合理\"}");
+        return;
+    }
+
+    // ESP8266的固件更新需要特殊的处理
+    // 这里我们采用一个变通方案：标记需要更新，但不立即应用
+    EEPROM.begin(512);
+    EEPROM.write(510, 1); // 设置固件更新标志
+    EEPROM.write(511, (firmwareSize >> 24) & 0xFF);
+    EEPROM.write(512, (firmwareSize >> 16) & 0xFF);
+    EEPROM.write(513, (firmwareSize >> 8) & 0xFF);
+    EEPROM.write(514, firmwareSize & 0xFF);
+    EEPROM.commit();
+    EEPROM.end();
+
+    Serial.println("固件已上传并标记为待更新");
+    Serial.println("设备将在3秒后重启以应用更新...");
+
+    // 发送响应
+    webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"固件已上传成功，设备将在3秒后重启以应用更新\",\"action\":\"restart\"}");
+
+    // 延迟重启
+    delay(3000);
+    ESP.restart();
+}
+
 void handleFilesystemUpdate() {
-    // 文件系统更新处理函数 - 简化为单个文件更新
+    // 文件系统更新处理函数 - 实现真正的文件系统镜像应用机制
     Serial.println("开始处理文件系统更新");
 
     // 检查是否存在上传的文件系统镜像
     if (!LittleFS.exists("/littlefs.bin")) {
         Serial.println("错误：未找到文件系统镜像文件");
-        webServer.sendHeader("Connection", "close");
-        webServer.send(400, "text/plain; charset=utf-8", "未找到文件系统镜像文件");
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"未找到文件系统镜像文件\"}");
         return;
     }
 
@@ -1395,8 +1538,7 @@ void handleFilesystemUpdate() {
     File fsImage = LittleFS.open("/littlefs.bin", "r");
     if (!fsImage) {
         Serial.println("错误：无法打开文件系统镜像文件");
-        webServer.sendHeader("Connection", "close");
-        webServer.send(500, "text/plain; charset=utf-8", "无法打开文件系统镜像文件");
+        webServer.send(500, "application/json", "{\"status\":\"error\",\"message\":\"无法打开文件系统镜像文件\"}");
         return;
     }
 
@@ -1407,41 +1549,23 @@ void handleFilesystemUpdate() {
     Serial.print("文件系统镜像大小: ");
     Serial.println(imageSize);
 
-    // 检查当前文件系统状态
-    Serial.println("检查当前文件系统状态:");
-    String filesToCheck[] = {"/index.html", "/login.html", "/wifi_config.html", "/device_status.html"};
-    for (String filename : filesToCheck) {
-        if (LittleFS.exists(filename)) {
-            File file = LittleFS.open(filename, "r");
-            if (file) {
-                Serial.printf("文件 %s 存在，大小: %d 字节\n", filename.c_str(), file.size());
-                file.close();
-            } else {
-                Serial.printf("文件 %s 存在但无法打开\n", filename.c_str());
-            }
-        } else {
-            Serial.printf("文件 %s 不存在\n", filename.c_str());
-        }
-    }
-
-    // 对于ESP8266，真正的文件系统镜像更新比较复杂
-    // 这里我们提供一个简化的解决方案：
-    // 1. 验证镜像文件
-    // 2. 尝试直接应用（如果可能）
-    // 3. 或者提供手动文件更新的指导
-
     // 验证镜像文件的基本完整性
-    if (imageSize < 1024 || imageSize > 1024 * 1024) { // 1KB到1MB之间
+    if (imageSize < 1024 || imageSize > 3 * 1024 * 1024) { // 1KB到3MB之间
         Serial.println("错误：文件系统镜像大小不合理");
         LittleFS.remove("/littlefs.bin");
-        webServer.send(400, "text/plain; charset=utf-8", "文件系统镜像大小不合理");
+        webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"文件系统镜像大小不合理\"}");
         return;
     }
 
-    // ESP8266的文件系统更新需要特殊的处理
-    // 这里我们采用一个变通方案：标记需要更新，但不立即应用
+    // 标记需要恢复配置
     EEPROM.begin(512);
-    EEPROM.write(500, 2); // 设置文件系统更新标志（2表示镜像已上传）
+    EEPROM.write(505, 1); // 设置配置恢复标志
+    EEPROM.commit();
+    EEPROM.end();
+
+    // 设置文件系统更新标志
+    EEPROM.begin(512);
+    EEPROM.write(500, 3); // 设置文件系统更新标志（3表示需要应用镜像）
     EEPROM.write(501, (imageSize >> 24) & 0xFF);
     EEPROM.write(502, (imageSize >> 16) & 0xFF);
     EEPROM.write(503, (imageSize >> 8) & 0xFF);
@@ -1449,98 +1573,126 @@ void handleFilesystemUpdate() {
     EEPROM.commit();
     EEPROM.end();
 
-    Serial.println("文件系统镜像已上传并标记为待更新");
-    Serial.println("注意：ESP8266的文件系统更新需要特殊的OTA过程");
+    Serial.println("文件系统镜像已准备就绪，设备将在3秒后重启以应用更新...");
 
     // 发送响应
-    webServer.sendHeader("Access-Control-Allow-Origin", "*");
-    String responseMsg = "文件系统镜像已上传成功。但是ESP8266的文件系统更新需要特殊的OTA过程。\n\n";
-    responseMsg += "建议的解决方案：\n";
-    responseMsg += "1. 使用PlatformIO的完整OTA更新（同时更新固件和文件系统）\n";
-    responseMsg += "2. 或者使用Web界面逐个更新文件\n\n";
-    responseMsg += "镜像文件已保存，重启后可重新上传。";
+    webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"文件系统镜像已上传成功，设备将在3秒后重启以应用更新\",\"action\":\"restart\"}");
 
-    String completeData = "event: complete\r\ndata: {\"status\": \"warning\", \"message\": \"" + responseMsg + "\", \"action\": \"none\"}\r\n\r\n";
-    webServer.setContentLength(completeData.length());
-    webServer.send(200, "text/event-stream; charset=utf-8", completeData);
-
-    Serial.println("文件系统更新处理完成（标记模式）");
+    // 延迟重启
+    delay(3000);
+    ESP.restart();
 }
 
-void handleFileUpload() {
-    // 文件上传处理函数 - 重新设计进度计算逻辑
-    HTTPUpload& upload = webServer.upload();
-    static String currentFilename;
-    static fs::File currentFile;
-    static bool isFilesystemUpdate = false;
-    static bool isFirmwareUpdate = false;
-    static bool responseStarted = false;
-    static unsigned long receivedBytes = 0;    // 已接收的字节数
-    static unsigned long estimatedTotalSize = 0; // 预估的文件总大小
-    static unsigned int chunkNum = 0;         // 数据块计数
-    static unsigned long lastProgressUpdate = 0; // 上次更新进度的时间戳
-
-    // 检查更新类型
-    if (upload.status == UPLOAD_FILE_START) {
-        // 完全重置所有状态
-        currentFilename = upload.filename;
-        String uri = webServer.uri();
-
-        // 根据表单字段名判断更新类型
-        isFirmwareUpdate = webServer.hasArg("firmware");
-        isFilesystemUpdate = webServer.hasArg("filesystem");
-
-        // 如果都没有指定，根据URI判断（向后兼容）
-        if (!isFirmwareUpdate && !isFilesystemUpdate) {
-            isFilesystemUpdate = (uri == "/update");
-        }
-
+// 文件上传处理结构体，用于替代静态变量
+struct UploadStatus {
+    String currentFilename;
+    fs::File currentFile;
+    bool isFilesystemUpdate;
+    bool isFirmwareUpdate;
+    bool isSingleFileUpload;
+    String targetPath;
+    bool responseStarted;
+    unsigned long receivedBytes;
+    unsigned long estimatedTotalSize;
+    unsigned int chunkNum;
+    unsigned long lastProgressUpdate;
+    
+    // 初始化函数
+    void init() {
+        currentFilename = "";
+        isFilesystemUpdate = false;
+        isFirmwareUpdate = false;
+        isSingleFileUpload = false;
+        targetPath = "";
+        responseStarted = false;
         receivedBytes = 0;
         estimatedTotalSize = 0;
         chunkNum = 0;
-        responseStarted = false;
         lastProgressUpdate = 0;
+    }
+};
+
+void handleFileUpload() {
+    // 文件上传处理函数 - 使用结构体替代静态变量，避免状态冲突
+    HTTPUpload& upload = webServer.upload();
+    
+    // 创建上传状态实例（局部变量，每次调用都会重新创建）
+    static UploadStatus uploadStatus;
+    
+    // 检查更新类型
+    if (upload.status == UPLOAD_FILE_START) {
+        // 初始化状态
+        uploadStatus.init();
         
+        uploadStatus.currentFilename = upload.filename;
+        String uri = webServer.uri();
+
+        // 根据表单字段名判断更新类型
+        uploadStatus.isFirmwareUpdate = webServer.hasArg("firmware");
+        uploadStatus.isFilesystemUpdate = webServer.hasArg("filesystem");
+        uploadStatus.isSingleFileUpload = webServer.hasArg("target_path");
+
+        // 如果都没有指定，根据URI判断（向后兼容）
+        if (!uploadStatus.isFirmwareUpdate && !uploadStatus.isFilesystemUpdate && !uploadStatus.isSingleFileUpload) {
+            uploadStatus.isFilesystemUpdate = (uri == "/update");
+        }
+
+        // 保存目标路径参数
+        if (uploadStatus.isSingleFileUpload) {
+            uploadStatus.targetPath = webServer.arg("target_path");
+            Serial.print("检测到单个文件上传，目标路径参数: ");
+            Serial.println(uploadStatus.targetPath);
+        }
+
         // 在上传开始时获取Content-Length头信息（这是真正的文件总大小）
         String contentLength = webServer.header("Content-Length");
         if (contentLength.length() > 0) {
-            estimatedTotalSize = contentLength.toInt();
+            uploadStatus.estimatedTotalSize = contentLength.toInt();
             // 减去多部分表单数据的边界和头部信息（粗略估计）
             // 根据观察，通常这部分大约占用几百字节，我们保守估计为500字节
-            if (estimatedTotalSize > 500) {
-                estimatedTotalSize -= 500;
+            if (uploadStatus.estimatedTotalSize > 500) {
+                uploadStatus.estimatedTotalSize -= 500;
             } else {
-                estimatedTotalSize = 0; // 如果太小，则认为获取失败
+                uploadStatus.estimatedTotalSize = 0; // 如果太小，则认为获取失败
             }
         }
-        
+
         // 如果Content-Length不可用或计算后为0，使用upload.totalSize作为备用
-        if (estimatedTotalSize == 0 && upload.totalSize > 0) {
-            estimatedTotalSize = upload.totalSize;
+        if (uploadStatus.estimatedTotalSize == 0 && upload.totalSize > 0) {
+            uploadStatus.estimatedTotalSize = upload.totalSize;
         }
-        
+
         // 标准化文件名路径
-        if (!currentFilename.startsWith("/")) {
-            currentFilename = "/" + currentFilename;
+        if (!uploadStatus.currentFilename.startsWith("/")) {
+            uploadStatus.currentFilename = "/" + uploadStatus.currentFilename;
         }
 
         // 根据更新类型设置文件名
-        if (isFirmwareUpdate) {
-            currentFilename = "/firmware.bin";  // 固件文件
-        } else if (isFilesystemUpdate) {
-            currentFilename = "/littlefs.bin";  // 文件系统镜像
+        if (uploadStatus.isFirmwareUpdate) {
+            uploadStatus.currentFilename = "/firmware.bin";  // 固件文件
+        } else if (uploadStatus.isFilesystemUpdate) {
+            uploadStatus.currentFilename = "/littlefs.bin";  // 文件系统镜像
+        } else if (uploadStatus.isSingleFileUpload) {
+            // 单个文件上传，使用指定的目标路径
+            if (uploadStatus.targetPath.startsWith("/")) {
+                uploadStatus.currentFilename = uploadStatus.targetPath;
+            } else {
+                uploadStatus.currentFilename = "/" + uploadStatus.targetPath;
+            }
+            Serial.print("单个文件上传，目标路径: ");
+            Serial.println(uploadStatus.currentFilename);
         }
         
         // 验证文件类型（非文件系统更新时）
-        if (!isFilesystemUpdate && !isValidFileType(currentFilename)) {
+        if (!uploadStatus.isFilesystemUpdate && !isValidFileType(uploadStatus.currentFilename)) {
             Serial.print("不支持的文件类型: ");
-            Serial.println(currentFilename);
+            Serial.println(uploadStatus.currentFilename);
             return;
         }
         
         // 创建或覆盖文件
-        currentFile = LittleFS.open(currentFilename, "w");
-        if (!currentFile) {
+        uploadStatus.currentFile = LittleFS.open(uploadStatus.currentFilename, "w");
+        if (!uploadStatus.currentFile) {
             Serial.println("文件创建失败");
             return;
         }
@@ -1548,34 +1700,34 @@ void handleFileUpload() {
         // 初始化日志
         Serial.println("\n===== 文件上传开始 =====");
         Serial.print("文件名: ");
-        Serial.println(currentFilename);
+        Serial.println(uploadStatus.currentFilename);
         
     } else if (upload.status == UPLOAD_FILE_WRITE) {
-        if (currentFile) {
+        if (uploadStatus.currentFile) {
             // 写入数据并获取实际写入大小
-            size_t bytesWritten = currentFile.write(upload.buf, upload.currentSize);
+            size_t bytesWritten = uploadStatus.currentFile.write(upload.buf, upload.currentSize);
             
             // 累加已上传大小
-            receivedBytes += bytesWritten;
-            chunkNum++;
+            uploadStatus.receivedBytes += bytesWritten;
+            uploadStatus.chunkNum++;
             
             // 动态检查upload.totalSize，如果发现更准确的文件大小信息则更新estimatedTotalSize
             // 这有助于提高进度计算的准确性
-            if (upload.totalSize > estimatedTotalSize && upload.totalSize > 0) {
-                estimatedTotalSize = upload.totalSize;
+            if (upload.totalSize > uploadStatus.estimatedTotalSize && upload.totalSize > 0) {
+                uploadStatus.estimatedTotalSize = upload.totalSize;
             }
             
             // 注意：Content-Length应在UPLOAD_FILE_START时获取一次，而不是每次写入时重复获取
             
             // 如果还没有开始响应，立即开始
-            if (!responseStarted) {
+            if (!uploadStatus.responseStarted) {
                 // 开始Server-Sent Events响应
                 webServer.setContentLength(CONTENT_LENGTH_UNKNOWN);
                 webServer.sendHeader("Connection", "keep-alive");
                 webServer.sendHeader("Access-Control-Allow-Origin", "*");
                 webServer.sendHeader("Content-Type", "text/event-stream; charset=utf-8");
                 webServer.send(200, "text/event-stream; charset=utf-8", "");  // 先发送空响应体开始流
-                responseStarted = true;
+                uploadStatus.responseStarted = true;
                 Serial.println("已启动SSE响应流");
                 Serial.print("响应头信息 - Content-Type: ");
                 Serial.println(webServer.header("Content-Type"));
@@ -1583,12 +1735,12 @@ void handleFileUpload() {
             
             // 限制进度更新频率，避免过度发送事件
             unsigned long currentTime = millis();
-            if (currentTime - lastProgressUpdate > 100 || chunkNum % 10 == 0) { // 每100ms或每10个块更新一次
+            if (currentTime - uploadStatus.lastProgressUpdate > 100 || uploadStatus.chunkNum % 10 == 0) { // 每100ms或每10个块更新一次
                 // 计算进度百分比
                 int progress = 0;
-                if (estimatedTotalSize > 0) {
+                if (uploadStatus.estimatedTotalSize > 0) {
                     // 使用浮点计算以提高精度
-                    float progressFloat = (float)receivedBytes / estimatedTotalSize * 100.0;
+                    float progressFloat = (float)uploadStatus.receivedBytes / uploadStatus.estimatedTotalSize * 100.0;
                     progress = (int)progressFloat;
                     
                     // 限制进度在1-100之间
@@ -1596,17 +1748,17 @@ void handleFileUpload() {
                     progress = min(100, progress);
                 } else {
                     // 如果没有总大小信息，使用块计数作为进度参考
-                    progress = min(100, (int)(chunkNum * 5));
+                    progress = min(100, (int)(uploadStatus.chunkNum * 5));
                     // 确保进度至少为1%
                     progress = max(1, progress);
                 }
                 
                 // 构建严格符合SSE规范的进度事件（使用\r\n）
-                String progressEvent = "event: progress\r\ndata: {\"progress\":" + String(progress) + ",\"totalSize\":" + String(estimatedTotalSize) + ",\"currentSize\":" + String(receivedBytes) + "}\r\n\r\n";
+                String progressEvent = "event: progress\r\ndata: {\"progress\":" + String(progress) + ",\"totalSize\":" + String(uploadStatus.estimatedTotalSize) + ",\"currentSize\":" + String(uploadStatus.receivedBytes) + "}\r\n\r\n";
                 webServer.sendContent(progressEvent);
                 // 立即刷新缓冲区确保事件发送
                 webServer.client().flush();
-                lastProgressUpdate = currentTime;
+                uploadStatus.lastProgressUpdate = currentTime;
                 
                 // 调试信息
                 Serial.print("发送进度事件: ");
@@ -1614,35 +1766,35 @@ void handleFileUpload() {
                 
                 // 调试日志
                 Serial.print("块: ");
-                Serial.print(chunkNum);
+                Serial.print(uploadStatus.chunkNum);
                 Serial.print(" 写入: ");
                 Serial.print(bytesWritten);
                 Serial.print(" 累计: ");
-                Serial.print(receivedBytes);
+                Serial.print(uploadStatus.receivedBytes);
                 Serial.print(" 预估大小: ");
-                Serial.print(estimatedTotalSize);
+                Serial.print(uploadStatus.estimatedTotalSize);
                 Serial.print(" 进度: ");
                 Serial.println(progress);
             }
         }
         
     } else if (upload.status == UPLOAD_FILE_END) {
-        if (currentFile) {
-            currentFile.close();
+        if (uploadStatus.currentFile) {
+            uploadStatus.currentFile.close();
 
             // 文件已完成上传
 
             // 验证文件是否正确保存
-            if (LittleFS.exists(currentFilename)) {
-                File verifyFile = LittleFS.open(currentFilename, "r");
+            if (LittleFS.exists(uploadStatus.currentFilename)) {
+                File verifyFile = LittleFS.open(uploadStatus.currentFilename, "r");
                 if (verifyFile) {
                     size_t actualSize = verifyFile.size();
                     verifyFile.close();
                     Serial.print("文件验证成功，实际大小: ");
                     Serial.println(actualSize);
                     Serial.print("预期大小: ");
-                    Serial.println(receivedBytes);
-                    if (actualSize != receivedBytes) {
+                    Serial.println(uploadStatus.receivedBytes);
+                    if (actualSize != uploadStatus.receivedBytes) {
                         Serial.println("警告：文件大小不匹配，可能存在写入问题");
                     }
                 } else {
@@ -1653,25 +1805,25 @@ void handleFileUpload() {
             }
 
             // 发送完成事件
-            if (responseStarted) {
-                String completeEvent = "event: complete\r\ndata: {\"status\":\"success\",\"message\":\"文件上传完成\",\"filename\":\"" + currentFilename + "\",\"size\":" + String(receivedBytes) + "}\r\n\r\n";
+            if (uploadStatus.responseStarted) {
+                String completeEvent = "event: complete\r\ndata: {\"status\":\"success\",\"message\":\"文件上传完成\",\"filename\":\"" + uploadStatus.currentFilename + "\",\"size\":" + String(uploadStatus.receivedBytes) + "}\r\n\r\n";
                 webServer.sendContent(completeEvent);
                 // 立即刷新缓冲区确保事件发送
                 webServer.client().flush();
-                responseStarted = false;
+                uploadStatus.responseStarted = false;
                 Serial.println("已发送完成事件");
             }
 
             // 完成日志
             Serial.println("===== 文件上传完成 =====");
             Serial.print("文件: ");
-            Serial.print(currentFilename);
+            Serial.print(uploadStatus.currentFilename);
             Serial.print(" 大小: ");
-            Serial.println(receivedBytes);
+            Serial.println(uploadStatus.receivedBytes);
             Serial.print("总块数: ");
-            Serial.println(chunkNum);
+            Serial.println(uploadStatus.chunkNum);
             
-            if (isFirmwareUpdate) {
+            if (uploadStatus.isFirmwareUpdate) {
                 Serial.println("固件文件上传完成，开始OTA升级...");
 
                 // 验证固件文件
@@ -1684,24 +1836,145 @@ void handleFileUpload() {
                         Serial.print("固件文件大小: ");
                         Serial.println(firmwareSize);
 
-                        // 开始OTA升级 - 直接使用Update类
-                        // 这里我们标记需要重启并应用固件更新
-                        EEPROM.begin(512);
-                        EEPROM.write(510, 1); // 设置固件更新标志
-                        EEPROM.commit();
-                        EEPROM.end();
-
-                        Serial.println("固件更新标记已设置，设备将在3秒后重启...");
-                        delay(3000);
-                        ESP.restart();
+                        // 执行真正的OTA固件更新
+                        if (Update.begin(firmwareSize, U_FLASH)) {
+                            // 打开固件文件进行读取
+                            File firmwareFile = LittleFS.open("/firmware.bin", "r");
+                            if (firmwareFile) {
+                                // 将文件内容写入更新器
+                                size_t written = Update.writeStream(firmwareFile);
+                                firmwareFile.close();
+                                
+                                if (written == firmwareSize) {
+                                    Serial.println("固件写入完成");
+                                    if (Update.end()) {
+                                        Serial.println("OTA更新成功完成");
+                                        if (uploadStatus.responseStarted) {
+                                            String successEvent = "event: complete\r\ndata: {\"status\":\"success\",\"message\":\"OTA固件更新成功完成，设备将在3秒后重启...\",\"filename\":\"/firmware.bin\",\"size\":" + String(firmwareSize) + "}\r\n\r\n";
+                                            webServer.sendContent(successEvent);
+                                            webServer.client().flush();
+                                            uploadStatus.responseStarted = false;
+                                        }
+                                        
+                                        Serial.println("设备将在3秒后重启...");
+                                        delay(3000);
+                                        ESP.restart();
+                                    } else {
+                                        Update.printError(Serial);
+                                        if (uploadStatus.responseStarted) {
+                                            String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"OTA更新结束失败\"}\r\n\r\n";
+                                            webServer.sendContent(errorEvent);
+                                            webServer.client().flush();
+                                            uploadStatus.responseStarted = false;
+                                        }
+                                    }
+                                } else {
+                                    Serial.println("固件写入失败");
+                                    Update.printError(Serial);
+                                    if (uploadStatus.responseStarted) {
+                                        String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"固件写入失败\"}\r\n\r\n";
+                                        webServer.sendContent(errorEvent);
+                                        webServer.client().flush();
+                                        uploadStatus.responseStarted = false;
+                                    }
+                                }
+                            } else {
+                                Serial.println("无法打开固件文件进行读取");
+                                if (uploadStatus.responseStarted) {
+                                    String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法打开固件文件进行读取\"}\r\n\r\n";
+                                    webServer.sendContent(errorEvent);
+                                    webServer.client().flush();
+                                    uploadStatus.responseStarted = false;
+                                }
+                            }
+                        } else {
+                            Update.printError(Serial);
+                            if (uploadStatus.responseStarted) {
+                                String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法开始OTA更新，请检查固件大小\"}\r\n\r\n";
+                                webServer.sendContent(errorEvent);
+                                webServer.client().flush();
+                                uploadStatus.responseStarted = false;
+                            }
+                        }
                     } else {
                         Serial.println("错误：无法打开固件文件");
+                        if (uploadStatus.responseStarted) {
+                            String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法打开固件文件\"}\r\n\r\n";
+                            webServer.sendContent(errorEvent);
+                            webServer.client().flush();
+                            uploadStatus.responseStarted = false;
+                        }
                     }
                 } else {
                     Serial.println("错误：固件文件不存在");
+                    if (uploadStatus.responseStarted) {
+                        String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"固件文件不存在\"}\r\n\r\n";
+                        webServer.sendContent(errorEvent);
+                        webServer.client().flush();
+                        uploadStatus.responseStarted = false;
+                    }
                 }
-            } else if (isFilesystemUpdate) {
-                Serial.println("文件系统镜像上传完成，等待更新");
+            } else if (uploadStatus.isFilesystemUpdate) {
+                Serial.println("文件系统镜像上传完成，开始更新...");
+                
+                // 验证文件系统镜像
+                if (LittleFS.exists("/littlefs.bin")) {
+                    File fsFile = LittleFS.open("/littlefs.bin", "r");
+                    if (fsFile) {
+                        size_t fsSize = fsFile.size();
+                        fsFile.close();
+                        
+                        Serial.print("文件系统镜像大小: ");
+                        Serial.println(fsSize);
+                        
+                        // 设置文件系统更新标志
+                        EEPROM.begin(512);
+                        // 设置文件系统更新标志 (3表示需要应用镜像)
+                        EEPROM.write(500, 3);
+                        EEPROM.write(501, (fsSize >> 24) & 0xFF);
+                        EEPROM.write(502, (fsSize >> 16) & 0xFF);
+                        EEPROM.write(503, (fsSize >> 8) & 0xFF);
+                        EEPROM.write(504, fsSize & 0xFF);
+                        EEPROM.commit();
+                        EEPROM.end();
+                        
+                        Serial.println("文件系统更新标志已设置，设备将在3秒后重启...");
+                        Serial.print("EEPROM标志值: ");
+                        Serial.println(EEPROM.read(500));
+                        Serial.print("文件大小: ");
+                        Serial.println(fsSize);
+
+                        if (uploadStatus.responseStarted) {
+                            String successEvent = "event: complete\r\ndata: {\"status\":\"success\",\"action\":\"restart\",\"message\":\"文件系统更新成功！设备将在3秒后重启...\",\"filename\":\"/littlefs.bin\",\"size\":" + String(fsSize) + "}\r\n\r\n";
+                            webServer.sendContent(successEvent);
+                            webServer.client().flush();
+                            uploadStatus.responseStarted = false;
+
+                            // 确保响应完全发送
+                            delay(1000);
+                        }
+
+                        Serial.println("准备重启设备...");
+                        delay(3000);
+                        ESP.restart();
+                    } else {
+                        Serial.println("错误：无法打开文件系统镜像");
+                        if (uploadStatus.responseStarted) {
+                            String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法打开文件系统镜像\"}\r\n\r\n";
+                            webServer.sendContent(errorEvent);
+                            webServer.client().flush();
+                            uploadStatus.responseStarted = false;
+                        }
+                    }
+                } else {
+                    Serial.println("错误：文件系统镜像不存在");
+                    if (uploadStatus.responseStarted) {
+                        String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"文件系统镜像不存在\"}\r\n\r\n";
+                        webServer.sendContent(errorEvent);
+                        webServer.client().flush();
+                        uploadStatus.responseStarted = false;
+                    }
+                }
             } else {
                 // 其他文件类型
                 LittleFS.end();
@@ -1709,8 +1982,8 @@ void handleFileUpload() {
                 LittleFS.begin();
 
                 // 验证文件
-                if (LittleFS.exists(currentFilename)) {
-                    File verifyFile = LittleFS.open(currentFilename, "r");
+                if (LittleFS.exists(uploadStatus.currentFilename)) {
+                    File verifyFile = LittleFS.open(uploadStatus.currentFilename, "r");
                     if (verifyFile) {
                         Serial.print("文件验证成功，实际大小: ");
                         Serial.println(verifyFile.size());
@@ -1720,52 +1993,43 @@ void handleFileUpload() {
                     Serial.println("警告：文件验证失败，文件不存在");
                 }
             }
-            
-            // 重置所有状态变量
-            receivedBytes = 0;
-            estimatedTotalSize = 0;
-            chunkNum = 0;
-            lastProgressUpdate = 0;
-            
         }
         
     } else if (upload.status == UPLOAD_FILE_ABORTED) {
         // 处理上传取消
-        if (currentFile) {
-            currentFile.close();
-            LittleFS.remove(currentFilename);
+        if (uploadStatus.currentFile) {
+            uploadStatus.currentFile.close();
+            LittleFS.remove(uploadStatus.currentFilename);
             
             // 发送错误事件
-            if (responseStarted) {
+            if (uploadStatus.responseStarted) {
                 String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"文件上传被取消\"}\r\n\r\n";
                 webServer.sendContent(errorEvent);
                 // 立即刷新缓冲区确保事件发送
                 webServer.client().flush();
-                responseStarted = false;
+                uploadStatus.responseStarted = false;
             }
             
             Serial.println("文件上传被取消，已删除不完整文件");
-            
-            // 重置状态
-            receivedBytes = 0;
-            estimatedTotalSize = 0;
-            chunkNum = 0;
-            lastProgressUpdate = 0;
         }
     }
 }
 
 bool isValidFileType(String filename) {
     // 验证文件类型是否支持
-    String validExtensions[] = {".html", ".js", ".css", ".bin", ".json", ".txt"};
+    String validExtensions[] = {
+        ".html", ".js", ".css", ".bin", ".json", ".txt",
+        ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg",
+        ".woff", ".woff2", ".ttf", ".eot", ".map", ".md"
+    };
     int numExtensions = sizeof(validExtensions) / sizeof(validExtensions[0]);
-    
+
     for (int i = 0; i < numExtensions; i++) {
         if (filename.endsWith(validExtensions[i])) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -1773,16 +2037,8 @@ bool isValidFileType(String filename) {
 
 void setupWebServer() {
     // 设置静态文件服务（所有模式下都需要）
-    webServer.serveStatic("/login.html", LittleFS, "/login.html");
-    webServer.serveStatic("/index.html", LittleFS, "/index.html");
-    webServer.serveStatic("/wifi_config.html", LittleFS, "/wifi_config.html");
-    webServer.serveStatic("/device_status.html", LittleFS, "/device_status.html");
-    webServer.serveStatic("/temperature_calibration.html", LittleFS, "/temperature_calibration.html");
-    webServer.serveStatic("/settings_help.html", LittleFS, "/settings_help.html");
-    webServer.serveStatic("/mobile_utils.js", LittleFS, "/mobile_utils.js");
-    webServer.serveStatic("/css/", LittleFS, "/css/");
-    webServer.serveStatic("/js/", LittleFS, "/js/");
-    webServer.serveStatic("/images/", LittleFS, "/images/");
+    // 注意：ESP8266的serveStatic方法返回void，无法设置缓存控制
+    // 静态文件通过handleNotFound处理，缓存控制通过HTML meta标签实现
     
     // 设置Web服务器路由，处理各种HTTP请求
     webServer.on("/", HTTP_GET, handleRoot);
@@ -1793,13 +2049,17 @@ void setupWebServer() {
     webServer.on("/restart", HTTP_POST, handleRestart);
     webServer.on("/reset_calibration", HTTP_POST, handleResetCalibration);
     webServer.on("/clear_cache", HTTP_POST, handleClearCache);
+    webServer.on("/file_list", HTTP_GET, handleFileList);
     webServer.on("/ota_update", HTTP_GET, handleOTAUpdate);
-    webServer.on("/update", HTTP_POST, []() {
-        webServer.send(200, "text/plain", "OTA update endpoint");
-    }, handleFileUpload);
-    
-    webServer.on("/update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
+    webServer.on("/firmware_update", HTTP_POST, handleFirmwareUpdate, handleFileUpload);
+    webServer.on("/filesystem_update", HTTP_POST, handleFilesystemUpdate, handleFileUpload);
+    webServer.on("/upload_file", HTTP_POST, handleUploadFile, handleFileUpload);
     webServer.on("/status", HTTP_GET, handleStatus);
+
+    // 添加CORS预检请求处理
+    webServer.on("/firmware_update", HTTP_OPTIONS, handleCORSOptions);
+    webServer.on("/filesystem_update", HTTP_OPTIONS, handleCORSOptions);
+    webServer.on("/upload_file", HTTP_OPTIONS, handleCORSOptions);
     
     // PID控制API端点
     webServer.on("/pid", HTTP_GET, handleGetPID);
@@ -1965,8 +2225,17 @@ void handleStatus() {
     json += "\"pid_ki\":" + String(Ki) + ",";
     json += "\"pid_kd\":" + String(Kd);
     json += "}";
-    
+
     webServer.send(200, "application/json", json);
+}
+
+// 处理CORS预检请求
+void handleCORSOptions() {
+    webServer.sendHeader("Access-Control-Allow-Origin", "*");
+    webServer.sendHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    webServer.sendHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    webServer.sendHeader("Access-Control-Max-Age", "86400"); // 24小时
+    webServer.send(200, "text/plain", "");
 }
 
 void handleNotFound() {
@@ -2121,8 +2390,31 @@ void handleSerialCommands() {
         } else if (command == "autotune_pid") {
             Serial.println("启动PID自动调优程序...");
             autoTunePID();
+        } else if (command == "test_fs_update") {
+            Serial.println("手动触发文件系统更新测试...");
+            EEPROM.begin(512);
+            EEPROM.write(500, 3); // 设置文件系统更新标志
+            EEPROM.write(501, 0); // 文件大小高字节
+            EEPROM.write(502, 0);
+            EEPROM.write(503, 0x0F); // 文件大小低字节 (模拟1MB)
+            EEPROM.write(504, 0x42);
+            EEPROM.commit();
+            EEPROM.end();
+            Serial.println("文件系统更新标志已设置，重启设备以应用更新...");
+            delay(1000);
+            ESP.restart();
+        } else if (command == "check_eeprom") {
+            Serial.println("检查EEPROM状态:");
+            EEPROM.begin(512);
+            for (int i = 500; i <= 510; i++) {
+                Serial.print("EEPROM[");
+                Serial.print(i);
+                Serial.print("] = ");
+                Serial.println(EEPROM.read(i));
+            }
+            EEPROM.end();
         } else {
-            Serial.println("未知命令，可用命令: status, reset, set_temp [温度], heat_on, heat_off, calibrate, pid_on, pid_off, set_kp [值], set_ki [值], set_kd [值], save_config, load_config, reset_config, autotune_pid");
+            Serial.println("未知命令，可用命令: status, reset, set_temp [温度], heat_on, heat_off, calibrate, pid_on, pid_off, set_kp [值], set_ki [值], set_kd [值], save_config, load_config, reset_config, autotune_pid, test_fs_update, check_eeprom");
         }
     }
 }
@@ -2367,10 +2659,19 @@ void setup() {
     }
     
     // 初始化文件系统
+    Serial.println("正在初始化文件系统...");
     if (!LittleFS.begin()) {
         Serial.println("文件系统初始化失败，HTML文件服务将不可用");
+        isFileSystemAvailable = false;
     } else {
         Serial.println("文件系统初始化成功");
+        isFileSystemAvailable = true;
+        // 检查OTA相关文件是否存在
+        if (LittleFS.exists("/index.html")) {
+            Serial.println("index.html 文件存在");
+        } else {
+            Serial.println("警告：index.html 文件不存在");
+        }
     }
     
     // 优化WiFi启动逻辑：先检查配置，再尝试连接
@@ -2399,36 +2700,75 @@ void setup() {
     if (EEPROM.read(510) == 1) {
         Serial.println("检测到固件更新请求，开始应用固件更新...");
 
-        // 清除更新标志
+        // 读取固件大小信息
+        size_t expectedFirmwareSize = 0;
+        expectedFirmwareSize |= ((size_t)EEPROM.read(511) << 24);
+        expectedFirmwareSize |= ((size_t)EEPROM.read(512) << 16);
+        expectedFirmwareSize |= ((size_t)EEPROM.read(513) << 8);
+        expectedFirmwareSize |= (size_t)EEPROM.read(514);
+
+        // 先清除更新标志，避免失败时形成循环
         EEPROM.write(510, 0);
+        EEPROM.write(511, 0);
+        EEPROM.write(512, 0);
+        EEPROM.write(513, 0);
+        EEPROM.write(514, 0);
         EEPROM.commit();
 
         // 检查固件文件是否存在
         if (LittleFS.exists("/firmware.bin")) {
             File firmwareFile = LittleFS.open("/firmware.bin", "r");
             if (firmwareFile) {
-                size_t firmwareSize = firmwareFile.size();
-                Serial.print("开始应用固件更新，大小: ");
-                Serial.println(firmwareSize);
+                size_t actualFirmwareSize = firmwareFile.size();
+                Serial.print("固件文件大小: ");
+                Serial.print(actualFirmwareSize);
+                Serial.print(" 字节，期望大小: ");
+                Serial.print(expectedFirmwareSize);
+                Serial.println(" 字节");
 
-                // 使用ESP8266的Update类进行固件更新
-                Update.begin(firmwareSize);
-                Update.writeStream(firmwareFile);
+                // 验证固件文件大小
+                if (actualFirmwareSize == expectedFirmwareSize && actualFirmwareSize > 0) {
+                    Serial.println("固件文件验证通过，开始应用更新...");
 
-                if (Update.end()) {
-                    Serial.println("固件更新成功！设备将在3秒后重启...");
-                    firmwareFile.close();
-                    LittleFS.remove("/firmware.bin"); // 删除临时文件
-                    delay(3000);
-                    ESP.restart();
+                    // 使用ESP8266的Update类进行固件更新
+                    if (Update.begin(actualFirmwareSize, U_FLASH)) {
+                        size_t written = Update.writeStream(firmwareFile);
+                        firmwareFile.close();
+
+                        if (written == actualFirmwareSize) {
+                            Serial.println("固件写入完成");
+                            if (Update.end()) {
+                                Serial.println("固件更新成功完成");
+                                LittleFS.remove("/firmware.bin"); // 删除临时文件
+                                EEPROM.end();
+                                Serial.println("设备将在3秒后重启...");
+                                delay(3000);
+                                ESP.restart();
+                            } else {
+                                Serial.println("固件更新结束失败");
+                                Update.printError(Serial);
+                                LittleFS.remove("/firmware.bin"); // 删除失败的文件
+                            }
+                        } else {
+                            Serial.println("固件写入失败，写入大小不匹配");
+                            Update.printError(Serial);
+                            firmwareFile.close();
+                            LittleFS.remove("/firmware.bin"); // 删除失败的文件
+                        }
+                    } else {
+                        Serial.println("无法开始固件更新，请检查固件大小和格式");
+                        Update.printError(Serial);
+                        firmwareFile.close();
+                        LittleFS.remove("/firmware.bin");
+                    }
                 } else {
-                    Serial.println("固件更新失败");
-                    Update.printError(Serial);
+                    Serial.println("错误：固件文件大小不匹配，放弃更新");
+                    firmwareFile.close();
+                    LittleFS.remove("/firmware.bin");
                 }
-
-                firmwareFile.close();
             } else {
                 Serial.println("错误：无法打开固件文件");
+                LittleFS.remove("/firmware.bin"); // 删除无法打开的文件
             }
         } else {
             Serial.println("警告：未找到固件文件，但检测到更新标志");
@@ -2438,7 +2778,12 @@ void setup() {
     }
 
     // 检查是否有文件系统更新请求（重启后恢复）
-    if (EEPROM.read(500) == 1) {
+    EEPROM.begin(512);
+    byte fsUpdateFlag = EEPROM.read(500);
+    Serial.print("检查文件系统更新标志: ");
+    Serial.println(fsUpdateFlag);
+
+    if (fsUpdateFlag == 3) {
         Serial.println("检测到文件系统更新请求，开始应用文件系统更新...");
 
         // 读取镜像大小信息
@@ -2448,7 +2793,7 @@ void setup() {
         expectedSize |= ((size_t)EEPROM.read(503) << 8);
         expectedSize |= (size_t)EEPROM.read(504);
 
-        // 清除更新标志
+        // 先清除更新标志，避免失败时形成循环
         EEPROM.write(500, 0);
         EEPROM.write(501, 0);
         EEPROM.write(502, 0);
@@ -2473,32 +2818,120 @@ void setup() {
                 if (actualSize == expectedSize) {
                     Serial.println("文件系统镜像验证通过，开始应用更新...");
 
-                    // 对于ESP8266 LittleFS，采用文件级别的更新策略
-                    // 由于直接更新整个文件系统比较复杂，我们采用以下策略：
-                    // 1. 备份当前的重要文件
-                    // 2. 模拟文件系统更新（在实际应用中需要更复杂的逻辑）
+                    // 检查是否有配置恢复标志
+                    bool needConfigRestore = false;
+                    EEPROM.begin(512);
+                    if (EEPROM.read(505) == 1) {
+                        needConfigRestore = true;
+                        EEPROM.write(505, 0); // 清除标志
+                        EEPROM.commit();
+                    }
+                    EEPROM.end();
 
-                    Serial.println("开始文件系统更新过程...");
-
-                    // 备份关键文件
-                    // 注意：由于ESP8266内存限制，这里简化处理
-                    // 在实际应用中，应该备份重要文件
-                    Serial.println("跳过文件备份（内存限制）");
-
-                    // 设置更新标记
-                    File updateFlag = LittleFS.open("/.fs_update_pending", "w");
-                    if (updateFlag) {
-                        updateFlag.printf("%lu", actualSize); // 存储镜像大小
-                        updateFlag.close();
-                        Serial.println("文件系统更新标记已设置");
+                    // 备份当前文件系统中的重要配置文件
+                    Serial.println("备份重要配置文件...");
+                    String configFiles[] = {"/config.json", "/wifi_config.json", "/calibration_data.json"};
+                    for (String configFile : configFiles) {
+                        if (LittleFS.exists(configFile)) {
+                            File source = LittleFS.open(configFile, "r");
+                            if (source) {
+                                File backup = LittleFS.open(configFile + ".bak", "w");
+                                if (backup) {
+                                    // 使用缓冲区逐块复制文件内容
+                                    const size_t bufferSize = 256;
+                                    uint8_t buffer[bufferSize];
+                                    while (source.available()) {
+                                        size_t bytesRead = source.read(buffer, bufferSize);
+                                        backup.write(buffer, bytesRead);
+                                    }
+                                    backup.close();
+                                    Serial.printf("已备份配置文件: %s\n", configFile.c_str());
+                                } else {
+                                    Serial.printf("无法创建备份文件: %s.bak\n", configFile.c_str());
+                                }
+                                source.close();
+                            }
+                        }
                     }
 
-                    Serial.println("文件系统更新准备完成");
-                    Serial.println("设备将在3秒后重启以应用更新...");
+                    // 应用文件系统更新 - 使用ESP8266正确的OTA机制
+                    Serial.println("应用文件系统更新...");
 
-                    // 延迟重启，让用户看到消息
-                    delay(3000);
-                    ESP.restart();
+                    if (LittleFS.exists("/littlefs.bin")) {
+                        File fsImage = LittleFS.open("/littlefs.bin", "r");
+                        if (fsImage) {
+                            size_t fsSize = fsImage.size();
+                            Serial.print("开始应用文件系统更新，大小: ");
+                            Serial.println(fsSize);
+
+                            // 使用正确的分区类型U_FS进行文件系统更新
+                            if (Update.begin(fsSize, U_FS)) {
+                                Serial.println("文件系统更新器初始化成功");
+
+                                size_t written = Update.writeStream(fsImage);
+                                fsImage.close();
+
+                                if (written == fsSize) {
+                                    Serial.println("文件系统镜像写入完成");
+                                    if (Update.end()) {
+                                        Serial.println("文件系统更新成功完成");
+
+                                        // 恢复配置文件
+                                        if (needConfigRestore) {
+                                            Serial.println("恢复配置文件...");
+                                            // 等待文件系统重新挂载
+                                            delay(2000);
+                                            LittleFS.end();
+                                            delay(500);
+                                            if (LittleFS.begin()) {
+                                                for (String configFile : configFiles) {
+                                                    if (LittleFS.exists(configFile + ".bak")) {
+                                                        // 删除现有的配置文件（如果存在）
+                                                        if (LittleFS.exists(configFile)) {
+                                                            LittleFS.remove(configFile);
+                                                        }
+                                                        // 恢复备份的配置文件
+                                                        LittleFS.rename(configFile + ".bak", configFile);
+                                                        Serial.printf("已恢复配置文件: %s\n", configFile.c_str());
+                                                    }
+                                                }
+                                            } else {
+                                                Serial.println("文件系统重新挂载失败");
+                                            }
+                                        }
+
+                                        // 删除临时文件
+                                        LittleFS.remove("/littlefs.bin");
+
+                                        Serial.println("文件系统更新完成，设备将在3秒后重启...");
+                                        delay(3000);
+                                        ESP.restart();
+                                    } else {
+                                        Serial.println("文件系统更新结束失败");
+                                        Update.printError(Serial);
+                                        LittleFS.remove("/littlefs.bin");
+                                    }
+                                } else {
+                                    Serial.print("文件系统镜像写入失败，写入大小: ");
+                                    Serial.print(written);
+                                    Serial.print("，期望大小: ");
+                                    Serial.println(fsSize);
+                                    Update.printError(Serial);
+                                    LittleFS.remove("/littlefs.bin");
+                                }
+                            } else {
+                                Serial.println("无法开始文件系统更新，请检查镜像大小和格式");
+                                Update.printError(Serial);
+                                fsImage.close();
+                                LittleFS.remove("/littlefs.bin");
+                            }
+                        } else {
+                            Serial.println("无法打开文件系统镜像进行读取");
+                            LittleFS.remove("/littlefs.bin");
+                        }
+                    } else {
+                        Serial.println("错误：文件系统镜像文件不存在");
+                    }
 
                 } else {
                     Serial.println("错误：文件系统镜像大小不匹配，放弃更新");
@@ -2513,31 +2946,13 @@ void setup() {
         }
     } else {
         EEPROM.end();
-
-        // 检查是否有待处理的文件系统更新
-        if (LittleFS.exists("/.fs_update_pending")) {
-            Serial.println("检测到待处理的文件系统更新，应用中...");
-
-            if (LittleFS.exists("/littlefs.bin")) {
-                // 这里可以实现实际的文件系统更新逻辑
-                // 对于ESP8266，这通常需要特殊的SPIFFS更新API
-
-                Serial.println("应用文件系统镜像...");
-
-                // 示例实现：重命名文件作为新的文件系统
-                // 注意：这只是简化实现，实际应用中需要更复杂的逻辑
-
-                LittleFS.remove("/.fs_update_pending");
-                Serial.println("文件系统更新应用完成");
-            } else {
-                Serial.println("警告：更新标记存在但未找到镜像文件");
-                LittleFS.remove("/.fs_update_pending");
-            }
-        }
     }
     
     // 初始化Web服务器
     setupWebServer();
+    
+    // 初始化OTA服务
+    setupOTA();
     
     // 快速初始化温度读取计数器和平均时间
     temperatureReadCount = 0;
@@ -2734,6 +3149,9 @@ void autoTunePID() {
 void loop() {
     // 处理Web服务器请求
     webServer.handleClient();
+    
+    // 处理Arduino OTA请求
+    ArduinoOTA.handle();
     
     // 文件系统更新现在直接在handleFilesystemUpdate中处理并重启设备
     

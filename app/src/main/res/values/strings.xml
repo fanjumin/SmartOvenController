@@ -106,6 +106,13 @@
     <string name="offline">离线</string>
     <string name="device_restarting">设备重启中...</string>
     <string name="factory_resetting">恢复出厂设置中...</string>
+    <string name="firmware_updating">固件更新中...</string>
+    <string name="filesystem_updating">文件系统更新中...</string>
+
+    <!-- OTA错误消息 -->
+    <string name="firmware_upload_failed">固件上传失败</string>
+    <string name="filesystem_upload_failed">文件系统上传失败</string>
+    <string name="file_upload_failed">文件上传失败</string>
 
     <!-- UI文本 -->
     <string name="firmware_label">固件</string>

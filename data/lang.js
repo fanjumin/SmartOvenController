@@ -72,6 +72,7 @@ const translations = {
         'temperatureCalibration': '温度校准',
         'wifiConfig': 'WiFi配置',
         'firmwareUpdate': '固件更新',
+        'filesystemUpdate': '文件系统更新',
         'restartDevice': '重启设备',
         'factoryReset': '恢复出厂设置',
 
@@ -86,7 +87,7 @@ const translations = {
 
         // 页脚
         'smartOvenController': '智能电烤箱控制器',
-        'version': '智能电烤箱控制器 v0.8.7',
+        'version': '智能电烤箱控制器 v0.8.9',
 
         // 状态信息
         'heating': '加热中',
@@ -275,7 +276,7 @@ const translations = {
         'adminPassword': '管理员密码',
         'enterAdminPassword': '请输入管理员密码',
         'login': '登录',
-        'versionInfo': '智能电烤箱控制器 v0.8.7',
+        'versionInfo': '智能电烤箱控制器 v0.8.9',
 
         // 烘焙模式
         'bread': '面包',
@@ -565,6 +566,7 @@ const translations = {
         'temperatureCalibration': 'Temperature Calibration',
         'wifiConfig': 'WiFi Config',
         'firmwareUpdate': 'Firmware Update',
+        'filesystemUpdate': 'Filesystem Update',
         'restartDevice': 'Restart Device',
         'factoryReset': 'Factory Reset',
 
@@ -579,7 +581,7 @@ const translations = {
 
         // Footer
         'smartOvenController': 'Smart Oven Controller',
-        'version': 'Smart Oven Controller v0.8.7',
+        'version': 'Smart Oven Controller v0.8.9',
 
         // Status Information
         'heating': 'Heating',
@@ -768,7 +770,7 @@ const translations = {
         'adminPassword': 'Admin Password',
         'enterAdminPassword': 'Please enter admin password',
         'login': 'Login',
-        'versionInfo': 'Smart Oven Controller v0.8.7',
+        'versionInfo': 'Smart Oven Controller v0.8.9',
 
         // Baking Modes
         'bread': 'Bread',
