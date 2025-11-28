@@ -1923,6 +1923,9 @@ void handleFileUpload() {
             } else if (uploadStatus.isFilesystemUpdate) {
                 Serial.println("[DEBUG] 文件系统镜像上传完成，开始直接应用更新...");
 
+                // 检查文件系统状态 (ESP8266 LittleFS不支持空间查询)
+                Serial.println("[DEBUG] ESP8266 LittleFS不支持直接查询空间信息");
+
                 // 验证文件系统镜像
                 if (LittleFS.exists("/littlefs.bin")) {
                     File fsFile = LittleFS.open("/littlefs.bin", "r");
@@ -1936,6 +1939,9 @@ void handleFileUpload() {
                         // 检查文件大小是否合理
                         if (fsSize == 0 || fsSize > 3 * 1024 * 1024) {
                             Serial.println("[ERROR] 文件系统镜像大小不合理");
+                            Serial.print("[ERROR] 镜像大小: ");
+                            Serial.print(fsSize);
+                            Serial.println(" 字节 (应在1KB-3MB之间)");
                             LittleFS.remove("/littlefs.bin");
                             if (uploadStatus.responseStarted) {
                                 String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"文件大小不合理\"}\r\n\r\n";
@@ -1946,18 +1952,27 @@ void handleFileUpload() {
                             return;
                         }
 
+                        // ESP8266 LittleFS不支持空间检查，跳过此验证
+                        Serial.println("[DEBUG] ESP8266 LittleFS不支持空间检查，跳过空间验证");
+
                         // 直接应用文件系统更新
                         Serial.println("[DEBUG] 开始应用文件系统更新...");
                         Serial.print("[DEBUG] 调用Update.begin(");
                         Serial.print(fsSize);
                         Serial.println(", U_FS)");
 
+                        Serial.print("[DEBUG] 调用Update.begin(");
+                        Serial.print(fsSize);
+                        Serial.println(", U_FS)");
                         if (Update.begin(fsSize, U_FS)) {
                             Serial.println("[DEBUG] Update.begin() 成功");
 
                             File fsImage = LittleFS.open("/littlefs.bin", "r");
                             if (fsImage) {
                                 Serial.println("[DEBUG] 打开文件系统镜像进行读取");
+                                Serial.print("[DEBUG] 镜像文件大小: ");
+                                Serial.println(fsImage.size());
+
                                 size_t written = Update.writeStream(fsImage);
                                 fsImage.close();
 
@@ -1984,11 +1999,21 @@ void handleFileUpload() {
                                         }
 
                                         Serial.println("[DEBUG] 设备将在3秒后重启...");
+                                        unsigned long restartStart = millis();
                                         delay(3000);
                                         Serial.println("[DEBUG] 调用ESP.restart()...");
                                         ESP.restart();
+                                        // 如果ESP.restart()失败，这里不会执行
+                                        // 添加超时保护，如果10秒后还没重启，强制重启
+                                        while (millis() - restartStart < 10000) {
+                                            delay(100);
+                                        }
+                                        // 如果到达这里说明重启失败，尝试硬件重启
+                                        Serial.println("[ERROR] 软件重启失败，尝试硬件重启...");
+                                        ESP.reset();
                                     } else {
                                         Serial.println("[ERROR] 文件系统更新结束失败");
+                                        Serial.print("[ERROR] Update.end() 错误码: ");
                                         Update.printError(Serial);
                                         LittleFS.remove("/littlefs.bin");
                                         if (uploadStatus.responseStarted) {
@@ -1997,9 +2022,18 @@ void handleFileUpload() {
                                             webServer.client().flush();
                                             uploadStatus.responseStarted = false;
                                         }
+                                        // 即使失败也重启设备，避免设备卡在错误状态
+                                        Serial.println("[ERROR] 文件系统更新失败，设备将在5秒后重启...");
+                                        delay(5000);
+                                        ESP.restart();
                                     }
                                 } else {
                                     Serial.println("[ERROR] 文件系统镜像写入失败，大小不匹配");
+                                    Serial.print("[ERROR] 实际写入: ");
+                                    Serial.print(written);
+                                    Serial.print(" 字节，期望: ");
+                                    Serial.print(fsSize);
+                                    Serial.println(" 字节");
                                     Update.printError(Serial);
                                     LittleFS.remove("/littlefs.bin");
                                     if (uploadStatus.responseStarted) {
@@ -2021,7 +2055,10 @@ void handleFileUpload() {
                             }
                         } else {
                             Serial.println("[ERROR] 无法开始文件系统更新");
+                            Serial.print("[ERROR] Update.begin() 错误码: ");
                             Update.printError(Serial);
+                            Serial.print("[ERROR] 尝试更新的文件大小: ");
+                            Serial.println(fsSize);
                             LittleFS.remove("/littlefs.bin");
                             if (uploadStatus.responseStarted) {
                                 String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"Update.begin()失败\"}\r\n\r\n";
