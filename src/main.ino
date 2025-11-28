@@ -1,7 +1,7 @@
 // =========================================
-// 智能烤箱控制器固件 v0.8.9 - 正式版
+// 智能烤箱控制器固件 v0.9.0 - 正式版
 // =========================================
-// 固件版本: 0.8.9
+// 固件版本: 0.9.0
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能 + PID温控算法
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -184,7 +184,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.8.9";
+const String FIRMWARE_VERSION = "0.9.0";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -1525,14 +1525,16 @@ void handleFirmwareUpdate() {
 
 void handleFilesystemUpdate() {
     // 文件系统更新处理函数 - 实现真正的文件系统镜像应用机制
-    Serial.println("开始处理文件系统更新");
+    Serial.println("=== FILESYSTEM UPDATE START ===");
+    Serial.println("[DEBUG] handleFilesystemUpdate called - 开始处理文件系统更新");
 
     // 检查是否存在上传的文件系统镜像
     if (!LittleFS.exists("/littlefs.bin")) {
-        Serial.println("错误：未找到文件系统镜像文件");
+        Serial.println("[DEBUG] 错误：未找到文件系统镜像文件 /littlefs.bin");
         webServer.send(400, "application/json", "{\"status\":\"error\",\"message\":\"未找到文件系统镜像文件\"}");
         return;
     }
+    Serial.println("[DEBUG] littlefs.bin 文件存在，开始验证");
 
     // 获取文件信息
     File fsImage = LittleFS.open("/littlefs.bin", "r");
@@ -1573,13 +1575,17 @@ void handleFilesystemUpdate() {
     EEPROM.commit();
     EEPROM.end();
 
-    Serial.println("文件系统镜像已准备就绪，设备将在3秒后重启以应用更新...");
+    Serial.println("[DEBUG] EEPROM标志已设置，文件系统镜像已准备就绪，设备将在3秒后重启以应用更新...");
+    Serial.print("[DEBUG] 镜像大小: ");
+    Serial.println(imageSize);
 
     // 发送响应
     webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"文件系统镜像已上传成功，设备将在3秒后重启以应用更新\",\"action\":\"restart\"}");
 
     // 延迟重启
+    Serial.println("[DEBUG] 准备重启设备...");
     delay(3000);
+    Serial.println("[DEBUG] 执行ESP.restart()...");
     ESP.restart();
 }
 
@@ -1614,6 +1620,7 @@ struct UploadStatus {
 
 void handleFileUpload() {
     // 文件上传处理函数 - 使用结构体替代静态变量，避免状态冲突
+    Serial.println("=== HANDLE FILE UPLOAD CALLED ===");
     HTTPUpload& upload = webServer.upload();
     
     // 创建上传状态实例（局部变量，每次调用都会重新创建）
@@ -1621,46 +1628,54 @@ void handleFileUpload() {
     
     // 检查更新类型
     if (upload.status == UPLOAD_FILE_START) {
+        Serial.println("[DEBUG] UPLOAD_FILE_START 开始处理文件上传");
         // 初始化状态
         uploadStatus.init();
-        
+
         uploadStatus.currentFilename = upload.filename;
         String uri = webServer.uri();
+        Serial.print("[DEBUG] 请求URI: ");
+        Serial.println(uri);
 
-        // 根据表单字段名判断更新类型
-        uploadStatus.isFirmwareUpdate = webServer.hasArg("firmware");
-        uploadStatus.isFilesystemUpdate = webServer.hasArg("filesystem");
-        uploadStatus.isSingleFileUpload = webServer.hasArg("target_path");
-
-        // 如果都没有指定，根据URI判断（向后兼容）
-        if (!uploadStatus.isFirmwareUpdate && !uploadStatus.isFilesystemUpdate && !uploadStatus.isSingleFileUpload) {
-            uploadStatus.isFilesystemUpdate = (uri == "/update");
+        // 根据URI判断更新类型（因为在UPLOAD_FILE_START时multipart数据还未解析，hasArg()不可靠）
+        if (uri == "/filesystem_update") {
+            uploadStatus.isFilesystemUpdate = true;
+            Serial.println("[DEBUG] 检测到文件系统更新请求 (URI: /filesystem_update)");
+        } else if (uri == "/firmware_update") {
+            uploadStatus.isFirmwareUpdate = true;
+            Serial.println("[DEBUG] 检测到固件更新请求 (URI: /firmware_update)");
+        } else if (uri == "/upload_file") {
+            uploadStatus.isSingleFileUpload = true;
+            Serial.println("[DEBUG] 检测到单个文件上传请求 (URI: /upload_file)");
+        } else {
+            // 向后兼容：检查表单参数（虽然可能不可靠）
+            uploadStatus.isFirmwareUpdate = webServer.hasArg("firmware");
+            uploadStatus.isFilesystemUpdate = webServer.hasArg("filesystem");
+            uploadStatus.isSingleFileUpload = webServer.hasArg("target_path");
+            Serial.println("[DEBUG] 使用表单参数检测更新类型");
         }
 
         // 保存目标路径参数
         if (uploadStatus.isSingleFileUpload) {
             uploadStatus.targetPath = webServer.arg("target_path");
-            Serial.print("检测到单个文件上传，目标路径参数: ");
+            Serial.print("[DEBUG] 检测到单个文件上传，目标路径参数: ");
             Serial.println(uploadStatus.targetPath);
         }
 
-        // 在上传开始时获取Content-Length头信息（这是真正的文件总大小）
-        String contentLength = webServer.header("Content-Length");
-        if (contentLength.length() > 0) {
-            uploadStatus.estimatedTotalSize = contentLength.toInt();
-            // 减去多部分表单数据的边界和头部信息（粗略估计）
-            // 根据观察，通常这部分大约占用几百字节，我们保守估计为500字节
-            if (uploadStatus.estimatedTotalSize > 500) {
-                uploadStatus.estimatedTotalSize -= 500;
-            } else {
-                uploadStatus.estimatedTotalSize = 0; // 如果太小，则认为获取失败
-            }
-        }
+        // 调试日志：显示检测到的更新类型
+        Serial.print("[DEBUG] 更新类型检测 - URI: ");
+        Serial.print(uri);
+        Serial.print(", isFirmwareUpdate: ");
+        Serial.print(uploadStatus.isFirmwareUpdate);
+        Serial.print(", isFilesystemUpdate: ");
+        Serial.print(uploadStatus.isFilesystemUpdate);
+        Serial.print(", isSingleFileUpload: ");
+        Serial.println(uploadStatus.isSingleFileUpload);
 
-        // 如果Content-Length不可用或计算后为0，使用upload.totalSize作为备用
-        if (uploadStatus.estimatedTotalSize == 0 && upload.totalSize > 0) {
-            uploadStatus.estimatedTotalSize = upload.totalSize;
-        }
+        // ESP8266内存限制：不使用Content-Length头，而是动态计算文件大小
+        // 避免内存溢出，只在写入时累积计算
+        uploadStatus.estimatedTotalSize = 0; // 初始化为0，动态更新
+        Serial.println("[DEBUG] ESP8266内存优化：不预先获取Content-Length，避免内存溢出");
 
         // 标准化文件名路径
         if (!uploadStatus.currentFilename.startsWith("/")) {
@@ -1711,14 +1726,13 @@ void handleFileUpload() {
             uploadStatus.receivedBytes += bytesWritten;
             uploadStatus.chunkNum++;
             
-            // 动态检查upload.totalSize，如果发现更准确的文件大小信息则更新estimatedTotalSize
-            // 这有助于提高进度计算的准确性
+            // ESP8266内存优化：动态更新文件大小估计
             if (upload.totalSize > uploadStatus.estimatedTotalSize && upload.totalSize > 0) {
                 uploadStatus.estimatedTotalSize = upload.totalSize;
+                Serial.print("[DEBUG] 更新文件大小估计: ");
+                Serial.println(uploadStatus.estimatedTotalSize);
             }
-            
-            // 注意：Content-Length应在UPLOAD_FILE_START时获取一次，而不是每次写入时重复获取
-            
+
             // 如果还没有开始响应，立即开始
             if (!uploadStatus.responseStarted) {
                 // 开始Server-Sent Events响应
@@ -1728,53 +1742,37 @@ void handleFileUpload() {
                 webServer.sendHeader("Content-Type", "text/event-stream; charset=utf-8");
                 webServer.send(200, "text/event-stream; charset=utf-8", "");  // 先发送空响应体开始流
                 uploadStatus.responseStarted = true;
-                Serial.println("已启动SSE响应流");
-                Serial.print("响应头信息 - Content-Type: ");
-                Serial.println(webServer.header("Content-Type"));
+                Serial.println("[DEBUG] 已启动SSE响应流");
             }
-            
+
             // 限制进度更新频率，避免过度发送事件
             unsigned long currentTime = millis();
-            if (currentTime - uploadStatus.lastProgressUpdate > 100 || uploadStatus.chunkNum % 10 == 0) { // 每100ms或每10个块更新一次
-                // 计算进度百分比
+            if (currentTime - uploadStatus.lastProgressUpdate > 200) { // 每200ms更新一次，减少频率
+                // 计算进度百分比 - 基于实际接收的数据
                 int progress = 0;
                 if (uploadStatus.estimatedTotalSize > 0) {
                     // 使用浮点计算以提高精度
                     float progressFloat = (float)uploadStatus.receivedBytes / uploadStatus.estimatedTotalSize * 100.0;
                     progress = (int)progressFloat;
-                    
-                    // 限制进度在1-100之间
+
+                    // 限制进度在1-99之间（100%在完成时发送）
                     progress = max(1, progress);
-                    progress = min(100, progress);
+                    progress = min(99, progress);
                 } else {
                     // 如果没有总大小信息，使用块计数作为进度参考
-                    progress = min(100, (int)(uploadStatus.chunkNum * 5));
-                    // 确保进度至少为1%
+                    progress = min(99, (int)(uploadStatus.chunkNum * 2)); // 更保守的估计
                     progress = max(1, progress);
                 }
-                
+
                 // 构建严格符合SSE规范的进度事件（使用\r\n）
                 String progressEvent = "event: progress\r\ndata: {\"progress\":" + String(progress) + ",\"totalSize\":" + String(uploadStatus.estimatedTotalSize) + ",\"currentSize\":" + String(uploadStatus.receivedBytes) + "}\r\n\r\n";
                 webServer.sendContent(progressEvent);
                 // 立即刷新缓冲区确保事件发送
                 webServer.client().flush();
                 uploadStatus.lastProgressUpdate = currentTime;
-                
-                // 调试信息
-                Serial.print("发送进度事件: ");
-                Serial.println(progressEvent);
-                
-                // 调试日志
-                Serial.print("块: ");
-                Serial.print(uploadStatus.chunkNum);
-                Serial.print(" 写入: ");
-                Serial.print(bytesWritten);
-                Serial.print(" 累计: ");
-                Serial.print(uploadStatus.receivedBytes);
-                Serial.print(" 预估大小: ");
-                Serial.print(uploadStatus.estimatedTotalSize);
-                Serial.print(" 进度: ");
-                Serial.println(progress);
+
+                // 简化的调试信息
+                Serial.printf("[PROGRESS] %d%% (%lu/%lu bytes)\n", progress, uploadStatus.receivedBytes, uploadStatus.estimatedTotalSize);
             }
         }
         
@@ -1804,6 +1802,14 @@ void handleFileUpload() {
                 Serial.println("错误：文件上传后不存在");
             }
 
+            // 先发送100%进度事件
+            if (uploadStatus.responseStarted) {
+                String finalProgressEvent = "event: progress\r\ndata: {\"progress\":100,\"totalSize\":" + String(uploadStatus.receivedBytes) + ",\"currentSize\":" + String(uploadStatus.receivedBytes) + "}\r\n\r\n";
+                webServer.sendContent(finalProgressEvent);
+                webServer.client().flush();
+                Serial.println("[DEBUG] 已发送100%进度事件");
+            }
+
             // 发送完成事件
             if (uploadStatus.responseStarted) {
                 String completeEvent = "event: complete\r\ndata: {\"status\":\"success\",\"message\":\"文件上传完成\",\"filename\":\"" + uploadStatus.currentFilename + "\",\"size\":" + String(uploadStatus.receivedBytes) + "}\r\n\r\n";
@@ -1811,7 +1817,7 @@ void handleFileUpload() {
                 // 立即刷新缓冲区确保事件发送
                 webServer.client().flush();
                 uploadStatus.responseStarted = false;
-                Serial.println("已发送完成事件");
+                Serial.println("[DEBUG] 已发送完成事件");
             }
 
             // 完成日志
@@ -1915,61 +1921,128 @@ void handleFileUpload() {
                     }
                 }
             } else if (uploadStatus.isFilesystemUpdate) {
-                Serial.println("文件系统镜像上传完成，开始更新...");
-                
+                Serial.println("[DEBUG] 文件系统镜像上传完成，开始直接应用更新...");
+
                 // 验证文件系统镜像
                 if (LittleFS.exists("/littlefs.bin")) {
                     File fsFile = LittleFS.open("/littlefs.bin", "r");
                     if (fsFile) {
                         size_t fsSize = fsFile.size();
                         fsFile.close();
-                        
-                        Serial.print("文件系统镜像大小: ");
-                        Serial.println(fsSize);
-                        
-                        // 设置文件系统更新标志
-                        EEPROM.begin(512);
-                        // 设置文件系统更新标志 (3表示需要应用镜像)
-                        EEPROM.write(500, 3);
-                        EEPROM.write(501, (fsSize >> 24) & 0xFF);
-                        EEPROM.write(502, (fsSize >> 16) & 0xFF);
-                        EEPROM.write(503, (fsSize >> 8) & 0xFF);
-                        EEPROM.write(504, fsSize & 0xFF);
-                        EEPROM.commit();
-                        EEPROM.end();
-                        
-                        Serial.println("文件系统更新标志已设置，设备将在3秒后重启...");
-                        Serial.print("EEPROM标志值: ");
-                        Serial.println(EEPROM.read(500));
-                        Serial.print("文件大小: ");
+
+                        Serial.print("[DEBUG] 文件系统镜像大小: ");
                         Serial.println(fsSize);
 
-                        if (uploadStatus.responseStarted) {
-                            String successEvent = "event: complete\r\ndata: {\"status\":\"success\",\"action\":\"restart\",\"message\":\"文件系统更新成功！设备将在3秒后重启...\",\"filename\":\"/littlefs.bin\",\"size\":" + String(fsSize) + "}\r\n\r\n";
-                            webServer.sendContent(successEvent);
-                            webServer.client().flush();
-                            uploadStatus.responseStarted = false;
-
-                            // 确保响应完全发送
-                            delay(1000);
+                        // 检查文件大小是否合理
+                        if (fsSize == 0 || fsSize > 3 * 1024 * 1024) {
+                            Serial.println("[ERROR] 文件系统镜像大小不合理");
+                            LittleFS.remove("/littlefs.bin");
+                            if (uploadStatus.responseStarted) {
+                                String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"文件大小不合理\"}\r\n\r\n";
+                                webServer.sendContent(errorEvent);
+                                webServer.client().flush();
+                                uploadStatus.responseStarted = false;
+                            }
+                            return;
                         }
 
-                        Serial.println("准备重启设备...");
-                        delay(3000);
-                        ESP.restart();
+                        // 直接应用文件系统更新
+                        Serial.println("[DEBUG] 开始应用文件系统更新...");
+                        Serial.print("[DEBUG] 调用Update.begin(");
+                        Serial.print(fsSize);
+                        Serial.println(", U_FS)");
+
+                        if (Update.begin(fsSize, U_FS)) {
+                            Serial.println("[DEBUG] Update.begin() 成功");
+
+                            File fsImage = LittleFS.open("/littlefs.bin", "r");
+                            if (fsImage) {
+                                Serial.println("[DEBUG] 打开文件系统镜像进行读取");
+                                size_t written = Update.writeStream(fsImage);
+                                fsImage.close();
+
+                                Serial.print("[DEBUG] 写入大小: ");
+                                Serial.print(written);
+                                Serial.print("，期望大小: ");
+                                Serial.println(fsSize);
+
+                                if (written == fsSize) {
+                                    Serial.println("[DEBUG] 文件系统镜像写入完成，调用Update.end()");
+                                    if (Update.end()) {
+                                        Serial.println("[DEBUG] 文件系统更新成功完成");
+
+                                        // 删除临时文件
+                                        LittleFS.remove("/littlefs.bin");
+                                        Serial.println("[DEBUG] 已删除临时文件");
+
+                                        if (uploadStatus.responseStarted) {
+                                            String successEvent = "event: complete\r\ndata: {\"status\":\"success\",\"action\":\"restart\",\"message\":\"文件系统更新成功完成！设备将在3秒后重启...\",\"filename\":\"/littlefs.bin\",\"size\":" + String(fsSize) + "}\r\n\r\n";
+                                            webServer.sendContent(successEvent);
+                                            webServer.client().flush();
+                                            uploadStatus.responseStarted = false;
+                                            Serial.println("[DEBUG] 已发送成功事件");
+                                        }
+
+                                        Serial.println("[DEBUG] 设备将在3秒后重启...");
+                                        delay(3000);
+                                        Serial.println("[DEBUG] 调用ESP.restart()...");
+                                        ESP.restart();
+                                    } else {
+                                        Serial.println("[ERROR] 文件系统更新结束失败");
+                                        Update.printError(Serial);
+                                        LittleFS.remove("/littlefs.bin");
+                                        if (uploadStatus.responseStarted) {
+                                            String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"Update.end()失败\"}\r\n\r\n";
+                                            webServer.sendContent(errorEvent);
+                                            webServer.client().flush();
+                                            uploadStatus.responseStarted = false;
+                                        }
+                                    }
+                                } else {
+                                    Serial.println("[ERROR] 文件系统镜像写入失败，大小不匹配");
+                                    Update.printError(Serial);
+                                    LittleFS.remove("/littlefs.bin");
+                                    if (uploadStatus.responseStarted) {
+                                        String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"写入大小不匹配\"}\r\n\r\n";
+                                        webServer.sendContent(errorEvent);
+                                        webServer.client().flush();
+                                        uploadStatus.responseStarted = false;
+                                    }
+                                }
+                            } else {
+                                Serial.println("[ERROR] 无法打开文件系统镜像进行读取");
+                                LittleFS.remove("/littlefs.bin");
+                                if (uploadStatus.responseStarted) {
+                                    String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法读取镜像文件\"}\r\n\r\n";
+                                    webServer.sendContent(errorEvent);
+                                    webServer.client().flush();
+                                    uploadStatus.responseStarted = false;
+                                }
+                            }
+                        } else {
+                            Serial.println("[ERROR] 无法开始文件系统更新");
+                            Update.printError(Serial);
+                            LittleFS.remove("/littlefs.bin");
+                            if (uploadStatus.responseStarted) {
+                                String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"Update.begin()失败\"}\r\n\r\n";
+                                webServer.sendContent(errorEvent);
+                                webServer.client().flush();
+                                uploadStatus.responseStarted = false;
+                            }
+                        }
                     } else {
-                        Serial.println("错误：无法打开文件系统镜像");
+                        Serial.println("[ERROR] 无法打开文件系统镜像");
                         if (uploadStatus.responseStarted) {
-                            String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法打开文件系统镜像\"}\r\n\r\n";
+                            String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"无法打开镜像文件\"}\r\n\r\n";
                             webServer.sendContent(errorEvent);
                             webServer.client().flush();
                             uploadStatus.responseStarted = false;
                         }
                     }
                 } else {
-                    Serial.println("错误：文件系统镜像不存在");
+                    Serial.println("[ERROR] 文件系统镜像不存在");
                     if (uploadStatus.responseStarted) {
-                        String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"文件系统镜像不存在\"}\r\n\r\n";
+                        String errorEvent = "event: error\r\ndata: {\"status\":\"error\",\"message\":\"镜像文件不存在\"}\r\n\r\n";
                         webServer.sendContent(errorEvent);
                         webServer.client().flush();
                         uploadStatus.responseStarted = false;
@@ -2642,6 +2715,8 @@ void restoreBackupFiles() {
 void setup() {
     // 快速初始化串口通信
     Serial.begin(115200);
+    Serial.println("=== DEVICE STARTUP ===");
+    Serial.println("[DEBUG] setup() 开始执行");
     
     // 快速初始化硬件引脚
     pinMode(HEATER_PIN, OUTPUT);
@@ -2778,13 +2853,58 @@ void setup() {
     }
 
     // 检查是否有文件系统更新请求（重启后恢复）
+    // 首先检查是否有上传的文件系统镜像
+    if (LittleFS.exists("/littlefs.bin")) {
+        Serial.println("[DEBUG] 检测到文件系统镜像文件 /littlefs.bin，开始应用更新...");
+        // 直接应用文件系统更新
+        File fsImage = LittleFS.open("/littlefs.bin", "r");
+        if (fsImage) {
+            size_t imageSize = fsImage.size();
+            fsImage.close();
+
+            Serial.print("文件系统镜像大小: ");
+            Serial.println(imageSize);
+
+            // 应用文件系统更新
+            if (Update.begin(imageSize, U_FS)) {
+                File fsImage2 = LittleFS.open("/littlefs.bin", "r");
+                if (fsImage2) {
+                    size_t written = Update.writeStream(fsImage2);
+                    fsImage2.close();
+
+                    if (written == imageSize) {
+                        if (Update.end()) {
+                            Serial.println("文件系统更新成功完成");
+                            LittleFS.remove("/littlefs.bin");
+                            Serial.println("设备将在3秒后重启...");
+                            delay(3000);
+                            ESP.restart();
+                        } else {
+                            Serial.println("文件系统更新结束失败");
+                            Update.printError(Serial);
+                            LittleFS.remove("/littlefs.bin");
+                        }
+                    } else {
+                        Serial.println("文件系统镜像写入失败");
+                        Update.printError(Serial);
+                        LittleFS.remove("/littlefs.bin");
+                    }
+                }
+            } else {
+                Serial.println("无法开始文件系统更新");
+                Update.printError(Serial);
+                LittleFS.remove("/littlefs.bin");
+            }
+        }
+    }
+
     EEPROM.begin(512);
     byte fsUpdateFlag = EEPROM.read(500);
     Serial.print("检查文件系统更新标志: ");
     Serial.println(fsUpdateFlag);
 
     if (fsUpdateFlag == 3) {
-        Serial.println("检测到文件系统更新请求，开始应用文件系统更新...");
+        Serial.println("[DEBUG] 检测到文件系统更新请求 (EEPROM[500]=3)，开始应用文件系统更新...");
 
         // 读取镜像大小信息
         size_t expectedSize = 0;
@@ -2815,8 +2935,12 @@ void setup() {
                 Serial.print(expectedSize);
                 Serial.println(" 字节");
 
-                if (actualSize == expectedSize) {
-                    Serial.println("文件系统镜像验证通过，开始应用更新...");
+                if (actualSize > 0 && actualSize <= 3 * 1024 * 1024) { // 允许一定范围内的文件大小
+                    Serial.println("[DEBUG] 文件系统镜像大小验证通过，开始应用更新...");
+                    Serial.print("[DEBUG] 实际大小: ");
+                    Serial.print(actualSize);
+                    Serial.print(" 字节，预期大小: ");
+                    Serial.println(expectedSize);
 
                     // 检查是否有配置恢复标志
                     bool needConfigRestore = false;
