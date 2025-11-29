@@ -1,7 +1,7 @@
 // =========================================
-// 智能烤箱控制器固件 v0.9.0 - 正式版
+// 智能烤箱控制器固件 v0.9.1 - 正式版
 // =========================================
-// 固件版本: 0.9.0
+// 固件版本: 0.9.1
 // 主要功能: 网页控制界面 + 温度校准功能 + OTA升级功能 + MAX6675温度传感器驱动 + 多设备识别功能 + PID温控算法
 // 硬件支持: ESP8266系列芯片 + 继电器模块 + OLED显示屏 + MAX6675热电偶传感器
 // =========================================
@@ -184,7 +184,7 @@ bool hardwareInitialized = false;            // 硬件是否初始化完成标�
 const String DEVICE_TYPE = "oven";
 const String DEVICE_ID = "oven-" + String(ESP.getChipId());
 const String DEVICE_NAME = "SmartOven";
-const String FIRMWARE_VERSION = "0.9.0";
+const String FIRMWARE_VERSION = "0.9.1";
 
 // WiFi配置参数
 String wifiSSID = "";
@@ -1185,68 +1185,89 @@ void handleRestart() {
     delay(3000);
     ESP.restart();
 }
-
 void handleOTAUpdate() {
-    Serial.println("开始生成OTA升级页面...");
+    Serial.println("[DEBUG] handleOTAUpdate() called - 处理OTA更新页面请求");
+    Serial.print("[DEBUG] 文件系统可用状态: ");
+    Serial.println(isFileSystemAvailable ? "true" : "false");
 
-    // 简化的OTA页面，减少内存使用，添加缓存控制
-    String html = "<!DOCTYPE html><html><head><title>OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
-    html += "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\">";
-    html += "<meta http-equiv=\"Pragma\" content=\"no-cache\">";
-    html += "<meta http-equiv=\"Expires\" content=\"0\">";
-    html += "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}h1{color:#333;}.container{max-width:600px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}";
+    if (!isFileSystemAvailable) {
+        Serial.println("[ERROR] 文件系统不可用，无法提供OTA页面");
+        webServer.send(500, "text/plain", "Filesystem not available");
+        return;
+    }
 
-    html += ".tab{display:none;}.active{display:block;}button{background:#007bff;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin:5px;}button:hover{background:#0056b3;}";
-    html += ".btn-secondary{background:#6c757d;}.btn-secondary:hover{background:#545b62;}.progress{width:100%;height:20px;background:#f0f0f0;border-radius:10px;margin:10px 0;}.progress-bar{height:100%;background:#007bff;border-radius:10px;width:0%;}";
-    html += ".file-list{margin:10px 0;}.file-item{background:#f8f9fa;padding:5px 10px;margin:3px 0;border-radius:3px;border-left:3px solid #007bff;}</style></head><body>";
-    html += "<div class=\"container\"><h1>OTA升级</h1><div class=\"status-info\"><strong>设备状态:</strong><br>• 固件版本: " + FIRMWARE_VERSION + "<br>• 运行时间: " + String(millis() / 1000 / 60) + " 分钟<br>• 可用内存: " + String(ESP.getFreeHeap() / 1024) + " KB</div>";
+    bool fileExists = LittleFS.exists("/ota_update.html");
+    Serial.print("[DEBUG] /ota_update.html 文件存在: ");
+    Serial.println(fileExists ? "true" : "false");
 
-    // 主标签页
-    html += "<div class=\"tab active\" id=\"mainTab\"><h3>选择升级类型</h3>";
-    html += "<button onclick=\"showTab('firmwareTab')\">🔧 固件升级</button>";
-    html += "<button onclick=\"showTab('fsTab')\">💾 文件系统更新</button>";
-    html += "<button onclick=\"showTab('fileTab')\">📄 单个文件上传</button>";
-    html += "<button onclick=\"showTab('batchTab')\">📁 批量文件上传</button></div>";
-
-    // 固件升级标签页
-    html += "<div class=\"tab\" id=\"firmwareTab\"><h3>固件升级</h3><p>选择.bin文件升级固件</p>";
-    html += "<form action=\"/firmware_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFirmware(this)\">";
-    html += "<input type=\"file\" name=\"firmware\" accept=\".bin\" required><br><button type=\"submit\">开始升级</button></form>";
-    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"firmwareProgress\"></div></div><p id=\"firmwareStatus\"></p>";
-    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
-
-    // 文件系统更新标签页
-    html += "<div class=\"tab\" id=\"fsTab\"><h3>文件系统更新</h3><p>选择.bin文件更新文件系统</p>";
-    html += "<form action=\"/filesystem_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
-    html += "<input type=\"file\" name=\"filesystem\" accept=\".bin\" required><br><button type=\"submit\">开始更新</button></form>";
-    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fsProgress\"></div></div><p id=\"fsStatus\"></p>";
-    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
-
-    // 单个文件上传标签页
-    html += "<div class=\"tab\" id=\"fileTab\"><h3>单个文件上传</h3><p>选择要上传的文件，系统将自动推断目标路径</p>";
-    html += "<form action=\"/upload_file\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadSingleFile(this)\">";
-    html += "<div style=\"margin-bottom:10px;\"><label>选择文件：</label><br><input type=\"file\" name=\"file\" accept=\".html,.htm,.js,.css,.json,.txt,.bin,.png,.jpg,.jpeg,.gif,.ico,.svg,.woff,.woff2,.ttf,.eot,.md,.map\" required onchange=\"updateTargetPath(this)\"></div>";
-    html += "<div style=\"margin-bottom:10px;\"><label>目标路径：</label><br><input type=\"text\" name=\"target_path\" id=\"targetPath\" placeholder=\"系统将自动推断路径\" style=\"width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;background:#f8f9fa;\" readonly></div>";
-    html += "<button type=\"submit\">上传文件</button></form>";
-    html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fileProgress\"></div></div><p id=\"fileStatus\"></p>";
-    html += "<div class=\"file-list\"><h4>设备文件列表:</h4><div id=\"fileList\">加载中...</div></div>";
-    html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
-
-    html += "</div><script>";
-    html += "function showTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='fileTab')loadFileList();}function updateTargetPath(input){var file=input.files[0];if(file){var filename=file.name.toLowerCase();var targetPath='/';if(filename.endsWith('.html')||filename.endsWith('.htm')){targetPath='/index.html';}else if(filename.endsWith('.js')){if(filename.includes('mobile')||filename.includes('utils')){targetPath='/mobile_utils.js';}else{targetPath='/lang.js';}}else if(filename.endsWith('.css')){targetPath='/title-styles.css';}else if(filename.endsWith('.bin')){targetPath='/firmware.bin';}else{targetPath='/'+filename;}document.getElementById('targetPath').value=targetPath;}}";
-    html += "function uploadFirmware(f){var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('firmwareProgress').style.width=p+'%';document.getElementById('firmwareStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){var r=JSON.parse(x.responseText);document.getElementById('firmwareStatus').innerHTML=r.status=='success'?'成功，重启中...':'失败:'+r.message;}else{document.getElementById('firmwareStatus').innerHTML='失败';}};x.open('POST','/firmware_update');x.send(new FormData(f));return false;}";
-    html += "function uploadFilesystem(f){var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('fsProgress').style.width=p+'%';document.getElementById('fsStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){var r=JSON.parse(x.responseText);document.getElementById('fsStatus').innerHTML=r.status=='success'?'成功，重启中...':'失败:'+r.message;}else{document.getElementById('fsStatus').innerHTML='失败';}};x.open('POST','/filesystem_update');x.send(new FormData(f));return false;}";
-    html += "function uploadSingleFile(f){var t=f.target_path.value;if(!t){document.getElementById('fileStatus').innerHTML='请选择目标路径';return false;}var fi=f.file;if(!fi.files||fi.files.length==0){document.getElementById('fileStatus').innerHTML='请选择文件';return false;}document.getElementById('fileStatus').innerHTML='上传中...';var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('fileProgress').style.width=p+'%';document.getElementById('fileStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){try{var r=JSON.parse(x.responseText);document.getElementById('fileStatus').innerHTML=r.status=='success'?'成功':'失败:'+r.message;document.getElementById('fileProgress').style.width='0%';if(r.status=='success')loadFileList();}catch(e){document.getElementById('fileStatus').innerHTML='解析错误';}}else{document.getElementById('fileStatus').innerHTML='HTTP错误';}document.getElementById('fileProgress').style.width='0%';};x.onerror=function(){document.getElementById('fileStatus').innerHTML='网络错误';document.getElementById('fileProgress').style.width='0%';};x.open('POST','/upload_file');x.send(new FormData(f));return false;}";
-    html += "function loadFileList(){var d=document.getElementById('fileList');d.innerHTML='加载中...';fetch('/file_list').then(r=>r.json()).then(data=>{d.innerHTML='';if(data.files&&data.files.length>0){data.files.forEach(f=>{var i=document.createElement('div');i.className='file-item';i.innerHTML=f.name+' ('+f.size+'字节)';d.appendChild(i);});}else{d.innerHTML='无文件';}}).catch(e=>{d.innerHTML='加载失败';});}";
-    html += "function loadBatchFileList(){var d=document.getElementById('batchFileList');d.innerHTML='加载中...';fetch('/file_list').then(r=>r.json()).then(data=>{d.innerHTML='';if(data.files&&data.files.length>0){data.files.forEach(f=>{var i=document.createElement('div');i.className='file-item';i.innerHTML=f.name+' ('+f.size+'字节)';d.appendChild(i);});}else{d.innerHTML='无文件';}}).catch(e=>{d.innerHTML='加载失败';});}";
-    html += "function uploadBatchFiles(){var files=document.getElementById('batchFiles').files;if(!files||files.length==0){document.getElementById('batchStatus').innerHTML='请选择文件';return;}document.getElementById('batchProgress').style.display='block';document.getElementById('batchStatus').innerHTML='开始批量上传...';document.getElementById('batchResults').innerHTML='';var results=[];var uploadPromises=Array.from(files).map(function(file,index){return new Promise(function(resolve,reject){var formData=new FormData();formData.append('file',file);formData.append('target_path','/'+file.name);var xhr=new XMLHttpRequest();xhr.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('batchProgressBar').style.width=p+'%';document.getElementById('batchStatus').innerHTML='上传 '+file.name+' ('+(index+1)+'/'+files.length+'): '+p+'%';}};xhr.onload=function(){if(xhr.status==200){try{var r=JSON.parse(xhr.responseText);if(r.status=='success'){results.push('<div style=\"color:green;\">✓ '+file.name+' 上传成功</div>');resolve();}else{results.push('<div style=\"color:red;\">✗ '+file.name+' 上传失败: '+r.message+'</div>');resolve();}}catch(e){results.push('<div style=\"color:red;\">✗ '+file.name+' 解析错误</div>');resolve();}}else{results.push('<div style=\"color:red;\">✗ '+file.name+' HTTP错误</div>');resolve();}};xhr.onerror=function(){results.push('<div style=\"color:red;\">✗ '+file.name+' 网络错误</div>');resolve();};xhr.open('POST','/upload_file');xhr.send(formData);});});Promise.all(uploadPromises).then(function(){document.getElementById('batchResults').innerHTML=results.join('');document.getElementById('batchStatus').innerHTML='批量上传完成';document.getElementById('batchProgressBar').style.width='0%';loadBatchFileList();}).catch(function(error){document.getElementById('batchStatus').innerHTML='批量上传过程中发生错误';console.error(error);});}";
-    html += "window.onload=function(){loadFileList();loadBatchFileList();};</script></body></html>";
-
-    Serial.println("OTA升级页面生成完成，长度: " + String(html.length()) + " 字节");
-    webServer.send(200, "text/html", html);
-    Serial.println("OTA升级页面已发送到客户端");
+    if (fileExists) {
+        Serial.println("[DEBUG] 尝试打开OTA更新页面文件");
+        File file = LittleFS.open("/ota_update.html", "r");
+        if (file) {
+            size_t fileSize = file.size();
+            Serial.print("[DEBUG] 文件大小: ");
+            Serial.println(fileSize);
+            if (fileSize > 0) {
+                Serial.println("[DEBUG] 发送OTA更新页面文件到客户端");
+                webServer.streamFile(file, "text/html");
+                file.close();
+                Serial.println("[DEBUG] OTA更新页面文件发送完成");
+            } else {
+                Serial.println("[ERROR] OTA更新页面文件大小为0");
+                file.close();
+                webServer.send(500, "text/plain", "OTA update page file is empty");
+            }
+        } else {
+            Serial.println("[ERROR] 无法打开OTA更新页面文件");
+            webServer.send(500, "text/plain", "Error reading OTA update page file");
+        }
+    } else {
+        // 后备方案：动态生成OTA页面（兼容旧版本）
+        Serial.println("[DEBUG] OTA升级页面文件不存在，使用动态生成的后备方案...");
+        String html = "<!DOCTYPE html><html><head><title>OTA升级</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+        html += "<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\">";
+        html += "<meta http-equiv=\"Pragma\" content=\"no-cache\">";
+        html += "<meta http-equiv=\"Expires\" content=\"0\">";
+        html += "<style>body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5;}h1{color:#333;}.container{max-width:600px;margin:0 auto;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}";
+        html += ".tab{display:none;}.active{display:block;}button{background:#007bff;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin:5px;}button:hover{background:#0056b3;}";
+        html += ".progress{width:100%;height:20px;background:#f0f0f0;border-radius:10px;margin:10px 0;}.progress-bar{height:100%;background:#007bff;border-radius:10px;width:0%;}";
+        html += ".file-list{margin:10px 0;}.file-item{background:#f8f9fa;padding:5px 10px;margin:3px 0;border-radius:3px;border-left:3px solid #007bff;}</style></head><body>";
+        html += "<div class=\"container\"><h1>OTA升级</h1><div class=\"status-info\"><strong>设备状态:</strong><br>• 固件版本: " + FIRMWARE_VERSION + "<br>• 运行时间: " + String(millis() / 1000 / 60) + " 分钟<br>• 可用内存: " + String(ESP.getFreeHeap() / 1024) + " KB</div>";
+        html += "<div class=\"tab active\" id=\"mainTab\"><h3>选择升级类型</h3>";
+        html += "<button onclick=\"showTab('firmwareTab')\">🔧 固件升级</button>";
+        html += "<button onclick=\"showTab('fsTab')\">💾 文件系统更新</button>";
+        html += "<button onclick=\"showTab('fileTab')\">📄 单个文件上传</button></div>";
+        html += "<div class=\"tab\" id=\"firmwareTab\"><h3>固件升级</h3><p>选择.bin文件升级固件</p>";
+        html += "<form action=\"/firmware_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFirmware(this)\">";
+        html += "<input type=\"file\" name=\"firmware\" accept=\".bin\" required><br><button type=\"submit\">开始升级</button></form>";
+        html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"firmwareProgress\"></div></div><p id=\"firmwareStatus\"></p>";
+        html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
+        html += "<div class=\"tab\" id=\"fsTab\"><h3>文件系统更新</h3><p>选择.bin文件更新文件系统</p>";
+        html += "<form action=\"/filesystem_update\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadFilesystem(this)\">";
+        html += "<input type=\"file\" name=\"filesystem\" accept=\".bin\" required><br><button type=\"submit\">开始更新</button></form>";
+        html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fsProgress\"></div></div><p id=\"fsStatus\"></p>";
+        html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
+        html += "<div class=\"tab\" id=\"fileTab\"><h3>单个文件上传</h3><p>选择要上传的文件，系统将自动推断目标路径</p>";
+        html += "<form action=\"/upload_file\" method=\"post\" enctype=\"multipart/form-data\" onsubmit=\"return uploadSingleFile(this)\">";
+        html += "<div style=\"margin-bottom:10px;\"><label>选择文件：</label><br><input type=\"file\" name=\"file\" accept=\".html,.htm,.js,.css,.json,.txt,.bin,.png,.jpg,.jpeg,.gif,.ico,.svg,.woff,.woff2,.ttf,.eot,.md,.map\" required onchange=\"updateTargetPath(this)\"></div>";
+        html += "<div style=\"margin-bottom:10px;\"><label>目标路径：</label><br><input type=\"text\" name=\"target_path\" id=\"targetPath\" placeholder=\"系统将自动推断路径\" style=\"width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;background:#f8f9fa;\" readonly></div>";
+        html += "<button type=\"submit\">上传文件</button></form>";
+        html += "<div class=\"progress\"><div class=\"progress-bar\" id=\"fileProgress\"></div></div><p id=\"fileStatus\"></p>";
+        html += "<div class=\"file-list\"><h4>设备文件列表:</h4><div id=\"fileList\">加载中...</div></div>";
+        html += "<button class=\"btn-secondary\" onclick=\"showTab('mainTab')\">返回</button></div>";
+        html += "</div><script>";
+        html += "function showTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='fileTab')loadFileList();}";
+        html += "function updateTargetPath(input){var file=input.files[0];if(file){var filename=file.name.toLowerCase();var targetPath='/';if(filename.endsWith('.html')||filename.endsWith('.htm')){targetPath='/index.html';}else if(filename.endsWith('.js')){if(filename.includes('mobile')||filename.includes('utils')){targetPath='/mobile_utils.js';}else{targetPath='/lang.js';}}else if(filename.endsWith('.css')){targetPath='/title-styles.css';}else if(filename.endsWith('.bin')){targetPath='/firmware.bin';}else{targetPath='/'+filename;}document.getElementById('targetPath').value=targetPath;}}";
+        html += "function uploadFirmware(f){var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('firmwareProgress').style.width=p+'%';document.getElementById('firmwareStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){var r=JSON.parse(x.responseText);document.getElementById('firmwareStatus').innerHTML=r.status=='success'?'成功，重启中...':'失败:'+r.message;}else{document.getElementById('firmwareStatus').innerHTML='失败';}};x.open('POST','/firmware_update');x.send(new FormData(f));return false;}";
+        html += "function uploadFilesystem(f){var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('fsProgress').style.width=p+'%';document.getElementById('fsStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){var r=JSON.parse(x.responseText);document.getElementById('fsStatus').innerHTML=r.status=='success'?'成功，重启中...':'失败:'+r.message;}else{document.getElementById('fsStatus').innerHTML='失败';}};x.open('POST','/filesystem_update');x.send(new FormData(f));return false;}";
+        html += "function uploadSingleFile(f){var t=f.target_path.value;if(!t){document.getElementById('fileStatus').innerHTML='请选择目标路径';return false;}var fi=f.file;if(!fi.files||fi.files.length==0){document.getElementById('fileStatus').innerHTML='请选择文件';return false;}document.getElementById('fileStatus').innerHTML='上传中...';var x=new XMLHttpRequest();x.upload.onprogress=function(e){if(e.lengthComputable){var p=Math.round(e.loaded/e.total*100);document.getElementById('fileProgress').style.width=p+'%';document.getElementById('fileStatus').innerHTML='进度:'+p+'%';}};x.onload=function(){if(x.status==200){try{var r=JSON.parse(x.responseText);document.getElementById('fileStatus').innerHTML=r.status=='success'?'成功':'失败:'+r.message;document.getElementById('fileProgress').style.width='0%';if(r.status=='success')loadFileList();}catch(e){document.getElementById('fileStatus').innerHTML='解析错误';}}else{document.getElementById('fileStatus').innerHTML='HTTP错误';}document.getElementById('fileProgress').style.width='0%';};x.onerror=function(){document.getElementById('fileStatus').innerHTML='网络错误';document.getElementById('fileProgress').style.width='0%';};x.open('POST','/upload_file');x.send(new FormData(f));return false;}";
+        html += "function loadFileList(){var d=document.getElementById('fileList');d.innerHTML='加载中...';fetch('/file_list').then(r=>r.json()).then(data=>{d.innerHTML='';if(data.files&&data.files.length>0){data.files.forEach(f=>{var i=document.createElement('div');i.className='file-item';i.innerHTML=f.name+' ('+f.size+'字节)';d.appendChild(i);});}else{d.innerHTML='无文件';}}).catch(e=>{d.innerHTML='加载失败';});}";
+        html += "</script></body></html>";
+        Serial.println("[DEBUG] OTA升级页面动态生成完成，长度: " + String(html.length()) + " 字节");
+        webServer.send(200, "text/html", html);
+        Serial.println("[DEBUG] OTA升级页面已发送到客户端");
+    }
 }
-
 void handleLogout() {
     // 登出端点 - 主要用于Web界面
     webServer.send(200, "application/json", "{\"status\":\"success\",\"message\":\"已登出\"}");
